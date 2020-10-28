@@ -1,0 +1,461 @@
+﻿<mah:MetroWindow xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:CSGO_Boost_Panel="clr-namespace:CSGO_Boost_Panel" 
+        xmlns:local="clr-namespace:CSGO_Boost_Panel"
+        xmlns:controlzex="urn:controlzex" x:Class="CSGO_Boost_Panel.MainWindow"
+        mc:Ignorable="d"
+        Icon="Icon.ico"
+        Title="CSGO Boost Panel" ResizeMode="CanMinimize" Height="474" Width="824" MouseDown="Window_MouseDown" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
+    <mah:MetroWindow.Resources>
+        <DrawingImage x:Key="Rectangle1DrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V474 H72 V0 H0 Z">
+                    <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,474">
+                        <GeometryDrawing Brush="#2e3f7f" Geometry="F1 M72,474z M0,0z M0,2370L0,0 360,0 720,0 720,2143C720,4488 724,4327 661,4455 601,4575 492,4670 361,4716 303,4737 276,4740 148,4740L0,4740 0,2370z" />
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="bckgrndDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V426 H730 V0 H0 Z">
+                    <DrawingGroup Opacity="1" Transform="0.99590233,0,0,0.99533534,-6.471599,0.49590457">
+                        <DrawingGroup.ClipGeometry>
+                            <RectangleGeometry Rect="0,0,738,436" />
+                        </DrawingGroup.ClipGeometry>
+                        <DrawingGroup>
+                            <DrawingGroup.ClipGeometry>
+                                <RectangleGeometry Rect="0,0,738,436" />
+                            </DrawingGroup.ClipGeometry>
+                            <GeometryDrawing>
+                                <GeometryDrawing.Brush>
+                                    <SolidColorBrush Color="#FF153E78" Opacity="0.5" />
+                                </GeometryDrawing.Brush>
+                                <GeometryDrawing.Pen>
+                                    <Pen Thickness="3" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter">
+                                        <Pen.Brush>
+                                            <SolidColorBrush Color="#FF01142F" Opacity="0.25" />
+                                        </Pen.Brush>
+                                    </Pen>
+                                </GeometryDrawing.Pen>
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry RadiusX="58.5888" RadiusY="58.5888" Rect="8,1,730,425" />
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup>
+                    </DrawingGroup>
+                    <GeometryDrawing Geometry="F1 M730,426z M0,0z M3,213.49726L727,213.49726">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF000000" Thickness="0.99452" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="bcgDrawingImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V50.000002 H142 V0 H0 Z">
+                    <DrawingGroup Opacity="1">
+                        <GeometryDrawing>
+                            <GeometryDrawing.Brush>
+                                <SolidColorBrush Color="#FF162D50" Opacity="0.9" />
+                            </GeometryDrawing.Brush>
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="1.00472" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter">
+                                    <Pen.Brush>
+                                        <SolidColorBrush Color="#FF535D6C" Opacity="0.9" />
+                                    </Pen.Brush>
+                                </Pen>
+                            </GeometryDrawing.Pen>
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry RadiusX="11.6071" RadiusY="8.9619" Rect="0.5024,0.5024,140.9953,48.9953" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <Style x:Key="MahAppsButtonDisabled"
+           BasedOn="{StaticResource MahApps.Styles.Button.Square}"
+           TargetType="{x:Type ButtonBase}">
+            <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ButtonBase}">
+                        <Grid>
+                            <Controls:ClipBorder x:Name="Background"
+                                             Background="{TemplateBinding Background}"
+                                             BorderBrush="{TemplateBinding BorderBrush}"
+                                             BorderThickness="{TemplateBinding BorderThickness}"
+                                             CornerRadius="{TemplateBinding Controls:ControlsHelper.CornerRadius}"
+                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <Controls:ClipBorder x:Name="DisabledVisualElement"
+                                             Background="{DynamicResource MahApps.Brushes.Control.Disabled}"
+                                             CornerRadius="{TemplateBinding Controls:ControlsHelper.CornerRadius}"
+                                             IsHitTestVisible="False"
+                                             Opacity="0"
+                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <Grid Margin="{TemplateBinding BorderThickness}">
+                                <Rectangle x:Name="MouseOverRectangle"
+                                       Fill="{DynamicResource MahApps.Brushes.Button.AccentedSquare.Background.MouseOver}"
+                                       Opacity="0" />
+                                <Controls:ContentControlEx x:Name="PART_ContentPresenter"
+                                                       Padding="{TemplateBinding Padding}"
+                                                       HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                       Content="{TemplateBinding Content}"
+                                                       ContentCharacterCasing="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Controls:ControlsHelper.ContentCharacterCasing)}"
+                                                       ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                                       ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                       ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                       RecognizesAccessKey="{TemplateBinding Controls:ControlsHelper.RecognizesAccessKey}"
+                                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DisabledVisualElement" Storyboard.TargetProperty="Opacity">
+                                                <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_ContentPresenter" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <EasingDoubleKeyFrame KeyTime="0" Value="0.3" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused" />
+                                    <VisualState x:Name="Unfocused" />
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ValidationStates">
+                                    <VisualState x:Name="Valid" />
+                                    <VisualState x:Name="InvalidFocused" />
+                                    <VisualState x:Name="InvalidUnfocused" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Button.AccentedSquare.Foreground.MouseOver}" />
+                                <Setter TargetName="MouseOverRectangle" Property="Opacity" Value="1" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
+                                <Setter TargetName="MouseOverRectangle" Property="Opacity" Value="0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </mah:MetroWindow.Resources>
+
+    <Grid x:Name="grid1" FocusVisualStyle="{x:Null}" Focusable="True">
+        <Image Source="{StaticResource Rectangle1DrawingImage}" Margin="0,0,744,0" Stretch="Fill" />
+        <TabControl x:Name="tab" Background="Transparent" Style="{StaticResource MahApps.Styles.TabControl.Animated}">
+            <TabItem x:Name="main" Margin="5,26,-5,-26" Width="66" Height="65" BorderThickness="0" Padding="0">
+                <TabItem.Header>
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" FocusVisualStyle="{x:Null}">
+                        <iconPacks:PackIconModern Kind="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
+                    </Button>
+                </TabItem.Header>
+                <Grid Margin="71,-68,0,0">
+                    <Grid.Background>
+                        <ImageBrush ImageSource="{StaticResource bckgrndDrawingImage}" Stretch="None"/>
+                    </Grid.Background>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="454" ></ColumnDefinition>
+                        <ColumnDefinition Width="112"></ColumnDefinition>
+                        <ColumnDefinition Width="175"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid x:Name="controlContainer" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="27"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="22"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="36"/>
+                            <ColumnDefinition Width="54"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="162"/>
+                            <ColumnDefinition Width="182"/>
+                        </Grid.ColumnDefinitions>
+                        <Ellipse x:Name="Status1" Fill="#FFA20404" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="Status2" Fill="#FFA20404" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status3" Fill="#FFA20404" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status4" Fill="#FFA20404" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status5" Fill="#FFA20404" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status6" Fill="#FFA20404" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status7" Fill="#FFA20404" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status8" Fill="#FFA20404" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status9" Fill="#FFA20404" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status10" Fill="#FFA20404" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton1" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton2" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton3" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton4" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton5" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton6" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton7" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton8" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton9" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton10" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+
+                        <TextBox x:Name="Login1" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login2" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login3" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login4" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login5" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password1" MaxLength="250" Grid.Column="4" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password2" MaxLength="250" Grid.Column="4" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password3" MaxLength="250" Grid.Column="4" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password4" MaxLength="250" Grid.Column="4" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password5" MaxLength="250" Grid.Column="4" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login6" MaxLength="250" Grid.Column="3" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login7" MaxLength="250" Grid.Column="3" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login8" MaxLength="250" Grid.Column="3" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login9" MaxLength="250" Grid.Column="3" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login10" MaxLength="250" Grid.Column="3" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password6" MaxLength="250" Grid.Column="4" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password7" MaxLength="250" Grid.Column="4" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password8" MaxLength="250" Grid.Column="4" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password9" MaxLength="250" Grid.Column="4" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox x:Name="Password10" MaxLength="250" Grid.Column="4" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="27"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="22"/>
+                        </Grid.RowDefinitions>
+                        <Button Grid.Row="1" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login1" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="2" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login2" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="3" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login3" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="4" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login4" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="5" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login5" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="7" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login6" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="8" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login7" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="9" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login8" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="10" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login9" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                        <Button Grid.Row="11" BorderBrush="#FF971D1D" Background="{x:Null}" Width="62" Height="29" Tag="Login10" Click="OpenSteam" Grid.ColumnSpan="2">
+                            <iconPacks:PackIconModern Kind="Steam" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                        </Button>
+                    </Grid>
+                    <Grid x:Name="exChange" IsEnabled="False" Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="27"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="22"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="32"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="1" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="1" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="2" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="2" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="3" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="3" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="4" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="4" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="5" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="5" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="7" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="6" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="8" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="7" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="9" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="8" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="10" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="9" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="0" Grid.Row="11" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="10" Foreground="White" Click="PlayOneFunc">
+                            <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+                        </Button>
+
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="1" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="2" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="2" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="3" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="3" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="4" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="4" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="5" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="5" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="7" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="6" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="8" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="7" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="9" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="8" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="10" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="9" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="11" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="10" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
+                        </Button>
+                    </Grid>
+                    <Button x:Name="SaveButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="133,0,2,10" Width="40" Height="40" Click="Save" FocusVisualStyle="{x:Null}" Grid.Column="2">
+                        <iconPacks:PackIconModern Kind="Save" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                    </Button>
+                    <Grid x:Name="AcceptGrid"  Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="83,328,42,40" Height="74" Width="162" Grid.ColumnSpan="2" Grid.Column="1">
+                        <Grid.Background>
+                            <ImageBrush ImageSource="{StaticResource bcgDrawingImage}"/>
+                        </Grid.Background>
+                        <TextBlock Text="Name for your lobby:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16,10,32,48" Foreground="#FFFF8B8B"/>
+                        <TextBox x:Name="PresetName" Background="#7FFBABAB" AcceptsReturn="False" KeyDown="Accept" Margin="10,31,10,17" MinHeight="0"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="lobbies" Margin="-60,94,60,-94" Width="66" Height="65" BorderThickness="0" Padding="0">
+                <TabItem.Header>
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click_1" FocusVisualStyle="{x:Null}">
+                        <iconPacks:PackIconMaterial Kind="AccountBoxMultipleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
+                    </Button>
+                </TabItem.Header>
+                <ListBox x:Name="lobbiesList" Margin="78,-60,3,2" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}">
+                    <ListBox.Resources>
+                        <ContextMenu x:Key="ItemContextMenu" Placement="Left" OverridesDefaultStyle="True">
+                            <MenuItem Header="Delete" Click="MenuItemDelete_Click"/>
+                        </ContextMenu>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Margin" Value="5"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                            <Setter Property="AllowDrop" Value="True"/>
+                            <EventSetter Event="Drop" Handler="ListBoxItem_Drop" />
+                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown"/>
+                            <Setter Property="Padding" Value="5"/>
+                            <Setter Property="FontSize" Value="20"/>
+                            <Setter Property="Height" Value="40"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </TabItem>
+            <TabItem x:Name="settings" Margin="-126,162,126,-162" Height="65" Width="66" BorderThickness="0" Padding="0">
+                <TabItem.Header>
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Click="Button_Click_2" FocusVisualStyle="{x:Null}" Width="66" Height="65">
+                        <iconPacks:PackIconModern Kind="Settings" Width="48" Height="48" Foreground="#FFE0D9BF"/>
+                    </Button>
+                </TabItem.Header>
+                <Grid Margin="73,-63,0,0">
+                    <Button Content="Choose Steam Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="SteamFolder" Margin="125,215,465,160" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal"/>
+                    <Button Content="Choose CSGO Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="CSGOFolder" Margin="125,53,465,322" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal"/>
+                    <TextBlock x:Name="SteamFolder" HorizontalAlignment="Left" Height="62" Margin="71,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15"/>
+                    <TextBlock x:Name="CSGOFolder" HorizontalAlignment="Left" Height="62" Margin="71,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="424,55,0,0" TextWrapping="Wrap" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="639,53,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346"/>
+                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,52,104,356" Background="{x:Null}" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings"/>
+                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,52,35,356" Background="{x:Null}" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="424,103,0,0" TextWrapping="Wrap" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="639,100,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423"/>
+                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,100,104,308" Background="{x:Null}" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings"/>
+                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,100,35,308" Background="{x:Null}" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings"/>
+                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="AutoAcceptTgl" Margin="481,150,0,255" HorizontalAlignment="Left" Content="AutoAccept"/>
+                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="AutoDisconnectTgl" Margin="481,187,0,218" Content="AutoDisconnect"/>
+                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,224,0,181" Content="Automation"/>
+                    <mah:ToggleSwitch Margin="481,261,0,144" Content="Rank Boost"/>
+                    <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,150,279,255" Checked="WinTeam1_Checked"/>
+                    <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,194,279,211" Checked="WinTeam2_Checked"/>
+                    <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,238,279,167" Checked="WinTeamTie_Checked"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="#FFE0D9BF" Width="66" Height="65" Click="CPUReducer" FocusVisualStyle="{x:Null}" Margin="4,248,748,132" Content="BES" mah:ControlsHelper.ContentCharacterCasing="Upper" FontSize="38" FontFamily="Mistral"/>
+        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="3,0,749,3" Width="66" Height="65" Click="Start" Foreground="White" BorderBrush="Transparent">
+            <iconPacks:PackIconModern Kind="ControlPlay" Width="48" Height="48" Foreground="#FFFF6657"/>
+        </Button>
+        <Button Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="27,0,751,68" Width="40" Height="40" Click="Stop">
+            <iconPacks:PackIconMaterial Kind="Stop" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+        </Button>
+    </Grid>
+</mah:MetroWindow>
