@@ -10,13 +10,19 @@
         xmlns:controlzex="urn:controlzex" x:Class="CSGO_Boost_Panel.MainWindow"
         mc:Ignorable="d"
         Icon="Icon.ico"
-        Title="CSGO Boost Panel" ResizeMode="CanMinimize" Height="474" Width="824" MouseDown="Window_MouseDown" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
+        Title="CSGO Boost Panel" ResizeMode="CanMinimize" Height="500" Width="824" MouseDown="Window_MouseDown" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
     <mah:MetroWindow.Resources>
         <DrawingImage x:Key="Rectangle1DrawingImage">
             <DrawingImage.Drawing>
-                <DrawingGroup ClipGeometry="M0,0 V474 H72 V0 H0 Z">
-                    <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,474">
-                        <GeometryDrawing Brush="#2e3f7f" Geometry="F1 M72,474z M0,0z M0,2370L0,0 360,0 720,0 720,2143C720,4488 724,4327 661,4455 601,4575 492,4670 361,4716 303,4737 276,4740 148,4740L0,4740 0,2370z" />
+                <DrawingGroup ClipGeometry="M0,0 V132.29167 H218.01667 V0 H0 Z">
+                    <DrawingGroup Opacity="1">
+                        <GeometryDrawing Brush="#FF2E3F76" Geometry="F1 M218.01667,132.29167z M0,0z M0,0L3.469369,0A17.168131,17.168131,45,0,1,20.6375,17.168131L20.6375,132.29167 0,132.29167z" />
+                        <GeometryDrawing Brush="#FF2E3F76">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,125.4125,218.0167,6.8792" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#FF2E3F76" Geometry="F1 M218.01667,132.29167z M0,0z M20.372917,112.44791L20.637084,112.44791A12.965,12.965,45,0,0,33.602084,125.41291L33.602084,125.67706 20.372917,125.67706z" />
                     </DrawingGroup>
                 </DrawingGroup>
             </DrawingImage.Drawing>
@@ -63,7 +69,7 @@
                     <DrawingGroup Opacity="1">
                         <GeometryDrawing>
                             <GeometryDrawing.Brush>
-                                <SolidColorBrush Color="#FF162D50" Opacity="0.9" />
+                                <SolidColorBrush Color="#FF162D50" Opacity="1" />
                             </GeometryDrawing.Brush>
                             <GeometryDrawing.Pen>
                                 <Pen Thickness="1.00472" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter">
@@ -163,15 +169,15 @@
     </mah:MetroWindow.Resources>
 
     <Grid x:Name="grid1" FocusVisualStyle="{x:Null}" Focusable="True">
-        <Image Source="{StaticResource Rectangle1DrawingImage}" Margin="0,0,744,0" Stretch="Fill" />
+        <Image Source="{StaticResource Rectangle1DrawingImage}" Stretch="Fill" />
         <TabControl x:Name="tab" Background="Transparent" Style="{StaticResource MahApps.Styles.TabControl.Animated}">
-            <TabItem x:Name="main" Margin="5,26,-5,-26" Width="66" Height="65" BorderThickness="0" Padding="0">
+            <TabItem x:Name="main" Margin="6,35,-6,-35" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
                     <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" FocusVisualStyle="{x:Null}">
                         <iconPacks:PackIconModern Kind="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <Grid Margin="71,-68,0,0">
+                <Grid Margin="74,-68,-3,22" Width="741">
                     <Grid.Background>
                         <ImageBrush ImageSource="{StaticResource bckgrndDrawingImage}" Stretch="None"/>
                     </Grid.Background>
@@ -387,13 +393,13 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="lobbies" Margin="-60,94,60,-94" Width="66" Height="65" BorderThickness="0" Padding="0">
+            <TabItem x:Name="lobbies" Margin="-60,103,60,-103" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
                     <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click_1" FocusVisualStyle="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="AccountBoxMultipleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <ListBox x:Name="lobbiesList" Margin="78,-60,3,2" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}">
+                <ListBox x:Name="lobbiesList" Margin="78,-60,3,26" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}">
                     <ListBox.Resources>
                         <ContextMenu x:Key="ItemContextMenu" Placement="Left" OverridesDefaultStyle="True">
                             <MenuItem Header="Delete" Click="MenuItemDelete_Click"/>
@@ -421,37 +427,43 @@
                     </ListBox.ItemContainerStyle>
                 </ListBox>
             </TabItem>
-            <TabItem x:Name="settings" Margin="-126,162,126,-162" Height="65" Width="66" BorderThickness="0" Padding="0">
+            <TabItem x:Name="settings" Margin="-126,171,126,-171" Height="65" Width="66" BorderThickness="0" Padding="0">
                 <TabItem.Header>
                     <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Click="Button_Click_2" FocusVisualStyle="{x:Null}" Width="66" Height="65">
                         <iconPacks:PackIconModern Kind="Settings" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <Grid Margin="73,-63,0,0">
-                    <Button Content="Choose Steam Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="SteamFolder" Margin="125,215,465,160" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal"/>
-                    <Button Content="Choose CSGO Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="CSGOFolder" Margin="125,53,465,322" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal"/>
-                    <TextBlock x:Name="SteamFolder" HorizontalAlignment="Left" Height="62" Margin="71,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15"/>
-                    <TextBlock x:Name="CSGOFolder" HorizontalAlignment="Left" Height="62" Margin="71,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="424,55,0,0" TextWrapping="Wrap" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="639,53,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346"/>
-                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,52,104,356" Background="{x:Null}" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings"/>
-                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,52,35,356" Background="{x:Null}" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="424,103,0,0" TextWrapping="Wrap" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="639,100,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423"/>
-                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,100,104,308" Background="{x:Null}" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings"/>
-                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,100,35,308" Background="{x:Null}" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings"/>
-                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="AutoAcceptTgl" Margin="481,150,0,255" HorizontalAlignment="Left" Content="AutoAccept"/>
-                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="AutoDisconnectTgl" Margin="481,187,0,218" Content="AutoDisconnect"/>
-                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,224,0,181" Content="Automation"/>
-                    <mah:ToggleSwitch Margin="481,261,0,144" Content="Rank Boost"/>
-                    <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,150,279,255" Checked="WinTeam1_Checked"/>
-                    <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,194,279,211" Checked="WinTeam2_Checked"/>
-                    <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,238,279,167" Checked="WinTeamTie_Checked"/>
+                <Grid Margin="73,-63,0,27">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="45*"/>
+                        <RowDefinition Height="392*"/>
+                    </Grid.RowDefinitions>
+                    <Button Content="Choose Steam Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="SteamFolder" Margin="125,170,465,159" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal" Grid.Row="1"/>
+                    <Button Content="Choose CSGO Folder" Style="{StaticResource MahApps.Styles.Button.Square}" Tag="CSGOFolder" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal" Margin="125,6,465,323" Grid.Row="1"/>
+                    <TextBlock x:Name="SteamFolder" HorizontalAlignment="Left" Height="62" Margin="71,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15" Grid.Row="1"/>
+                    <TextBlock x:Name="CSGOFolder" HorizontalAlignment="Left" Height="62" Margin="71,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15" Grid.Row="1"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="424,10,0,0" TextWrapping="Wrap" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="639,8,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346" Grid.Row="1"/>
+                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,6,104,356" Background="{x:Null}" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,6,35,356" Background="{x:Null}" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="424,58,0,0" TextWrapping="Wrap" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="639,55,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Grid.Row="1"/>
+                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,54,104,308" Background="{x:Null}" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,54,35,308" Background="{x:Null}" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="AutoAcceptTgl" Margin="481,105,0,255" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="AutoDisconnectTgl" Margin="481,142,0,218" Content="AutoDisconnect" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,179,0,181" Content="Automation" Grid.Row="1"/>
+                    <mah:ToggleSwitch Margin="481,216,0,144" Content="Rank Boost" Grid.Row="1"/>
+                    <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
+                    <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>
+                    <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,193,279,167" Checked="WinTeamTie_Checked" Grid.Row="1"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="#FFE0D9BF" Width="66" Height="65" Click="CPUReducer" FocusVisualStyle="{x:Null}" Margin="4,248,748,132" Content="BES" mah:ControlsHelper.ContentCharacterCasing="Upper" FontSize="38" FontFamily="Mistral"/>
-        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="3,0,749,3" Width="66" Height="65" Click="Start" Foreground="White" BorderBrush="Transparent">
+        <TextBlock HorizontalAlignment="Left" Margin="193,444,0,0" TextWrapping="Wrap" Text="AutoAccept:" VerticalAlignment="Top" Height="24" Width="99" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Foreground="White"/>
+        <Ellipse x:Name="AutoAcceptStatus" Fill="#FFA20404" Margin="294,444,509,2" Width="15" Height="15"/>
+        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="#FFE0D9BF" Width="66" Height="65" Click="CPUReducer" FocusVisualStyle="{x:Null}" Margin="4,261,748,145" Content="BES" mah:ControlsHelper.ContentCharacterCasing="Upper" FontSize="35" FontFamily="Mistral"/>
+        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4,0,748,3" Width="66" Height="65" Click="Start" Foreground="White" BorderBrush="Transparent">
             <iconPacks:PackIconModern Kind="ControlPlay" Width="48" Height="48" Foreground="#FFFF6657"/>
         </Button>
         <Button Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="27,0,751,68" Width="40" Height="40" Click="Stop">

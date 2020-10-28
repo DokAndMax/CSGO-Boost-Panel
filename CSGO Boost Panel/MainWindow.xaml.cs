@@ -190,7 +190,6 @@ namespace CSGO_Boost_Panel
                 }
             }
             loaded = true;
-            AppDomain.CurrentDomain.UnhandledException += MyHandler;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -216,7 +215,7 @@ namespace CSGO_Boost_Panel
             tab.SelectedIndex = 2;
         }
 
-        private void Start(object sender, RoutedEventArgs e)
+        private async void Start(object sender, RoutedEventArgs e)
         {
             if (!File.Exists("Settings.json"))
             {
@@ -298,7 +297,7 @@ namespace CSGO_Boost_Panel
                     return;
                 }
                 Process.Start("Launcher.exe", "false \"" + settingsObj["SteamFolder"].ToString() + "\" " + Logins[i] + " \"" + settingsObj["CSGOFolder"].ToString() + "\" ");
-                Thread.Sleep(2000);
+                await Task.Delay(2000);
             }
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
                 WinTeam1.IsChecked = true;
@@ -378,12 +377,6 @@ namespace CSGO_Boost_Panel
             choosed = false;
             controlContainer.IsEnabled = true;
             exChange.IsEnabled = false;
-        }
-
-        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
-        {
-            System.Net.HttpListenerException b = (System.Net.HttpListenerException)args.ExceptionObject;
-            MessageBox.Show(b.Data + "\n" + b.ErrorCode + "\n" + b.HelpLink + "\n" + b.HResult + "\n" + b.InnerException + "\n" + b.Message + "\n" + b.NativeErrorCode + "\n" + b.Source + "\n" + b.StackTrace + "\n" + b.TargetSite);
         }
 
         private void Save(object sender, RoutedEventArgs e)
@@ -550,6 +543,9 @@ namespace CSGO_Boost_Panel
             Stream Team2logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             StreamReader Team1log = new StreamReader(Team1logStream);
             StreamReader Team2log = new StreamReader(Team2logStream);
+            InvokeUI(() => {
+                AutoAcceptStatus.Fill = Brushes.Green;
+            });
             while (on)
             {
                 String test1 = Regex.Match(Team1log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
@@ -762,6 +758,9 @@ namespace CSGO_Boost_Panel
 
         private async void RestartSearch(bool t2)
         {
+            InvokeUI(() => {
+                AutoAcceptStatus.Fill = Brushes.Yellow;
+            });
             List<String> ldrTitles = new List<String>();
             for (int i = 0; i < accWindowsTitle.Count; i++)
             {
@@ -797,6 +796,9 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 3.36) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 22.85) + CSGO.y);
                 await Task.Delay(250);
             }
+            InvokeUI(() => {
+                AutoAcceptStatus.Fill = Brushes.Green;
+            });
         }
 
         private void AcceptGame()
@@ -814,7 +816,10 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 2.35 + (WindowRect.Right - WindowRect.Left - 6) / 6.6 / 2) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 2.52 - (WindowRect.Bottom - WindowRect.Top - 29) / 12.5 / 2) + CSGO.y);
                 Thread.Sleep(250);
             }
-         }
+            InvokeUI(() => {
+                AutoAcceptStatus.Fill = (Brush)(new BrushConverter().ConvertFrom("#FFA20404"));
+            });
+        }
 
         private void WinTeam1_Checked(object sender, RoutedEventArgs e)
         {
@@ -1038,11 +1043,29 @@ namespace CSGO_Boost_Panel
             Process.Start(@"BES\BES.exe");
         }
 
-        private void AccountChecker()
+        private async void AccountChecker()
         {
-            InvokeUI(() => {
-                Status1.Fill = Brushes.Green;
-            });
+            System.Windows.Shapes.Ellipse[] Status = { Status1, Status2, Status3, Status4, Status5, Status6, Status7, Status8, Status9, Status10 };
+            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
+            while (on)
+            {
+                for (short i = 0, n = 0; i < 10; i++)
+                {
+                    if(ToggleButton[i].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
+                    {
+                        InvokeUI(() => {
+                            Status[i].Fill = Brushes.Green;
+                        });
+                    }
+                    else
+                    {
+                        InvokeUI(() => {
+                            Status[i].Fill = (Brush)(new BrushConverter().ConvertFrom("#FFA20404"));
+                        });
+                    }
+                }
+                await Task.Delay(15000);
+            }
         }
 
         private void InvokeUI(Action a)
