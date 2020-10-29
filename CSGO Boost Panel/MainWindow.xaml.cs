@@ -314,7 +314,7 @@ namespace CSGO_Boost_Panel
             {
                 _ = Task.Run(() => AutoDisconnectFunc(false));
             }
-            _ = Task.Run(() => AccountChecker());
+            AccountChecker();
             exChange.IsEnabled = true;
         }
 
@@ -371,6 +371,9 @@ namespace CSGO_Boost_Panel
                 gslT1.Stop();
             if (gslT2.Running)
                 gslT2.Stop();
+            System.Windows.Shapes.Ellipse[] Status = { Status1, Status2, Status3, Status4, Status5, Status6, Status7, Status8, Status9, Status10, AutoAcceptStatus };
+            for (short i = 0; i < 11; i++)
+                Status[i].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
             on = false;
             if (choosedObj != null)
                 choosedObj.BorderBrush = null;
@@ -1051,16 +1054,17 @@ namespace CSGO_Boost_Panel
             {
                 for (short i = 0, n = 0; i < 10; i++)
                 {
-                    if(ToggleButton[i].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
+                    short index = i; 
+                    if(ToggleButton[index].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
                     {
                         InvokeUI(() => {
-                            Status[i].Fill = Brushes.Green;
+                            Status[index].Fill = Brushes.Green;
                         });
                     }
                     else
                     {
                         InvokeUI(() => {
-                            Status[i].Fill = (Brush)(new BrushConverter().ConvertFrom("#FFA20404"));
+                            Status[index].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
                         });
                     }
                 }
