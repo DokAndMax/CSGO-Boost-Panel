@@ -153,6 +153,7 @@ namespace CSGO_Boost_Panel
                         {
                             _player.Add(new Player(property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Login"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Nickname"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Rank") ?? "0") + ".png", "Collapsed"));
                         }
+                        MessageBox.Show((!string.IsNullOrEmpty(property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("SteamID64"))).ToString() + " && " + (property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("SteamID64") != "Unknown").ToString());
                     }
                     _player[_player.Count - 1].Visibility = "Visible";
                 }
@@ -435,7 +436,7 @@ namespace CSGO_Boost_Panel
                 lobbiesObj.Add(PresetName.Text, PresetNameObj);
                 for (int i = 0; i < 10; i++)
                 {
-                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SeamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", "0"), new JProperty("XP", "0"), new JProperty("Rank", "0")));
+                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", "0"), new JProperty("Rank", "0")));
                 }
                 loadedPreset = PresetName.Text;
                 MessageBox.Show("Preset successfully saved");
