@@ -17,15 +17,17 @@ namespace CSGO_Boost_Panel
         public string XP { get; set; }
         private string rank;
         public string Rank { get { return rank; } set { rank = value; OnPropertyChanged("Rank"); OnPropertyChanged("XP"); OnPropertyChanged("Level"); } }
+        public string PresetName { get; set; }
         public string Visibility { get; set; }
 
-        public Player(string Login, string Nickname, short Level, string XP, string Rank, string Visibility)
+        public Player(string Login, string Nickname, short Level, string XP, string Rank, string PresetName, string Visibility)
         {
             this.Login = Login;
             this.Nickname = Nickname;
             this.Level = Level;
             this.XP = XP;
             this.Rank = Rank;
+            this.PresetName = PresetName;
             this.Visibility = Visibility;
         }
     }

@@ -459,8 +459,8 @@
                                         <TextBlock Grid.Column="0" Text="{Binding Path=Login}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
                                         <TextBlock Grid.Column="1" Text="{Binding Path=Nickname}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
                                         <WrapPanel Grid.Column="2" Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=Level, StringFormat=0;;#}" FontSize="20" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Path=XP}" FontSize="20" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Path=Level, StringFormat=0;;#}" Width="35" FontSize="20" Padding="4" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding Path=XP}" Width="51" FontSize="20" Padding="4" TextAlignment="Center"/>
                                         </WrapPanel>
                                         <Image Grid.Column="3" Source="{Binding Rank}" Width="75" Height="30"/>
                                         <Border Grid.ColumnSpan="4" Grid.Row="1" Visibility="{Binding Path=Visibility}" Height="2" Margin="0,5,0,5" BorderThickness="0,0,0,2" VerticalAlignment="Center">
@@ -504,7 +504,7 @@
                     <mah:ToggleSwitch x:Name="AutoAccept" Toggled="AutoAcceptTgl" Margin="481,105,0,255" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="AutoDisconnectTgl" Margin="481,142,0,218" Content="AutoDisconnect" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,179,0,181" Content="Automation" Grid.Row="1"/>
-                    <mah:ToggleSwitch Margin="481,216,0,144" Content="Rank Boost" Grid.Row="1"/>
+                    <mah:ToggleSwitch Margin="481,216,0,144" Content="Rank Boost" Grid.Row="1" Toggled="Test"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,193,279,167" Checked="WinTeamTie_Checked" Grid.Row="1"/>
