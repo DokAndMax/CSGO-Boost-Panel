@@ -1,4 +1,10 @@
-﻿using System;
+﻿using CSGSI;
+using CSGSI.Events;
+using MahApps.Metro.Controls;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,12 +19,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using CSGSI;
-using CSGSI.Events;
-using MahApps.Metro.Controls;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 
 namespace CSGO_Boost_Panel
@@ -35,6 +35,7 @@ namespace CSGO_Boost_Panel
             this.Name = name;
         }
     }
+
     public partial class MainWindow : MetroWindow
     {
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
@@ -55,12 +56,10 @@ namespace CSGO_Boost_Panel
 
             lobbiesList.DisplayMemberPath = "Name";
             lobbiesList.ItemsSource = _items;
-
-            lobbiesList.PreviewMouseMove += ListBox_PreviewMouseMove;
+            playersList.ItemsSource = _player;
         }
 
         private Point _dragStartPoint;
-
         private T FindVisualParent<T>(DependencyObject child)
             where T : DependencyObject
         {
@@ -73,6 +72,7 @@ namespace CSGO_Boost_Panel
         }
 
         private readonly IList<Item> _items = new ObservableCollection<Item>();
+        private readonly IList<Player> _player = new ObservableCollection<Player>();
 
         private void ListBox_PreviewMouseMove(object sender, MouseEventArgs e)
         {
@@ -147,6 +147,14 @@ namespace CSGO_Boost_Panel
                 foreach (JProperty property in lobbiesObj.Properties())
                 {
                     _items.Add(new Item(property.Name));
+                    for (short i = 0; i < 10; i++)
+                    {
+                        if (!string.IsNullOrEmpty(property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("SteamID64")) && property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("SteamID64") != "Unknown")
+                        {
+                            _player.Add(new Player(property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Login"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Nickname"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (property.Value.Value<JToken>("Acc" + (i + 1)).Value<String>("Rank") ?? "0") + ".png", "Collapsed"));
+                        }
+                    }
+                    _player[_player.Count - 1].Visibility = "Visible";
                 }
             }
             if (!File.Exists("Settings.json"))
@@ -200,19 +208,24 @@ namespace CSGO_Boost_Panel
             SaveButton.IsEnabled = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SelectHome(object sender, RoutedEventArgs e)
         {
             tab.SelectedIndex = 0;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void SelectLobbiesList(object sender, RoutedEventArgs e)
         {
             tab.SelectedIndex = 1;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void SelectPlayersStats(object sender, RoutedEventArgs e)
         {
             tab.SelectedIndex = 2;
+        }
+
+        private void SelectSettings(object sender, RoutedEventArgs e)
+        {
+            tab.SelectedIndex = 3;
         }
 
         private async void Start(object sender, RoutedEventArgs e)
@@ -247,7 +260,7 @@ namespace CSGO_Boost_Panel
             {
                 if (ToggleButton[i].IsOn)
                 {
-                    if (string.IsNullOrEmpty(Login[i].Text)|| string.IsNullOrEmpty(Password[i].Password))
+                    if (string.IsNullOrEmpty(Login[i].Text) || string.IsNullOrEmpty(Password[i].Password))
                     {
                         MessageBox.Show("Please type login or password");
                         return;
@@ -269,7 +282,7 @@ namespace CSGO_Boost_Panel
                     }
                     else
                     {
-                        Logins.Add(Login[i].Text + " " + Password[i].Password + " " + accPos[i] + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n+2));
+                        Logins.Add(Login[i].Text + " " + Password[i].Password + " " + accPos[i] + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n + 2));
                         accWindowsTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #2");
                         T2WinTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #2");
                     }
@@ -303,9 +316,9 @@ namespace CSGO_Boost_Panel
                 WinTeam1.IsChecked = true;
             on = true;
             if (!gslT1.Start())
-                 MessageBox.Show("Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC");
+                MessageBox.Show("Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC");
             if (!gslT2.Start())
-                 MessageBox.Show("Cannot start GameStateListener #2. AutoDisconnect won't work! Try reboot your PC");
+                MessageBox.Show("Cannot start GameStateListener #2. AutoDisconnect won't work! Try reboot your PC");
             if (AutoAccept.IsOn)
             {
                 _ = Task.Run(() => AutoAcceptFunc());
@@ -315,6 +328,7 @@ namespace CSGO_Boost_Panel
                 _ = Task.Run(() => AutoDisconnectFunc(false));
             }
             AccountChecker();
+            StatsUpdate();
             exChange.IsEnabled = true;
         }
 
@@ -408,6 +422,8 @@ namespace CSGO_Boost_Panel
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = ToggleButton[i].IsOn;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = Login[i].Text;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Password"] = Password[i].Password;
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["SteamID64"] = accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown";
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Nickname"] = accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown";
                 }
                 MessageBox.Show("Preset successfully updated");
             }
@@ -417,7 +433,7 @@ namespace CSGO_Boost_Panel
                 lobbiesObj.Add(PresetName.Text, PresetNameObj);
                 for (int i = 0; i < 10; i++)
                 {
-                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i])));
+                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SeamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", "0"), new JProperty("XP", "0"), new JProperty("Rank", "0")));
                 }
                 loadedPreset = PresetName.Text;
                 MessageBox.Show("Preset successfully saved");
@@ -478,11 +494,11 @@ namespace CSGO_Boost_Panel
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
             if (((ToggleSwitch)sender).IsOn && on)
             {
-                    Task.Run(() => AutoDisconnectFunc(false));
+                Task.Run(() => AutoDisconnectFunc(false));
             }
             if (!((ToggleSwitch)sender).IsOn && on)
             {
-                    Task.Run(() => AutoDisconnectFunc(true));
+                Task.Run(() => AutoDisconnectFunc(true));
             }
         }
 
@@ -546,34 +562,39 @@ namespace CSGO_Boost_Panel
             Stream Team2logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             StreamReader Team1log = new StreamReader(Team1logStream);
             StreamReader Team2log = new StreamReader(Team2logStream);
-            InvokeUI(() => {
+            InvokeUI(() =>
+            {
                 AutoAcceptStatus.Fill = Brushes.Green;
             });
             while (on)
             {
-                String test1 = Regex.Match(Team1log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
-                String test2 = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
-                if (!string.IsNullOrEmpty(test1) && string.IsNullOrEmpty(test2))
+                String Team1String = Regex.Match(Team1log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
+                String Team2String = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
+                if (!string.IsNullOrEmpty(Team1String) && string.IsNullOrEmpty(Team2String))
                 {
                     Thread.Sleep(250);
-                    test2 = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
+                    Team2String = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
                 }
-                if (!string.IsNullOrEmpty(test2) && string.IsNullOrEmpty(test1))
+                if (!string.IsNullOrEmpty(Team2String) && string.IsNullOrEmpty(Team1String))
                 {
                     Thread.Sleep(250);
-                    test1 = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
+                    Team1String = Regex.Match(Team2log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
                 }
-                if (!string.IsNullOrEmpty(test1) && test1 == test2)
+                if (!string.IsNullOrEmpty(Team1String) && Team1String == Team2String)
                 {
                     Thread.Sleep(3000);
                     AcceptGame();
+                    Team1logStream.Close();
+                    Team2logStream.Close();
+                    Team1log.Close();
+                    Team2log.Close();
                     break;
                 }
-                if (test1 != test2 && string.IsNullOrEmpty(test1))
+                if (Team1String != Team2String && string.IsNullOrEmpty(Team1String))
                 {
                     RestartSearch(true);
                 }
-                if (test1 != test2 && string.IsNullOrEmpty(test2))
+                if (Team1String != Team2String && string.IsNullOrEmpty(Team2String))
                 {
                     RestartSearch(false);
                 }
@@ -680,8 +701,9 @@ namespace CSGO_Boost_Panel
                     }
                     if (settingsObj.Value<bool>("AutoAccept"))
                     {
-                        var _ = Task.Run(() => AutoAcceptFunc());
+                        _ = Task.Run(() => AutoAcceptFunc());
                     }
+                    _ = Task.Run(() => AutoAcceptFunc());
                     gslT1.NewGameState -= RoundGameOver;
                     gslT2.NewGameState -= RoundGameOver;
                     WinTeam.NewGameState += RoundWarmup;
@@ -761,7 +783,8 @@ namespace CSGO_Boost_Panel
 
         private async void RestartSearch(bool t2)
         {
-            InvokeUI(() => {
+            InvokeUI(() =>
+            {
                 AutoAcceptStatus.Fill = Brushes.Yellow;
             });
             List<String> ldrTitles = new List<String>();
@@ -799,7 +822,8 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 3.36) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 22.85) + CSGO.y);
                 await Task.Delay(250);
             }
-            InvokeUI(() => {
+            InvokeUI(() =>
+            {
                 AutoAcceptStatus.Fill = Brushes.Green;
             });
         }
@@ -819,7 +843,8 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 2.35 + (WindowRect.Right - WindowRect.Left - 6) / 6.6 / 2) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 2.52 - (WindowRect.Bottom - WindowRect.Top - 29) / 12.5 / 2) + CSGO.y);
                 Thread.Sleep(250);
             }
-            InvokeUI(() => {
+            InvokeUI(() =>
+            {
                 AutoAcceptStatus.Fill = (Brush)(new BrushConverter().ConvertFrom("#FFA20404"));
             });
         }
@@ -831,7 +856,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT1;
             if (on && AutoDisconnect.IsOn)
             {
-                var _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => AutoDisconnectFunc(false));
             }
         }
 
@@ -842,7 +867,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT2;
             if (on && AutoDisconnect.IsOn)
             {
-                var _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => AutoDisconnectFunc(false));
             }
         }
 
@@ -854,13 +879,13 @@ namespace CSGO_Boost_Panel
 
             if (on && AutoDisconnect.IsOn)
             {
-                var _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => AutoDisconnectFunc(false));
             }
         }
 
         private void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-            if(!((ToggleSwitch)this.GetType().GetField("ToggleButton" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn ||
+            if (!((ToggleSwitch)this.GetType().GetField("ToggleButton" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn ||
                 ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text == "" ||
                 ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password == "")
                 return;
@@ -870,8 +895,8 @@ namespace CSGO_Boost_Panel
             else
                 res = BotResX.Text + " " + BotResY.Text;
             Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " +
-                ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text + 
-                " " + ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password + 
+                ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text +
+                " " + ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password +
                 " " + accPos[Convert.ToInt16(((Button)sender).Tag)] + " " + res);
         }
 
@@ -885,18 +910,18 @@ namespace CSGO_Boost_Panel
                     return;
                 if (!((ToggleSwitch)this.GetType().GetField("ToggleButton" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn || !((ToggleSwitch)this.GetType().GetField("ToggleButton" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
                     return;
-                for(int i = 0, n = 0; i < 1 && n < 5; n++)
+                for (int i = 0, n = 0; i < 1 && n < 5; n++)
                 {
-                    if(((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n+1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
+                    if (((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n + 1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
                     {
                         if (Convert.ToInt16(choosedObj.Tag) < 6)
                         {
-                            if (Convert.ToInt16(choosedObj.Tag) == (n+1))
+                            if (Convert.ToInt16(choosedObj.Tag) == (n + 1))
                                 return;
                         }
                         else
                         {
-                            if (Convert.ToInt16(((Button)sender).Tag) == (n+1))
+                            if (Convert.ToInt16(((Button)sender).Tag) == (n + 1))
                                 return;
                         }
                         i++;
@@ -905,16 +930,16 @@ namespace CSGO_Boost_Panel
 
                 for (int i = 0, n = 5; i < 1 && n < 10; n++)
                 {
-                    if (((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n+1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
+                    if (((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n + 1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
                     {
                         if (Convert.ToInt16(choosedObj.Tag) > 5)
                         {
-                            if (Convert.ToInt16(choosedObj.Tag) == (n+1))
+                            if (Convert.ToInt16(choosedObj.Tag) == (n + 1))
                                 return;
                         }
                         else
                         {
-                            if (Convert.ToInt16(((Button)sender).Tag) == (n+1))
+                            if (Convert.ToInt16(((Button)sender).Tag) == (n + 1))
                                 return;
                         }
                         i++;
@@ -1005,13 +1030,13 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 2.7) + CSGO2.x, Convert.ToInt16(WindowRect2.Bottom - WindowRect2.Top - 29 - (WindowRect2.Bottom - WindowRect2.Top - 29) / 2.594) + CSGO2.y);
                 Thread.Sleep(500);
 
-                if (i == (T1WinTitle.Count-1) && n == 0)
+                if (i == (T1WinTitle.Count - 1) && n == 0)
                 {
                     n++;
                     TeamWinTitle = T2WinTitle;
                     i = 0;
                 }
-                if (i == (T2WinTitle.Count-1) && n == 1)
+                if (i == (T2WinTitle.Count - 1) && n == 1)
                     n++;
             }
 
@@ -1030,13 +1055,13 @@ namespace CSGO_Boost_Panel
                 Thread.Sleep(250);
                 LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 5.423) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 3.809) + CSGO.y);
                 Thread.Sleep(250);
-                if (i == (T1WinTitle.Count-1) && n == 0)
+                if (i == (T1WinTitle.Count - 1) && n == 0)
                 {
                     n++;
                     TeamWinTitle = T2WinTitle;
                     i = 0;
                 }
-                if (i == (T2WinTitle.Count-1) && n == 1)
+                if (i == (T2WinTitle.Count - 1) && n == 1)
                     n++;
             }
         }
@@ -1054,23 +1079,108 @@ namespace CSGO_Boost_Panel
             {
                 for (short i = 0, n = 0; i < 10; i++)
                 {
-                    short index = i; 
-                    if(ToggleButton[index].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
+                    short index = i;
+                    if (ToggleButton[index].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
                     {
-                        InvokeUI(() => {
-                            Status[index].Fill = Brushes.Green;
-                        });
+                        Status[index].Fill = Brushes.Green;
                     }
                     else
                     {
-                        InvokeUI(() => {
-                            Status[index].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
-                        });
+                        Status[index].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
                     }
                 }
                 await Task.Delay(15000);
             }
         }
+
+        private async void StatsUpdate()
+        {
+            JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
+            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
+            Directory.CreateDirectory(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\");
+            Stream Team1logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            Stream Team2logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            StreamReader Team1log = new StreamReader(Team1logStream);
+            StreamReader Team2log = new StreamReader(Team2logStream);
+            bool[] accB = { false, false, false, false, false, false, false, false, false, false };
+            bool done = false;
+            int index = 0;
+            foreach (Player proc in _player)
+            {
+                if (proc.Login == lobbiesObj[loadedPreset]["Acc" + 1]["Login"].ToString())
+                    break;
+                index++;
+            }
+            InvokeUI(() =>
+            {
+                PlayerStatus.Fill = Brushes.Green;
+            });
+            while (!done && on)
+            {
+                String Team1String = Team1log.ReadToEnd();
+                String Team2String = Team2log.ReadToEnd();
+                for (short i = 1; i < 6; i++)
+                {
+                    if (!accB[i - 1])
+                    {
+                        String accRank = Regex.Match(Regex.Match(Team1String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
+                        if ((!string.IsNullOrEmpty(accRank) && Regex.Match(Regex.Match(Team1String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0") || !ToggleButton[i - 1].IsOn)
+                        {
+                            short accLevel = Int16.Parse(Regex.Match(Regex.Match(Team1String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
+                            string accXP = Regex.Match(Regex.Match(Team1String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=xppts int[(] 32768)\d+", RegexOptions.Singleline).Value;
+                            if (ToggleButton[i - 1].IsOn)
+                            {
+                                lobbiesObj[loadedPreset]["Acc" + i]["Level"] = accLevel;
+                                _player[index + i - 1].Level = accLevel;
+                                lobbiesObj[loadedPreset]["Acc" + i]["XP"] = accXP;
+                                _player[index + i - 1].XP = accXP;
+                                lobbiesObj[loadedPreset]["Acc" + i]["Rank"] = accRank;
+                                _player[index + i - 1].Rank = "Images/" + accRank + ".png";
+                            }
+                            accB[i - 1] = true;
+                        }
+                    }
+                }
+                for (short i = 6; i < 11; i++)
+                {
+                    if (!accB[i - 1])
+                    {
+                        String accRank = Regex.Match(Regex.Match(Team2String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
+                        if ((!string.IsNullOrEmpty(accRank) && Regex.Match(Regex.Match(Team2String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0") || !ToggleButton[i - 1].IsOn)
+                        {
+                            short accLevel = Int16.Parse(Regex.Match(Regex.Match(Team2String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
+                            string accXP = Regex.Match(Regex.Match(Team2String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value, @"(?<=xppts int[(] 32768)\d+", RegexOptions.Singleline).Value;
+
+                            if (ToggleButton[i - 1].IsOn)
+                            {
+                                lobbiesObj[loadedPreset]["Acc" + i]["Level"] = accLevel;
+                                _player[index + i - 1].Level = accLevel;
+                                lobbiesObj[loadedPreset]["Acc" + i]["XP"] = accXP;
+                                _player[index + i - 1].XP = accXP;
+                                lobbiesObj[loadedPreset]["Acc" + i]["Rank"] = accRank;
+                                _player[index + i - 1].Rank = "Images/" + accRank + ".png";
+                            }
+                            accB[i - 1] = true;
+                        }
+                    }
+                }
+                if (accB[0] && accB[1] && accB[2] && accB[3] && accB[4] && accB[5] && accB[6] && accB[7] && accB[8] && accB[9])
+                {
+                    done = true;
+                    File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(lobbiesObj, Formatting.Indented));
+                }
+                await Task.Delay(2000);
+            }
+            InvokeUI(() =>
+            {
+                PlayerStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
+            });
+            Team1logStream.Close();
+            Team2logStream.Close();
+            Team1log.Close();
+            Team2log.Close();
+        }
+
 
         private void InvokeUI(Action a)
         {

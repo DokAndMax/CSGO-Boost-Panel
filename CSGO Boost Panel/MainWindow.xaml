@@ -169,11 +169,11 @@
     </mah:MetroWindow.Resources>
 
     <Grid x:Name="grid1" FocusVisualStyle="{x:Null}" Focusable="True">
-        <Image Source="{StaticResource Rectangle1DrawingImage}" Stretch="Fill" />
+        <Image Source="{StaticResource Rectangle1DrawingImage}" Stretch="Fill"/>
         <TabControl x:Name="tab" Background="Transparent" Style="{StaticResource MahApps.Styles.TabControl.Animated}">
             <TabItem x:Name="main" Margin="6,35,-6,-35" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
-                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" FocusVisualStyle="{x:Null}">
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SelectHome" FocusVisualStyle="{x:Null}">
                         <iconPacks:PackIconModern Kind="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
@@ -395,11 +395,11 @@
             </TabItem>
             <TabItem x:Name="lobbies" Margin="-60,103,60,-103" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
-                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click_1" FocusVisualStyle="{x:Null}">
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SelectLobbiesList" FocusVisualStyle="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="AccountBoxMultipleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <ListBox x:Name="lobbiesList" Margin="78,-60,3,26" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}">
+                <ListBox x:Name="lobbiesList" Margin="78,-60,3,26" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}" PreviewMouseMove="ListBox_PreviewMouseMove">
                     <ListBox.Resources>
                         <ContextMenu x:Key="ItemContextMenu" Placement="Left" OverridesDefaultStyle="True">
                             <MenuItem Header="Delete" Click="MenuItemDelete_Click"/>
@@ -427,9 +427,57 @@
                     </ListBox.ItemContainerStyle>
                 </ListBox>
             </TabItem>
-            <TabItem x:Name="settings" Margin="-126,171,126,-171" Height="65" Width="66" BorderThickness="0" Padding="0">
+            <TabItem x:Name="players" Margin="-126,171,126,-171" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
-                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Click="Button_Click_2" FocusVisualStyle="{x:Null}" Width="66" Height="65">
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Width="66" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SelectPlayersStats" FocusVisualStyle="{x:Null}">
+                        <iconPacks:PackIconModern Kind="People" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
+                    </Button>
+                </TabItem.Header>
+                <Grid Margin="74.5,-68,2,21.4">
+                    <Grid.OpacityMask>
+                        <VisualBrush Visual="{Binding ElementName=myBorder}"/>
+                    </Grid.OpacityMask>
+                    <Border x:Name="myBorder" Background="#B5FBDD" CornerRadius="0, 0, 0, 48"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" FocusVisualStyle="{x:Null}">
+                        <ItemsControl x:Name="playersList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Path=Login}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Path=Nickname}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
+                                        <WrapPanel Grid.Column="2" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=Level, StringFormat=0;;#}" FontSize="20" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Path=XP}" FontSize="20" Padding="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        </WrapPanel>
+                                        <Image Grid.Column="3" Source="{Binding Rank}" Width="75" Height="30"/>
+                                        <Border Grid.ColumnSpan="4" Grid.Row="1" Visibility="{Binding Path=Visibility}" Height="2" Margin="0,5,0,5" BorderThickness="0,0,0,2" VerticalAlignment="Center">
+                                            <Border.BorderBrush>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                    <GradientStop Color="#141E30" Offset="0"/>
+                                                    <GradientStop Color="#28416F" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.BorderBrush>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="settings" Margin="-192,239,192,-239" Height="65" Width="66" BorderThickness="0" Padding="0">
+                <TabItem.Header>
+                    <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="White" Click="SelectSettings" FocusVisualStyle="{x:Null}" Width="66" Height="65">
                         <iconPacks:PackIconModern Kind="Settings" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
@@ -462,11 +510,13 @@
         </TabControl>
         <TextBlock HorizontalAlignment="Left" Margin="193,444,0,0" TextWrapping="Wrap" Text="AutoAccept:" VerticalAlignment="Top" Height="24" Width="99" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Foreground="White"/>
         <Ellipse x:Name="AutoAcceptStatus" Fill="#FFA20404" Margin="294,444,509,2" Width="15" Height="15"/>
-        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="#FFE0D9BF" Width="66" Height="65" Click="CPUReducer" FocusVisualStyle="{x:Null}" Margin="4,261,748,145" Content="BES" mah:ControlsHelper.ContentCharacterCasing="Upper" FontSize="35" FontFamily="Mistral"/>
+        <TextBlock HorizontalAlignment="Left" Margin="339,444,0,0" TextWrapping="Wrap" Text="Player Statisctics:" VerticalAlignment="Top" Height="24" Width="130" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Foreground="White"/>
+        <Ellipse x:Name="PlayerStatus" Fill="#FFA20404" Margin="471,444,332,2" Width="15" Height="15"/>
+        <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" BorderBrush="Transparent" Foreground="#FFE0D9BF" Width="66" Height="65" Click="CPUReducer" FocusVisualStyle="{x:Null}" Margin="4,321,748,85" Content="BES" mah:ControlsHelper.ContentCharacterCasing="Upper" FontSize="34" FontFamily="Mistral"/>
         <Button Background="Transparent" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4,0,748,3" Width="66" Height="65" Click="Start" Foreground="White" BorderBrush="Transparent">
             <iconPacks:PackIconModern Kind="ControlPlay" Width="48" Height="48" Foreground="#FFFF6657"/>
         </Button>
-        <Button Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="27,0,751,68" Width="40" Height="40" Click="Stop">
+        <Button Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="61,0,717,0" Width="40" Height="40" Click="Stop">
             <iconPacks:PackIconMaterial Kind="Stop" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
         </Button>
     </Grid>
