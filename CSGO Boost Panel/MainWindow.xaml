@@ -381,6 +381,9 @@
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
                     </Grid>
+                    <Button x:Name="ClearButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="144,0,1,51" Width="30" Height="30" Click="ClearText" FocusVisualStyle="{x:Null}" Grid.Column="2">
+                        <iconPacks:PackIconMaterial Kind="CloseCircleOutline" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                    </Button>
                     <Button x:Name="SaveButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="133,0,2,10" Width="40" Height="40" Click="Save" FocusVisualStyle="{x:Null}" Grid.Column="2">
                         <iconPacks:PackIconModern Kind="Save" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
                     </Button>

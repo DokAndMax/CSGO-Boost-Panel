@@ -330,6 +330,7 @@ namespace CSGO_Boost_Panel
             AccountChecker();
             StatsUpdate();
             exChange.IsEnabled = true;
+            ClearButton.IsEnabled = false;
         }
 
         private void Stop(object sender, RoutedEventArgs e)
@@ -394,6 +395,7 @@ namespace CSGO_Boost_Panel
             choosed = false;
             controlContainer.IsEnabled = true;
             exChange.IsEnabled = false;
+            ClearButton.IsEnabled = true;
         }
 
         private void Save(object sender, RoutedEventArgs e)
@@ -443,6 +445,17 @@ namespace CSGO_Boost_Panel
                 _items.Add(new Item(PresetName.Text));
         }
 
+        private void ClearText(object sender, RoutedEventArgs e)
+        {
+            TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
+            PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
+            for(short i = 0; i < 10; i++)
+            {
+                Login[i].Text = "";
+                Password[i].Password = "";
+            }
+            loadedPreset = "";
+        }
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {
             _items.RemoveAt(lobbiesList.SelectedIndex);
