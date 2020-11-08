@@ -12,6 +12,7 @@ namespace CSGO_Boost_Panel
         }
 
         public string Login { get; set; }
+        public string nickname { get { return rank; } set { Nickname = value; OnPropertyChanged("Nickname"); } }
         public string Nickname { get; set; }
         public short Level { get; set; }
         public string XP { get; set; }
