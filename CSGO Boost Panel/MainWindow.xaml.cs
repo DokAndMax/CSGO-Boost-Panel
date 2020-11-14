@@ -417,6 +417,18 @@ namespace CSGO_Boost_Panel
                 File.Create("Lobbies.json").Close();
             if ((JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json")) != null)
                 lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
+            for (short i = 0; i < 10; i++)
+            {
+                if (accInfo[Login[i].Text.ToLower()] == null)
+                {
+                    LoadSteamAccs();
+                    if (accInfo[Login[i].Text.ToLower()] == null)
+                    {
+                        MessageBox.Show("First login to this account: \"" + Login[i].Text + "\" and then try again");
+                        return;
+                    }
+                }
+            }
 
             if (lobbiesObj.Property(PresetName.Text) != null)
             {
@@ -441,10 +453,7 @@ namespace CSGO_Boost_Panel
                 loadedPreset = PresetName.Text;
                 for (short i = 0; i < 10; i++)
                 {
-                    if (!string.IsNullOrEmpty(lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("SteamID64")) && lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("SteamID64") != "Unknown")
-                    {
-                        _player.Add(new Player(lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", loadedPreset, "Collapsed"));
-                    }
+                    _player.Add(new Player(lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", loadedPreset, "Collapsed"));
                 }
                 _player[_player.Count - 1].Visibility = "Visible";
                 MessageBox.Show("Preset successfully saved");
@@ -641,6 +650,8 @@ namespace CSGO_Boost_Panel
             gslT2.RoundPhaseChanged -= Round;
             gslT1.NewGameState -= RoundHalf;
             gslT2.NewGameState -= RoundHalf;
+            gslT1.NewGameState -= RoundHalfScore;
+            gslT2.NewGameState -= RoundHalfScore;
             gslT1.NewGameState -= RoundGameOver;
             gslT2.NewGameState -= RoundGameOver;
             if (disable)
