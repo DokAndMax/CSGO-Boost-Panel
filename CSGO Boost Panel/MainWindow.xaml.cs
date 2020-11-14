@@ -46,7 +46,7 @@ namespace CSGO_Boost_Panel
         public short WinTeamNum, score;
         public List<string> accWindowsTitle = new List<string>();
         public List<string> accPos = new List<string> { "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50" };
-        public bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false;
+        public bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, AutoAcceptS = false, PlayerStatusS = false;
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
 
         public Button choosedObj;
@@ -179,7 +179,10 @@ namespace CSGO_Boost_Panel
             if (settingsObj.Property("AutoDisconnect") != null)
                 AutoDisconnect.IsOn = settingsObj.Property("AutoDisconnect").Value.ToObject<bool>();
             if (settingsObj.Property("Sounds") != null)
+            {
                 Sounds.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                sounds = settingsObj.Property("Sounds").Value.ToObject<bool>();
+            }
             if (settingsObj.Property("WinTeam") != null)
             {
                 switch (settingsObj.Value<short>("WinTeam"))
@@ -391,6 +394,7 @@ namespace CSGO_Boost_Panel
             for (short i = 0; i < 12; i++)
                 Status[i].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
             on = false;
+            PlayerStatusS = false; AutoAcceptS = false;
             if (choosedObj != null)
                 choosedObj.BorderBrush = null;
             choosed = false;
@@ -604,7 +608,7 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             InvokeUI(() =>
             {
-                AutoAcceptStatus.Fill = Brushes.Green;
+                AutoAcceptStatus.Fill = Brushes.Green; AutoAcceptS = true;
             });
             while (on)
             {
@@ -660,7 +664,11 @@ namespace CSGO_Boost_Panel
                 gslT2.NewGameState -= RoundWarmup;
                 return;
             }
+            gslT1.NewGameState -= Indicators;
+            gslT2.NewGameState -= Indicators;
             WinTeam.RoundPhaseChanged += Round;
+            gslT1.NewGameState += Indicators;
+            gslT2.NewGameState += Indicators;
             WinTeam.NewGameState += RoundGameOver;
 
             if (settingsObj.Value<short>("WinTeam") == 2)
@@ -741,14 +749,6 @@ namespace CSGO_Boost_Panel
                         gslT2.NewGameState -= RoundHalf;
                         WinTeam.NewGameState += RoundHalf;
                     }
-                    if (settingsObj.Value<bool>("AutoAccept"))
-                    {
-                        _ = Task.Run(() => AutoAcceptFunc());
-                    }
-                    InvokeUI(() =>
-                  {
-                      StatsUpdate();
-                  });
                     gslT1.NewGameState -= RoundGameOver;
                     gslT2.NewGameState -= RoundGameOver;
                     WinTeam.NewGameState += RoundWarmup;
@@ -829,6 +829,25 @@ namespace CSGO_Boost_Panel
 
                 if (Convert.ToInt16(a.Map.Round) == score) score++;
             }
+            void Indicators(GameState a)
+            {
+                if (a.Map.Phase.ToString() == "GameOver")
+                {
+                    if (settingsObj.Value<bool>("AutoAccept") && !AutoAcceptS)
+                    {
+                        AutoAcceptS = true;
+                        _ = Task.Run(() => AutoAcceptFunc());
+                    }
+                    if (!PlayerStatusS)
+                    {
+                        PlayerStatusS = true;
+                        InvokeUI(() =>
+                    {
+                        StatsUpdate();
+                    });
+                    }
+                }
+            }
         }
 
         private async void RestartSearch(bool t2)
@@ -895,7 +914,7 @@ namespace CSGO_Boost_Panel
             }
             InvokeUI(() =>
             {
-                AutoAcceptStatus.Fill = (Brush)(new BrushConverter().ConvertFrom("#FFA20404"));
+                AutoAcceptStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404"); AutoAcceptS = false;
             });
         }
 
@@ -1156,7 +1175,7 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             bool[] accB = { false, false, false, false, false, false, false, false, false, false };
             bool done = false;
-            PlayerStatus.Fill = Brushes.Green;
+            PlayerStatus.Fill = Brushes.Green; PlayerStatusS = true;
             while (!done && on)
             {
                 string Team1String = Team1log.ReadToEnd();
@@ -1210,7 +1229,7 @@ namespace CSGO_Boost_Panel
                 }
                 await Task.Delay(2000);
             }
-            PlayerStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
+            PlayerStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404"); PlayerStatusS = false;
             Team1logStream.Close();
             Team2logStream.Close();
             Team1log.Close();
