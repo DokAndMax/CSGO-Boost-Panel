@@ -10,7 +10,7 @@
         xmlns:controlzex="urn:controlzex" x:Class="CSGO_Boost_Panel.MainWindow"
         mc:Ignorable="d"
         Icon="Icon.ico"
-        Title="CSGO Boost Panel" ResizeMode="CanMinimize" Height="500" Width="824" MouseDown="Window_MouseDown" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
+        Title="IziBoost" ResizeMode="CanMinimize" Height="500" Width="824" MouseDown="Window_MouseDown" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
     <mah:MetroWindow.Resources>
         <DrawingImage x:Key="Rectangle1DrawingImage">
             <DrawingImage.Drawing>

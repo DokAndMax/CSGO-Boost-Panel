@@ -741,8 +741,11 @@ namespace CSGO_Boost_Panel
                     gslT1.NewGameState -= RoundGameOver;
                     gslT2.NewGameState -= RoundGameOver;
                     WinTeam.NewGameState += RoundWarmup;
-                    mediaPlayer.Load();
-                    mediaPlayer.Play();
+                    if (sounds)
+                    {
+                        mediaPlayer.Load();
+                        mediaPlayer.Play();
+                    }
                 }
             }
             void RoundWarmup(GameState a)
@@ -1142,58 +1145,29 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             bool[] accB = { false, false, false, false, false, false, false, false, false, false };
             bool done = false;
-            int index = 0;
-            foreach (Player plr in _player)
-            {
-                if (plr.Login == lobbiesObj[loadedPreset]["Acc" + 1]["Login"].ToString() && plr.PresetName == loadedPreset)
-                    break;
-                index++;
-            }
             PlayerStatus.Fill = Brushes.Green;
             while (!done && on)
             {
                 string Team1String = Team1log.ReadToEnd();
                 string Team2String = Team2log.ReadToEnd();
-                for (short i = 1; i < 6; i++)
+                string TeamString = Team1String;
+                for (short i = 1; i < 11; i++)
                 {
+                    if (i == 6)
+                        TeamString = Team2String;
                     if (!accB[i - 1])
                     {
                         if (lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
                         {
-                            lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["SteamID"];
-                            lobbiesObj[loadedPreset]["Acc" + i]["Nickname"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["Nickname"];
-                            _player[index + i - 1].nickname = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()].Value<string>("Nickname");
-                        }
-                        string RegExStr = Regex.Match(Team1String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
-                        string accRank = Regex.Match(RegExStr, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
-                        if ((!string.IsNullOrEmpty(accRank) && Regex.Match(RegExStr, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0") || !ToggleButton[i - 1].IsOn)
-                        {
-                            if (ToggleButton[i - 1].IsOn)
+                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower() + "')]"))
                             {
-                                short accLevel = Int16.Parse(Regex.Match(RegExStr, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
-                                string accXP = Regex.Match(RegExStr, @"(?<=327680{0,3})(0{1}|[1-9]\d*)", RegexOptions.Singleline| RegexOptions.RightToLeft).Value;
-                                lobbiesObj[loadedPreset]["Acc" + i]["Level"] = accLevel;
-                                _player[index + i - 1].Level = accLevel;
-                                lobbiesObj[loadedPreset]["Acc" + i]["XP"] = accXP;
-                                _player[index + i - 1].XP = accXP;
-                                lobbiesObj[loadedPreset]["Acc" + i]["Rank"] = accRank;
-                                _player[index + i - 1].Rank = "Images/" + accRank + ".png";
+                                tkn["SteamID64"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["SteamID"];
+                                tkn["Nickname"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["Nickname"];
                             }
-                            accB[i - 1] = true;
+                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()))
+                                plr.nickname = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()].Value<string>("Nickname");
                         }
-                    }
-                }
-                for (short i = 6; i < 11; i++)
-                {
-                    if (!accB[i - 1])
-                    {
-                        if (lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
-                        {
-                            lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["SteamID"];
-                            lobbiesObj[loadedPreset]["Acc" + i]["Nickname"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["Nickname"];
-                            _player[index + i - 1].nickname = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()].Value<string>("Nickname");
-                        }
-                        string RegExStr = Regex.Match(Team2String, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
+                        string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
                         string accRank = Regex.Match(RegExStr, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
                         if ((!string.IsNullOrEmpty(accRank) && Regex.Match(RegExStr, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0") || !ToggleButton[i - 1].IsOn)
                         {
@@ -1201,12 +1175,18 @@ namespace CSGO_Boost_Panel
                             {
                                 short accLevel = Int16.Parse(Regex.Match(RegExStr, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
                                 string accXP = Regex.Match(RegExStr, @"(?<=327680{0,3})(0{1}|[1-9]\d*)", RegexOptions.Singleline | RegexOptions.RightToLeft).Value;
-                                lobbiesObj[loadedPreset]["Acc" + i]["Level"] = accLevel;
-                                _player[index + i - 1].Level = accLevel;
-                                lobbiesObj[loadedPreset]["Acc" + i]["XP"] = accXP;
-                                _player[index + i - 1].XP = accXP;
-                                lobbiesObj[loadedPreset]["Acc" + i]["Rank"] = accRank;
-                                _player[index + i - 1].Rank = "Images/" + accRank + ".png";
+                                foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
+                                {
+                                    tkn["Level"] = accLevel;
+                                    tkn["XP"] = accXP;
+                                    tkn["Rank"] = accRank;
+                                }
+                                foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
+                                {
+                                    plr.Level = accLevel;
+                                    plr.XP = accXP;
+                                    plr.Rank = "Images/" + accRank + ".png";
+                                }
                             }
                             accB[i - 1] = true;
                         }
@@ -1228,10 +1208,10 @@ namespace CSGO_Boost_Panel
 
         private void Test(object sender, RoutedEventArgs e)
         {
-            _player[29].nickname = "sex";
+            MessageBox.Show("Testing Button");
         }
 
-            private void InvokeUI(Action a)
+        private void InvokeUI(Action a)
         {
             this.BeginInvoke(a);
         }
