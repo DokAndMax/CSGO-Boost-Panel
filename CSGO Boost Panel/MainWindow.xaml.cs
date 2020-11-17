@@ -39,14 +39,14 @@ namespace CSGO_Boost_Panel
 
     public partial class MainWindow : MetroWindow
     {
-        private SoundPlayer mediaPlayer = new SoundPlayer(Properties.Resources.notification);
+        private readonly SoundPlayer mediaPlayer = new SoundPlayer();
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
         public JObject settingsObj, accInfo;
         public string loadedPreset;
         public short WinTeamNum, score;
         public List<string> accWindowsTitle = new List<string>();
         public List<string> accPos = new List<string> { "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50" };
-        public bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, AutoAcceptS = false, PlayerStatusS = false;
+        public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, AutoAcceptS = false, PlayerStatusS = false, SoundS = false, newRound = true, onemeth = true;
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
 
         public Button choosedObj;
@@ -183,6 +183,21 @@ namespace CSGO_Boost_Panel
                 Sounds.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
                 sounds = settingsObj.Property("Sounds").Value.ToObject<bool>();
             }
+            if (settingsObj.Property("MatchFoundSound") != null)
+            {
+                MatchFoundSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                MatchFoundSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+            }
+            if (settingsObj.Property("MatchEndedSound") != null)
+            {
+                MatchEndedSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                MatchEndedSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+            }
+            if (settingsObj.Property("RoundLastsSound") != null)
+            {
+                RoundLastsSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                RoundLastsSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+            }
             if (settingsObj.Property("WinTeam") != null)
             {
                 switch (settingsObj.Value<short>("WinTeam"))
@@ -209,6 +224,7 @@ namespace CSGO_Boost_Panel
             grid1.Focus();
             lobbiesList.SelectedIndex = -1;
             AcceptGrid.Visibility = Visibility.Collapsed;
+            SoundSettings.Visibility = Visibility.Collapsed;
             SaveButton.IsEnabled = true;
         }
 
@@ -332,6 +348,7 @@ namespace CSGO_Boost_Panel
             {
                 _ = Task.Run(() => AutoDisconnectFunc(false));
             }
+            _ = Task.Run(() => IndicatorsOn());
             AccountChecker();
             StatsUpdate();
             exChange.IsEnabled = true;
@@ -405,13 +422,16 @@ namespace CSGO_Boost_Panel
 
         private void Save(object sender, RoutedEventArgs e)
         {
-            AcceptGrid.Visibility = Visibility.Visible;
+            if (!AcceptGrid.IsVisible)
+                AcceptGrid.Visibility = Visibility.Visible;
+            else
+                AcceptGrid.Visibility = Visibility.Collapsed;
         }
         private void Accept(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
             if (string.IsNullOrEmpty(PresetName.Text)) return;
-            AcceptGrid.Visibility = Visibility.Hidden;
+            AcceptGrid.Visibility = Visibility.Collapsed;
             e.Handled = true;
             TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
@@ -540,9 +560,33 @@ namespace CSGO_Boost_Panel
 
         private void SoundsTgl(object sender, RoutedEventArgs e)
         {
+            if (!loaded)
+                return;
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
             sounds = ((ToggleSwitch)sender).IsOn;
         }
+        private void MatchFoundTgl(object sender, RoutedEventArgs e)
+        {
+            if (!loaded)
+                return;
+            settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
+            MatchFoundSnd = ((ToggleSwitch)sender).IsOn;
+        }
+        private void MatchEndedTgl(object sender, RoutedEventArgs e)
+        {
+            if (!loaded)
+                return;
+            settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
+            MatchEndedSnd = ((ToggleSwitch)sender).IsOn;
+        }
+        private void RoundLastsTgl(object sender, RoutedEventArgs e)
+        {
+            if (!loaded)
+                return;
+            settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
+            RoundLastsSnd = ((ToggleSwitch)sender).IsOn;
+        }
+
 
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
@@ -646,7 +690,79 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private void AutoDisconnectFunc(bool disable)
+        private void IndicatorsOn()
+        {
+            gslT1.NewGameState -= Indicators;
+            gslT2.NewGameState -= Indicators;
+            gslT1.NewGameState += Indicators;
+            gslT2.NewGameState += Indicators;
+            gslT1.RoundPhaseChanged -= RoundLasts;
+            gslT2.RoundPhaseChanged -= RoundLasts;
+            gslT1.RoundPhaseChanged += RoundLasts;
+            gslT2.RoundPhaseChanged += RoundLasts;
+
+            void Indicators(GameState a)
+            {
+                if (a.Map.Phase.ToString() == "GameOver")
+                {
+                    if (sounds && MatchEndedSnd && !SoundS)
+                    {
+                        SoundS = true;
+                        mediaPlayer.Stream = Properties.Resources.MatchEnded;
+                        mediaPlayer.Load();
+                        mediaPlayer.Play();
+                    }
+                    SoundS = false;
+                }
+                if (a.Map.Phase.ToString() == "GameOver")
+                {
+                    if (settingsObj.Value<bool>("AutoAccept") && !AutoAcceptS)
+                    {
+                        AutoAcceptS = true;
+                        _ = Task.Run(() => AutoAcceptFunc());
+                    }
+                    if (!PlayerStatusS)
+                    {
+                        PlayerStatusS = true;
+                        InvokeUI(() =>
+                        {
+                            StatsUpdate();
+                        });
+                    }
+                }
+            }
+            async void RoundLasts(RoundPhaseChangedEventArgs a)
+            {
+                if (a.CurrentPhase.ToString() == "Live" && onemeth)
+                {
+                    onemeth = false;
+                    Stopwatch at = new Stopwatch();
+                    newRound = true;
+                    at.Start();
+                    while (newRound)
+                    {
+                        if (at.Elapsed.TotalSeconds >= 30)
+                        {
+                            if (sounds && RoundLastsSnd)
+                            {
+                                mediaPlayer.Stream = Properties.Resources.RoundLasts;
+                                mediaPlayer.Load();
+                                mediaPlayer.Play();
+                            }
+                            break;
+                        }
+                        await Task.Delay(5000);
+                    }
+                    onemeth = true;
+                    return;
+                }
+                if (a.CurrentPhase.ToString() == "FreezeTime")
+                {
+                    newRound = false;
+                }
+            }
+        }
+            private void AutoDisconnectFunc(bool disable)
         {
             gslT1.RoundPhaseChanged -= RoundFast;
             gslT2.RoundPhaseChanged -= RoundFast;
@@ -664,11 +780,7 @@ namespace CSGO_Boost_Panel
                 gslT2.NewGameState -= RoundWarmup;
                 return;
             }
-            gslT1.NewGameState -= Indicators;
-            gslT2.NewGameState -= Indicators;
             WinTeam.RoundPhaseChanged += Round;
-            gslT1.NewGameState += Indicators;
-            gslT2.NewGameState += Indicators;
             WinTeam.NewGameState += RoundGameOver;
 
             if (settingsObj.Value<short>("WinTeam") == 2)
@@ -752,11 +864,6 @@ namespace CSGO_Boost_Panel
                     gslT1.NewGameState -= RoundGameOver;
                     gslT2.NewGameState -= RoundGameOver;
                     WinTeam.NewGameState += RoundWarmup;
-                    if (sounds)
-                    {
-                        mediaPlayer.Load();
-                        mediaPlayer.Play();
-                    }
                 }
             }
             void RoundWarmup(GameState a)
@@ -829,25 +936,6 @@ namespace CSGO_Boost_Panel
 
                 if (Convert.ToInt16(a.Map.Round) == score) score++;
             }
-            void Indicators(GameState a)
-            {
-                if (a.Map.Phase.ToString() == "GameOver")
-                {
-                    if (settingsObj.Value<bool>("AutoAccept") && !AutoAcceptS)
-                    {
-                        AutoAcceptS = true;
-                        _ = Task.Run(() => AutoAcceptFunc());
-                    }
-                    if (!PlayerStatusS)
-                    {
-                        PlayerStatusS = true;
-                        InvokeUI(() =>
-                    {
-                        StatsUpdate();
-                    });
-                    }
-                }
-            }
         }
 
         private async void RestartSearch(bool t2)
@@ -899,6 +987,12 @@ namespace CSGO_Boost_Panel
 
         private void AcceptGame()
         {
+            if (sounds && MatchEndedSnd)
+            {
+                mediaPlayer.Stream = Properties.Resources.MatchFound;
+                mediaPlayer.Load();
+                mediaPlayer.Play();
+            }
             for (int i = 0; i < accWindowsTitle.Count; i++)
             {
                 if (IsIconic(FindWindow(null, accWindowsTitle[i])))
@@ -1239,6 +1333,14 @@ namespace CSGO_Boost_Panel
         private void Test(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Testing Button");
+        }
+
+        private void SoundSettingsOn(object sender, RoutedEventArgs e)
+        {
+            if (!SoundSettings.IsVisible)
+                SoundSettings.Visibility = Visibility.Visible;
+            else
+                SoundSettings.Visibility = Visibility.Collapsed;
         }
 
         private void InvokeUI(Action a)

@@ -200,7 +200,13 @@
     <Resource Include="Images\9.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\notification.wav" />
+    <None Include="Resources\MatchEnded.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MatchFound.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RoundLasts.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -63,9 +63,27 @@ namespace CSGO_Boost_Panel.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream notification {
+        internal static System.IO.UnmanagedMemoryStream MatchEnded {
             get {
-                return ResourceManager.GetStream("notification", resourceCulture);
+                return ResourceManager.GetStream("MatchEnded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream MatchFound {
+            get {
+                return ResourceManager.GetStream("MatchFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream RoundLasts {
+            get {
+                return ResourceManager.GetStream("RoundLasts", resourceCulture);
             }
         }
     }
