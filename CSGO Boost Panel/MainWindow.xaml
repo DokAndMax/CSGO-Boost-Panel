@@ -525,7 +525,7 @@
                         <Border BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" Grid.ColumnSpan="2"/>
                         <mah:ToggleSwitch x:Name="MatchFoundSound" Content="Match found" Toggled="MatchFoundTgl" Grid.Row="0" Grid.Column="1" IsOn="True"/>
                         <mah:ToggleSwitch x:Name="MatchEndedSound" Content="Match ended" Grid.Row="1" Toggled="MatchEndedTgl" Grid.Column="1" IsOn="True"/>
-                        <mah:ToggleSwitch x:Name="RoundLastsSound" Content="Round lasts 30 seconds" Toggled="RoundLastsTgl" Grid.Row="2" Grid.Column="1" IsOn="True"/>
+                        <mah:ToggleSwitch x:Name="RoundLastsSound" Content="Round lasts 35 seconds" Toggled="RoundLastsTgl" Grid.Row="2" Grid.Column="1" IsOn="True"/>
                     </Grid>
                 </Grid>
             </TabItem>

@@ -46,7 +46,8 @@ namespace CSGO_Boost_Panel
         public short WinTeamNum, score;
         public List<string> accWindowsTitle = new List<string>();
         public List<string> accPos = new List<string> { "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50" };
-        public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, AutoAcceptS = false, PlayerStatusS = false, SoundS = false, newRound = true, onemeth = true;
+        public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true;
+        public static bool AutoAcceptS = false, PlayerStatusS = false, SoundS = false, AutoAcceptRestartS = false;
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
 
         public Button choosedObj;
@@ -59,6 +60,12 @@ namespace CSGO_Boost_Panel
             lobbiesList.DisplayMemberPath = "Name";
             lobbiesList.ItemsSource = _items;
             playersList.ItemsSource = _player;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(e.ExceptionObject.ToString());
         }
 
         private Point _dragStartPoint;
@@ -678,12 +685,14 @@ namespace CSGO_Boost_Panel
                     Team2log.Close();
                     break;
                 }
-                if (Team1String != Team2String && string.IsNullOrEmpty(Team1String))
+                if (Team1String != Team2String && string.IsNullOrEmpty(Team1String) && !AutoAcceptRestartS)
                 {
+                    AutoAcceptRestartS = true;
                     RestartSearch(true);
                 }
-                if (Team1String != Team2String && string.IsNullOrEmpty(Team2String))
+                if (Team1String != Team2String && string.IsNullOrEmpty(Team2String) && !AutoAcceptRestartS)
                 {
+                    AutoAcceptRestartS = true;
                     RestartSearch(false);
                 }
                 Thread.Sleep(650);
@@ -703,17 +712,7 @@ namespace CSGO_Boost_Panel
 
             void Indicators(GameState a)
             {
-                if (a.Map.Phase.ToString() == "GameOver")
-                {
-                    if (sounds && MatchEndedSnd && !SoundS)
-                    {
-                        SoundS = true;
-                        mediaPlayer.Stream = Properties.Resources.MatchEnded;
-                        mediaPlayer.Load();
-                        mediaPlayer.Play();
-                    }
-                    SoundS = false;
-                }
+
                 if (a.Map.Phase.ToString() == "GameOver")
                 {
                     if (settingsObj.Value<bool>("AutoAccept") && !AutoAcceptS)
@@ -729,6 +728,18 @@ namespace CSGO_Boost_Panel
                             StatsUpdate();
                         });
                     }
+                    if (sounds && MatchEndedSnd && !SoundS)
+                    {
+                        SoundS = true;
+                        newRound = false;
+                        mediaPlayer.Stream = Properties.Resources.MatchEnded;
+                        mediaPlayer.Load();
+                        mediaPlayer.Play();
+                    }
+                }
+                if (a.Map.Phase.ToString() == "Warmup" && SoundS)
+                {
+                    SoundS = false;
                 }
             }
             async void RoundLasts(RoundPhaseChangedEventArgs a)
@@ -741,7 +752,7 @@ namespace CSGO_Boost_Panel
                     at.Start();
                     while (newRound)
                     {
-                        if (at.Elapsed.TotalSeconds >= 30)
+                        if (at.Elapsed.TotalSeconds >= 35)
                         {
                             if (sounds && RoundLastsSnd)
                             {
@@ -762,7 +773,7 @@ namespace CSGO_Boost_Panel
                 }
             }
         }
-            private void AutoDisconnectFunc(bool disable)
+        private void AutoDisconnectFunc(bool disable)
         {
             gslT1.RoundPhaseChanged -= RoundFast;
             gslT2.RoundPhaseChanged -= RoundFast;
@@ -979,6 +990,7 @@ namespace CSGO_Boost_Panel
                 LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 3.36) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 22.85) + CSGO.y);
                 await Task.Delay(250);
             }
+            AutoAcceptRestartS = false;
             InvokeUI(() =>
             {
                 AutoAcceptStatus.Fill = Brushes.Green;
@@ -1060,7 +1072,7 @@ namespace CSGO_Boost_Panel
             Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " +
                 ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text +
                 " " + ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password +
-                " " + accPos[Convert.ToInt16(((Button)sender).Tag)] + " " + res);
+                " " + accPos[Convert.ToInt16(((Button)sender).Tag)-1] + " " + res);
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
