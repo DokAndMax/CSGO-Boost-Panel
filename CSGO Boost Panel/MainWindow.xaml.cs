@@ -418,7 +418,7 @@ namespace CSGO_Boost_Panel
             for (short i = 0; i < 12; i++)
                 Status[i].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
             on = false;
-            PlayerStatusS = false; AutoAcceptS = false;
+            AutoAcceptS = false; PlayerStatusS = false; SoundS = false; AutoAcceptRestartS = false;
             if (choosedObj != null)
                 choosedObj.BorderBrush = null;
             choosed = false;
@@ -436,6 +436,11 @@ namespace CSGO_Boost_Panel
         }
         private void Accept(object sender, KeyEventArgs e)
         {
+            if (settingsObj["CSGOFolder"] == null || settingsObj["SteamFolder"] == null)
+            {
+                MessageBox.Show("Please specify Steam and CSGO folders");
+                return;
+            }
             if (e.Key != Key.Enter) return;
             if (string.IsNullOrEmpty(PresetName.Text)) return;
             AcceptGrid.Visibility = Visibility.Collapsed;
@@ -448,25 +453,14 @@ namespace CSGO_Boost_Panel
                 File.Create("Lobbies.json").Close();
             if ((JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json")) != null)
                 lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
-            for (short i = 0; i < 10; i++)
-            {
-                if (accInfo[Login[i].Text.ToLower()] == null)
-                {
-                    LoadSteamAccs();
-                    if (accInfo[Login[i].Text.ToLower()] == null)
-                    {
-                        MessageBox.Show("First login to this account: \"" + Login[i].Text + "\" and then try again");
-                        return;
-                    }
-                }
-            }
+            LoadSteamAccs();
 
             if (lobbiesObj.Property(PresetName.Text) != null)
             {
                 for (int i = 0; i < 10; i++)
                 {
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = ToggleButton[i].IsOn;
-                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = Login[i].Text;
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = Login[i].Text.ToLower();
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Password"] = Password[i].Password;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["SteamID64"] = accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown";
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Nickname"] = accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown";
@@ -479,7 +473,7 @@ namespace CSGO_Boost_Panel
                 lobbiesObj.Add(PresetName.Text, PresetNameObj);
                 for (int i = 0; i < 10; i++)
                 {
-                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", ""), new JProperty("Rank", "0")));
+                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text.ToLower()), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", ""), new JProperty("Rank", "0")));
                 }
                 loadedPreset = PresetName.Text;
                 for (short i = 0; i < 10; i++)
@@ -1293,15 +1287,15 @@ namespace CSGO_Boost_Panel
                         TeamString = Team2String;
                     if (!accB[i - 1])
                     {
-                        if (lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
+                        if (!String.IsNullOrEmpty(lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
                         {
-                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower() + "')]"))
+                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
                             {
-                                tkn["SteamID64"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["SteamID"];
-                                tkn["Nickname"] = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()]["Nickname"];
+                                tkn["SteamID64"] = accInfo[tkn["Login"].ToString().ToLower()]["SteamID"];
+                                tkn["Nickname"] = accInfo[tkn["Login"].ToString().ToLower()]["Nickname"];
                             }
-                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()))
-                                plr.nickname = accInfo[lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login").ToLower()].Value<string>("Nickname");
+                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
+                                plr.nickname = accInfo[plr.Login.ToLower()].Value<string>("Nickname");
                         }
                         string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
                         string accRank = Regex.Match(RegExStr, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
