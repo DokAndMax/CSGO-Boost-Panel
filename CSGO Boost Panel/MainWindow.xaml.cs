@@ -338,7 +338,9 @@ namespace CSGO_Boost_Panel
                     return;
                 }
                 Process.Start("Launcher.exe", "false \"" + settingsObj["SteamFolder"].ToString() + "\" " + Logins[i] + " \"" + settingsObj["CSGOFolder"].ToString() + "\" ");
-                await Task.Delay(2000);
+                if (!on)
+                    return;
+                await Task.Delay(4000);
             }
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
                 WinTeam1.IsChecked = true;
