@@ -168,42 +168,42 @@ namespace CSGO_Boost_Panel
             settingsObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Settings.json"));
             if (settingsObj.Property("SteamFolder") != null && settingsObj.Value<dynamic>("SteamFolder") != null)
             {
-                SteamFolder.Text = settingsObj.Property("SteamFolder").Value.ToString();
+                SteamFolder.Text = settingsObj.Value<string>("SteamFolder");
                 LoadSteamAccs();
             }
             if (settingsObj.Property("CSGOFolder") != null)
-                CSGOFolder.Text = settingsObj.Property("CSGOFolder").Value.ToString();
+                CSGOFolder.Text = settingsObj.Value<string>("CSGOFolder");
             if (settingsObj.Property("LeaderResX") != null)
-                LeaderResX.Text = settingsObj.Property("LeaderResX").Value.ToString();
+                LeaderResX.Text = settingsObj.Value<string>("LeaderResX");
             if (settingsObj.Property("LeaderResY") != null)
-                LeaderResY.Text = settingsObj.Property("LeaderResY").Value.ToString();
+                LeaderResY.Text = settingsObj.Value<string>("LeaderResY");
             if (settingsObj.Property("BotResX") != null)
-                BotResX.Text = settingsObj.Property("BotResX").Value.ToString();
+                BotResX.Text = settingsObj.Value<string>("BotResX");
             if (settingsObj.Property("BotResY") != null)
-                BotResY.Text = settingsObj.Property("BotResY").Value.ToString();
+                BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("AutoAccept") != null)
-                AutoAccept.IsOn = settingsObj.Property("AutoAccept").Value.ToObject<bool>();
+                AutoAccept.IsOn = settingsObj.Value<bool>("AutoAccept");
             if (settingsObj.Property("AutoDisconnect") != null)
-                AutoDisconnect.IsOn = settingsObj.Property("AutoDisconnect").Value.ToObject<bool>();
+                AutoDisconnect.IsOn = settingsObj.Value<bool>("AutoDisconnect");
             if (settingsObj.Property("Sounds") != null)
             {
-                Sounds.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
-                sounds = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                Sounds.IsOn = settingsObj.Value<bool>("Sounds");
+                sounds = settingsObj.Value<bool>("Sounds");
             }
             if (settingsObj.Property("MatchFoundSound") != null)
             {
-                MatchFoundSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
-                MatchFoundSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                MatchFoundSound.IsOn = settingsObj.Value<bool>("MatchFoundSound");
+                MatchFoundSnd = settingsObj.Value<bool>("MatchFoundSound");
             }
             if (settingsObj.Property("MatchEndedSound") != null)
             {
-                MatchEndedSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
-                MatchEndedSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                MatchEndedSound.IsOn = settingsObj.Value<bool>("MatchEndedSound");
+                MatchEndedSnd = settingsObj.Value<bool>("MatchEndedSound");
             }
             if (settingsObj.Property("RoundLastsSound") != null)
             {
-                RoundLastsSound.IsOn = settingsObj.Property("Sounds").Value.ToObject<bool>();
-                RoundLastsSnd = settingsObj.Property("Sounds").Value.ToObject<bool>();
+                RoundLastsSound.IsOn = settingsObj.Value<bool>("RoundLastsSound");
+                RoundLastsSnd = settingsObj.Value<bool>("RoundLastsSound");
             }
             if (settingsObj.Property("WinTeam") != null)
             {
@@ -331,6 +331,7 @@ namespace CSGO_Boost_Panel
             }
             controlContainer.IsEnabled = false;
             ClearButton.IsEnabled = false;
+            on = true;
             for (int i = 0; i < Logins.Count; i++)
             {
                 if (controlContainer.IsEnabled)
@@ -344,7 +345,6 @@ namespace CSGO_Boost_Panel
             }
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
                 WinTeam1.IsChecked = true;
-            on = true;
             if (!gslT1.Start())
                 MessageBox.Show("Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC");
             if (!gslT2.Start())
