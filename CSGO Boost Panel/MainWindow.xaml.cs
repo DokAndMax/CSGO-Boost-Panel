@@ -166,7 +166,7 @@ namespace CSGO_Boost_Panel
             if (!File.Exists("Settings.json"))
                 File.WriteAllText("Settings.json", "{}");
             settingsObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Settings.json"));
-            if (settingsObj.Property("SteamFolder") != null)
+            if (settingsObj.Property("SteamFolder") != null && settingsObj.Value<dynamic>("SteamFolder") != null)
             {
                 SteamFolder.Text = settingsObj.Property("SteamFolder").Value.ToString();
                 LoadSteamAccs();
@@ -522,14 +522,18 @@ namespace CSGO_Boost_Panel
             };
             if (dialog.ShowDialog() == CommonFileDialogResult.Cancel)
                 return;
-            settingsObj[((Button)sender).Tag] = dialog.FileName;
             if (((Button)sender).Tag.ToString() == "SteamFolder")
             {
+                if(!File.Exists(dialog.FileName + @"/config/loginusers.vdf"))
+                {
+                    MessageBox.Show("Wrong Steam Directory");
+                    return;
+                }
                 SteamFolder.Text = dialog.FileName;
-                LoadSteamAccs();
             }
             else
                 CSGOFolder.Text = dialog.FileName;
+            settingsObj[((Button)sender).Tag] = dialog.FileName;
         }
 
         private void SaveSettings(object sender, TextChangedEventArgs e)
@@ -615,8 +619,12 @@ namespace CSGO_Boost_Panel
 
         private void LoadSteamAccs()
         {
+            if (!File.Exists(settingsObj.Value<String>("SteamFolder") + @"/config/loginusers.vdf"))
+            {
+                return;
+            }
             accInfo = new JObject();
-            string info = File.ReadAllText(settingsObj["SteamFolder"].ToString() + @"/config/loginusers.vdf");
+            string info = File.ReadAllText(settingsObj.Value<String>("SteamFolder") + @"/config/loginusers.vdf");
             string[] Delimiters = { @"""0""", @"""1""", "\"", "\n", "\t", "{", "}", "},", "\",", "users", "AccountName", "PersonaName", "RememberPassword", "MostRecent", "mostrecent", "Timestamp", "WantsOfflineMode" };
             string[] b = info.Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
             for (int a = 1; a <= (b.Length / 4); a++)
@@ -641,7 +649,6 @@ namespace CSGO_Boost_Panel
                     MessageBox.Show("Please, login to this account and try again");
                     return;
                 }
-
             }
             Process.Start("https://steamcommunity.com/profiles/" + accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text.ToLower()]["SteamID"] + "/");
         }
