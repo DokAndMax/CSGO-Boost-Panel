@@ -1068,6 +1068,15 @@ namespace CSGO_Boost_Panel
                 ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password == "")
                 return;
             string res;
+            foreach (Process proc in Process.GetProcessesByName("steam"))
+            {
+                String parameters = CommandLineUtilities.getCommandLines(proc);
+                if (parameters.Contains(((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text))
+                {
+                    proc.Kill();
+                    break;
+                }
+            }
             if (Convert.ToInt16(((Button)sender).Tag) == 1 || Convert.ToInt16(((Button)sender).Tag) == 6)
                 res = LeaderResX.Text + " " + LeaderResY.Text;
             else
