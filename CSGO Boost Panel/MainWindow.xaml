@@ -209,42 +209,42 @@
                             <ColumnDefinition Width="162"/>
                             <ColumnDefinition Width="182"/>
                         </Grid.ColumnDefinitions>
-                        <Ellipse x:Name="Status1" Fill="#FFA20404" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse x:Name="Status2" Fill="#FFA20404" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status3" Fill="#FFA20404" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status4" Fill="#FFA20404" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status5" Fill="#FFA20404" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status6" Fill="#FFA20404" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status7" Fill="#FFA20404" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status8" Fill="#FFA20404" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status9" Fill="#FFA20404" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status10" Fill="#FFA20404" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton1" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton2" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton3" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton4" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton5" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton6" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton7" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton8" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton9" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton10" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <Ellipse x:Name="Status1" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="Status2" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status3" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status4" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status5" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status6" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status7" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status8" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status9" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status10" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton1" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton2" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton3" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton4" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton5" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton6" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton7" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton8" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton9" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton10" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
 
-                        <TextBox x:Name="Login1" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login2" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login3" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login4" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login5" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login1" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login2" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login3" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login4" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login5" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password1" MaxLength="250" Grid.Column="4" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password2" MaxLength="250" Grid.Column="4" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password3" MaxLength="250" Grid.Column="4" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password4" MaxLength="250" Grid.Column="4" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password5" MaxLength="250" Grid.Column="4" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login6" MaxLength="250" Grid.Column="3" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login7" MaxLength="250" Grid.Column="3" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login8" MaxLength="250" Grid.Column="3" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login9" MaxLength="250" Grid.Column="3" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login10" MaxLength="250" Grid.Column="3" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login6" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login7" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login8" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login9" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login10" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password6" MaxLength="250" Grid.Column="4" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password7" MaxLength="250" Grid.Column="4" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password8" MaxLength="250" Grid.Column="4" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
@@ -508,7 +508,7 @@
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
                     <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,216,0,144" Content="Automation" Grid.Row="1"/>
-                    <mah:ToggleSwitch Margin="481,253,0,107" Content="Rank Boost" Toggled="Test" Grid.Row="1"/>
+                    <mah:ToggleSwitch Margin="481,253,0,107" Content="Rank Boost" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,193,279,167" Checked="WinTeamTie_Checked" Grid.Row="1"/>
@@ -527,6 +527,10 @@
                         <mah:ToggleSwitch x:Name="MatchEndedSound" Content="Match ended" Grid.Row="1" Toggled="MatchEndedTgl" Grid.Column="1" IsOn="True"/>
                         <mah:ToggleSwitch x:Name="RoundLastsSound" Content="Round lasts 35 seconds" Toggled="RoundLastsTgl" Grid.Row="2" Grid.Column="1" IsOn="True"/>
                     </Grid>
+                    <TextBlock Margin="29,303,610,59" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
+                    <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="134,304,323,58" Background="{x:Null}" BorderBrush="#FF460808" Grid.Row="1"/>
+                    <Button x:Name="TgCheckApiButton" Padding="0" Content="OK" HorizontalAlignment="Left" Margin="424,304,0,0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="29" Click="TgCheckApi" IsEnabled="False" FontSize="16"/>
+                    <TextBlock Margin="659,375,0,0" Grid.Row="1" Text="{Binding StringFormat=Version: {0}, RelativeSource={RelativeSource AncestorType=Window}, Path=AssemblyVersion}" Foreground="#FF8D8C8C"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -541,5 +545,7 @@
         <Button Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="61,0,717,0" Width="40" Height="40" Click="Stop">
             <iconPacks:PackIconMaterial Kind="Stop" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
         </Button>
+        <TextBlock HorizontalAlignment="Left" Margin="528,444,0,0" TextWrapping="Wrap" Text="Telegram Bot:" VerticalAlignment="Top" Height="24" Width="103" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Foreground="White"/>
+        <Ellipse x:Name="TgBotStatus" Fill="#FFA20404" Margin="633,444,170,2" Width="15" Height="15"/>
     </Grid>
 </mah:MetroWindow>

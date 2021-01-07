@@ -39,24 +39,45 @@ namespace CSGO_Boost_Panel
 
     public partial class MainWindow : MetroWindow
     {
+        public Version AssemblyVersion
+        {
+            get
+            {
+                return Assembly.GetEntryAssembly().GetName().Version;
+            }
+        }
+        public static string TgAPIKey;
         private readonly SoundPlayer mediaPlayer = new SoundPlayer();
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
-        public JObject settingsObj, accInfo;
+        public static JObject settingsObj, accInfo;
         public string loadedPreset;
-        public short WinTeamNum, score;
-        public List<string> accWindowsTitle = new List<string>();
-        public List<string> accPos = new List<string> { "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50", "50 50" };
+        public static short WinTeamNum, score, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0;
+        public static int LobbyCount = 0;
         public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true;
-        public static bool AutoAcceptS = false, PlayerStatusS = false, SoundS = false, AutoAcceptRestartS = false;
+        public static bool AutoAcceptRestartS = false, WarmUp = false;
+        public bool AutoBoost { get; set; }
+        public static string AutoAcceptStatusCircle = "🔴", PlayerStatusCircle = "🔴";
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
-
         public Button choosedObj;
+        public static Brush Red = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
+        static public LobbyPlayer[] PArray = new LobbyPlayer[10];
 
         public MainWindow()
         {
             InitializeComponent();
             Loaded += LoadSettings;
 
+            for (short i = 0; i < 10; i++)
+                PArray[i] = new LobbyPlayer();
+            TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
+            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
+            System.Windows.Shapes.Ellipse[] Status = { Status1, Status2, Status3, Status4, Status5, Status6, Status7, Status8, Status9, Status10 };
+            for (short i = 0; i < PArray.Length; i++)
+            {
+                Status[i].DataContext = PArray[i];
+                Login[i].DataContext = PArray[i];
+                ToggleButton[i].DataContext = PArray[i];
+            }
             lobbiesList.DisplayMemberPath = "Name";
             lobbiesList.ItemsSource = _items;
             playersList.ItemsSource = _player;
@@ -142,9 +163,11 @@ namespace CSGO_Boost_Panel
             File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(PresetNameObj, Formatting.Indented));
         }
 
-        public void Application_Exit(object sender, EventArgs e)
+        private void Application_Exit(object sender, EventArgs e)
         {
             File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
+            if (TgBot.connected)
+                TgBot.RemoveKeyboard();
             Environment.Exit(0);
         }
 
@@ -163,6 +186,7 @@ namespace CSGO_Boost_Panel
                     _player[_player.Count - 1].Visibility = "Visible";
                 }
             }
+            LobbyCount = _items.Count;
             if (!File.Exists("Settings.json"))
                 File.WriteAllText("Settings.json", "{}");
             settingsObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Settings.json"));
@@ -181,6 +205,8 @@ namespace CSGO_Boost_Panel
                 BotResX.Text = settingsObj.Value<string>("BotResX");
             if (settingsObj.Property("BotResY") != null)
                 BotResY.Text = settingsObj.Value<string>("BotResY");
+            if (settingsObj.Property("TgApi") != null)
+                TgApi.Text = settingsObj.Value<string>("TgApi");
             if (settingsObj.Property("AutoAccept") != null)
                 AutoAccept.IsOn = settingsObj.Value<bool>("AutoAccept");
             if (settingsObj.Property("AutoDisconnect") != null)
@@ -255,8 +281,15 @@ namespace CSGO_Boost_Panel
             tab.SelectedIndex = 3;
         }
 
+        public void StartTg()
+        {
+            Start(null, null);
+        }
+
         private async void Start(object sender, RoutedEventArgs e)
         {
+            if (on)
+                return;
             if (!File.Exists("Settings.json"))
             {
                 MessageBox.Show("Please specify Steam and CSGO folders");
@@ -276,42 +309,39 @@ namespace CSGO_Boost_Panel
                 return;
             }
             List<String> Logins = new List<String>();
-            accWindowsTitle.Clear();
             T1WinTitle.Clear();
             T2WinTitle.Clear();
-            TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
             string[] Names = { "LEADER", "BOT" }, Res = { LeaderResX.Text + " " + LeaderResY.Text, BotResX.Text + " " + BotResY.Text };
             for (short i = 0, n = 0, l = 0; i < 10; i++)
             {
-                if (ToggleButton[i].IsOn)
+                if (PArray[i].State)
                 {
-                    if (string.IsNullOrEmpty(Login[i].Text) || string.IsNullOrEmpty(Password[i].Password))
+                    if (string.IsNullOrEmpty(PArray[i].Login) || string.IsNullOrEmpty(Password[i].Password))
                     {
                         MessageBox.Show("Please type login or password");
                         return;
                     }
-                    if (accInfo[Login[i].Text.ToLower()] == null)
+                    if (accInfo[PArray[i].Login.ToLower()] == null)
                     {
                         LoadSteamAccs();
-                        if (accInfo[Login[i].Text.ToLower()] == null)
+                        if (accInfo[PArray[i].Login.ToLower()] == null)
                         {
-                            MessageBox.Show("First login to this account: \"" + Login[i].Text + "\" and then try again");
+                            MessageBox.Show("First login to this account: \"" + PArray[i].Login + "\" and then try again");
                             return;
                         }
                     }
                     if (i < 5)
                     {
-                        Logins.Add(Login[i].Text + " " + Password[i].Password + " " + accPos[i] + " " + Res[l] + " \"" + Names[l] + " #1\" " + n);
-                        accWindowsTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #1");
-                        T1WinTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #1");
+                        Logins.Add(PArray[i].Login + " " + Password[i].Password + " " + PArray[i].Position + " " + Res[l] + " \"" + Names[l] + " #1\" " + n);
+                        PArray[i].WindowTitle = "LOGIN: " + PArray[i].Login.ToLower() + " | " + Names[l] + " #1";
+                        T1WinTitle.Add("LOGIN: " + PArray[i].Login.ToLower() + " | " + Names[l] + " #1");
                     }
                     else
                     {
-                        Logins.Add(Login[i].Text + " " + Password[i].Password + " " + accPos[i] + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n + 2));
-                        accWindowsTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #2");
-                        T2WinTitle.Add("LOGIN: " + Login[i].Text.ToLower() + " | " + Names[l] + " #2");
+                        Logins.Add(PArray[i].Login + " " + Password[i].Password + " " + PArray[i].Position + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n + 2));
+                        PArray[i].WindowTitle = "LOGIN: " + PArray[i].Login.ToLower() + " | " + Names[l] + " #2";
+                        T2WinTitle.Add("LOGIN: " + PArray[i].Login.ToLower() + " | " + Names[l] + " #2");
                     }
                     if (n == 0)
                         n++;
@@ -323,6 +353,7 @@ namespace CSGO_Boost_Panel
                     n = 0;
                     l = 0;
                 }
+                PArray[i].Password = Password[i].Password;
             }
             if (Logins.Count < 1)
             {
@@ -353,11 +384,7 @@ namespace CSGO_Boost_Panel
             {
                 _ = Task.Run(() => AutoAcceptFunc());
             }
-            if (AutoDisconnect.IsOn)
-            {
-                _ = Task.Run(() => AutoDisconnectFunc(false));
-            }
-            _ = Task.Run(() => IndicatorsOn());
+            CSGSILogic(true, true);
             AccountChecker();
             StatsUpdate();
             exChange.IsEnabled = true;
@@ -369,27 +396,24 @@ namespace CSGO_Boost_Panel
             {
                 ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
                 JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
-                for (int i = 0, n = 0; i < 10; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    if (ToggleButton[i].IsOn)
+                    if (ToggleButton[i].IsOn && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
                     {
-                        if (FindWindow(null, accWindowsTitle[n]).ToInt32() != 0)
-                        {
                             int x;
                             Rect WindowRect = new Rect();
-                            if (IsIconic(FindWindow(null, accWindowsTitle[n])))
-                                ShowWindow(FindWindow(null, accWindowsTitle[n]), 4);
-                            GetWindowRect(FindWindow(null, accWindowsTitle[n]), ref WindowRect);
+                            if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
+                                ShowWindow(FindWindow(null, PArray[i].WindowTitle), 4);
+                            GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
                             if (WindowRect.Left < 0)
                                 x = 0;
                             else
                                 x = WindowRect.Left;
                             if (!string.IsNullOrEmpty(loadedPreset))
                                 lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"] = x + " " + WindowRect.Top;
-                            accPos[i] = x + " " + WindowRect.Top;
-                        }
-                        n++;
+                            PArray[i].Position = x + " " + WindowRect.Top;
                     }
+                    PArray[i].WindowTitle = "";
                 }
                 if (!string.IsNullOrEmpty(loadedPreset))
                     File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(lobbiesObj, Formatting.Indented));
@@ -411,16 +435,21 @@ namespace CSGO_Boost_Panel
                 MessageBox.Show(ex.Message);
             }
 
-            AutoDisconnectFunc(true);
+            CSGSILogic(false, false);
             if (gslT1.Running)
                 gslT1.Stop();
             if (gslT2.Running)
                 gslT2.Stop();
-            System.Windows.Shapes.Ellipse[] Status = { Status1, Status2, Status3, Status4, Status5, Status6, Status7, Status8, Status9, Status10, AutoAcceptStatus, PlayerStatus };
-            for (short i = 0; i < 12; i++)
-                Status[i].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
+            System.Windows.Shapes.Ellipse[] Status = { AutoAcceptStatus, PlayerStatus };
+            PlayerStatusCircle = "🔴";
+            AutoAcceptStatusCircle = "🔴";
+            GamesPlayerForGameSession = 0;
+            for (short i = 0; i < 2; i++)
+                Status[i].Fill = Red;
+            for (short i = 0; i < 10; i++)
+                PArray[i].Status = Red;
             on = false;
-            AutoAcceptS = false; PlayerStatusS = false; SoundS = false; AutoAcceptRestartS = false;
+            WarmUp = false;
             if (choosedObj != null)
                 choosedObj.BorderBrush = null;
             choosed = false;
@@ -461,8 +490,8 @@ namespace CSGO_Boost_Panel
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = ToggleButton[i].IsOn;
-                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = Login[i].Text.ToLower();
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = PArray[i].State;
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = PArray[i].Login.ToLower();
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Password"] = Password[i].Password;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["SteamID64"] = accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown";
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Nickname"] = accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown";
@@ -475,7 +504,7 @@ namespace CSGO_Boost_Panel
                 lobbiesObj.Add(PresetName.Text, PresetNameObj);
                 for (int i = 0; i < 10; i++)
                 {
-                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text.ToLower()), new JProperty("Password", Password[i].Password), new JProperty("Pos", accPos[i]), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", ""), new JProperty("Rank", "0")));
+                    PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text.ToLower()), new JProperty("Password", Password[i].Password), new JProperty("Pos", PArray[i].Position), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", ""), new JProperty("Rank", "0")));
                 }
                 loadedPreset = PresetName.Text;
                 for (short i = 0; i < 10; i++)
@@ -485,6 +514,7 @@ namespace CSGO_Boost_Panel
                 _player[_player.Count - 1].Visibility = "Visible";
                 MessageBox.Show("Preset successfully saved");
             }
+            LobbyCount = _items.Count;
             File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(lobbiesObj, Formatting.Indented));
             if (_items.Any(x => x.Name == PresetName.Text) == false)
                 _items.Add(new Item(PresetName.Text));
@@ -512,6 +542,7 @@ namespace CSGO_Boost_Panel
             for (int i = 0; i < _items.Count; i++)
                 PresetNameObj.Add(_items[i].Name, lobbiesObj[_items[i].Name]);
             File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(PresetNameObj, Formatting.Indented));
+            LobbyCount = _items.Count;
         }
 
         private void SaveSettings(object sender, RoutedEventArgs e)
@@ -557,11 +588,11 @@ namespace CSGO_Boost_Panel
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
             if (((ToggleSwitch)sender).IsOn && on)
             {
-                Task.Run(() => AutoDisconnectFunc(false));
+                Task.Run(() => CSGSILogic(true, false));
             }
             if (!((ToggleSwitch)sender).IsOn && on)
             {
-                Task.Run(() => AutoDisconnectFunc(true));
+                Task.Run(() => CSGSILogic(false, false));
             }
         }
 
@@ -594,27 +625,28 @@ namespace CSGO_Boost_Panel
             RoundLastsSnd = ((ToggleSwitch)sender).IsOn;
         }
 
+        public void LoadPresetTg(short num)
+        {
 
+            LoadPreset(null, null);
+        }
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
-            if (lobbiesList.SelectedItem == null)
+            if (lobbiesList.SelectedItem == null || on)
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
             JObject AccObj = lobbiesObj.Property(_items[lobbiesList.SelectedIndex].Name).Value.ToObject<JObject>();
-            TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
             loadedPreset = _items[lobbiesList.SelectedIndex].Name;
-            accPos.Clear();
             for (int i = 0; i < 10; i++)
             {
-                ToggleButton[i].IsOn = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
-                Login[i].Text = AccObj["Acc" + (i + 1)].Value<string>("Login");
+                PArray[i].State = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
+                PArray[i].Login = AccObj["Acc" + (i + 1)].Value<string>("Login");
                 Password[i].Password = AccObj["Acc" + (i + 1)].Value<string>("Password");
-                accPos.Add(lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"].ToString());
+                PArray[i].Position = lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"].ToString();
             }
             PresetName.Text = loadedPreset;
-            MessageBox.Show("Successfully loaded");
+            tab.SelectedIndex = 0;
         }
 
         private void LoadSteamAccs()
@@ -662,8 +694,9 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             InvokeUI(() =>
             {
-                AutoAcceptStatus.Fill = Brushes.Green; AutoAcceptS = true;
+                AutoAcceptStatus.Fill = Brushes.Green; 
             });
+            AutoAcceptStatusCircle = "🟢";
             while (on)
             {
                 string Team1String = Regex.Match(Team1log.ReadToEnd(), @"match_id=.*$", RegexOptions.Multiline).Value;
@@ -701,83 +734,20 @@ namespace CSGO_Boost_Panel
                 Thread.Sleep(650);
             }
         }
-
-        private void IndicatorsOn()
+        private void CSGSILogic(bool enabled, bool indicators)
         {
-            gslT1.NewGameState -= Indicators;
-            gslT2.NewGameState -= Indicators;
-            gslT1.NewGameState += Indicators;
-            gslT2.NewGameState += Indicators;
-            gslT1.RoundPhaseChanged -= RoundLasts;
-            gslT2.RoundPhaseChanged -= RoundLasts;
-            gslT1.RoundPhaseChanged += RoundLasts;
-            gslT2.RoundPhaseChanged += RoundLasts;
-
-            void Indicators(GameState a)
+            if (indicators)
             {
+                gslT1.NewGameState -= Indicators;
+                gslT2.NewGameState -= Indicators;
+                gslT1.NewGameState += Indicators;
+                gslT2.NewGameState += Indicators;
+                gslT1.RoundPhaseChanged -= RoundLasts;
+                gslT2.RoundPhaseChanged -= RoundLasts;
+                gslT1.RoundPhaseChanged += RoundLasts;
+                gslT2.RoundPhaseChanged += RoundLasts;
+            }
 
-                if (a.Map.Phase.ToString() == "GameOver")
-                {
-                    if (settingsObj.Value<bool>("AutoAccept") && !AutoAcceptS)
-                    {
-                        AutoAcceptS = true;
-                        _ = Task.Run(() => AutoAcceptFunc());
-                    }
-                    if (!PlayerStatusS)
-                    {
-                        PlayerStatusS = true;
-                        InvokeUI(() =>
-                        {
-                            StatsUpdate();
-                        });
-                    }
-                    if (sounds && MatchEndedSnd && !SoundS)
-                    {
-                        SoundS = true;
-                        newRound = false;
-                        mediaPlayer.Stream = Properties.Resources.MatchEnded;
-                        mediaPlayer.Load();
-                        mediaPlayer.Play();
-                    }
-                }
-                if (a.Map.Phase.ToString() == "Warmup" && SoundS)
-                {
-                    SoundS = false;
-                }
-            }
-            async void RoundLasts(RoundPhaseChangedEventArgs a)
-            {
-                if (a.CurrentPhase.ToString() == "Live" && onemeth)
-                {
-                    onemeth = false;
-                    Stopwatch at = new Stopwatch();
-                    newRound = true;
-                    at.Start();
-                    while (newRound)
-                    {
-                        if (at.Elapsed.TotalSeconds >= 35)
-                        {
-                            if (sounds && RoundLastsSnd)
-                            {
-                                mediaPlayer.Stream = Properties.Resources.RoundLasts;
-                                mediaPlayer.Load();
-                                mediaPlayer.Play();
-                            }
-                            break;
-                        }
-                        await Task.Delay(5000);
-                    }
-                    onemeth = true;
-                    return;
-                }
-                if (a.CurrentPhase.ToString() == "FreezeTime")
-                {
-                    newRound = false;
-                }
-            }
-        }
-        private void AutoDisconnectFunc(bool disable)
-        {
             gslT1.RoundPhaseChanged -= RoundFast;
             gslT2.RoundPhaseChanged -= RoundFast;
             gslT1.RoundPhaseChanged -= Round;
@@ -786,16 +756,11 @@ namespace CSGO_Boost_Panel
             gslT2.NewGameState -= RoundHalf;
             gslT1.NewGameState -= RoundHalfScore;
             gslT2.NewGameState -= RoundHalfScore;
-            gslT1.NewGameState -= RoundGameOver;
-            gslT2.NewGameState -= RoundGameOver;
-            if (disable)
+            if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
             {
-                gslT1.NewGameState -= RoundWarmup;
-                gslT2.NewGameState -= RoundWarmup;
                 return;
             }
             WinTeam.RoundPhaseChanged += Round;
-            WinTeam.NewGameState += RoundGameOver;
 
             if (settingsObj.Value<short>("WinTeam") == 2)
             {
@@ -855,38 +820,6 @@ namespace CSGO_Boost_Panel
                         SendKeyPress(0x44);
                         await Task.Delay(250);
                     }
-                }
-            }
-
-            void RoundGameOver(GameState a)
-            {
-                if (a.Map.Phase.ToString() == "GameOver")
-                {
-                    live = true;
-                    score = 0;
-                    if (settingsObj.Value<short>("WinTeam") == 2)
-                    {
-                        WinTeam = gslT1;
-                        WinTeamNum = 0;
-                        gslT1.RoundPhaseChanged -= Round;
-                        gslT2.RoundPhaseChanged -= Round;
-                        WinTeam.RoundPhaseChanged += Round;
-                        gslT1.NewGameState -= RoundHalf;
-                        gslT2.NewGameState -= RoundHalf;
-                        WinTeam.NewGameState += RoundHalf;
-                    }
-                    gslT1.NewGameState -= RoundGameOver;
-                    gslT2.NewGameState -= RoundGameOver;
-                    WinTeam.NewGameState += RoundWarmup;
-                }
-            }
-            void RoundWarmup(GameState a)
-            {
-                if (a.Map.Phase.ToString() == "Warmup")
-                {
-                    gslT1.NewGameState -= RoundWarmup;
-                    gslT2.NewGameState -= RoundWarmup;
-                    WinTeam.NewGameState += RoundGameOver;
                 }
             }
 
@@ -950,6 +883,83 @@ namespace CSGO_Boost_Panel
 
                 if (Convert.ToInt16(a.Map.Round) == score) score++;
             }
+
+            void Indicators(GameState a)
+            {
+                if (a.Map.Phase.ToString() == "GameOver" & !WarmUp)
+                {
+                    WarmUp = true;
+                    newRound = false;
+                    GamesPlayerForAppSession++; GamesPlayerForGameSession++;
+                    if (settingsObj.Value<bool>("AutoAccept"))
+                    {
+                        _ = Task.Run(() => AutoAcceptFunc());
+                    }
+                    InvokeUI(() =>
+                    {
+                        StatsUpdate();
+                    });
+                    if (sounds && MatchEndedSnd)
+                    {
+                        newRound = false;
+                        mediaPlayer.Stream = Properties.Resources.MatchEnded;
+                        mediaPlayer.Load();
+                        mediaPlayer.Play();
+                    }
+                    if (TgBot.connected && MainWindow.settingsObj.Value<bool>("notifies"))
+                        TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
+                    live = true;
+                    score = 0;
+                    if (settingsObj.Value<short>("WinTeam") == 2 && settingsObj.Value<bool>("AutoDisconnect"))
+                    {
+                        WinTeam = gslT1;
+                        WinTeamNum = 0;
+                        gslT1.RoundPhaseChanged -= Round;
+                        gslT2.RoundPhaseChanged -= Round;
+                        WinTeam.RoundPhaseChanged += Round;
+                        gslT1.NewGameState -= RoundHalf;
+                        gslT2.NewGameState -= RoundHalf;
+                        WinTeam.NewGameState += RoundHalf;
+                    }
+                }
+
+                if (a.Map.Phase.ToString() == "Warmup" && WarmUp)
+                {
+                    WarmUp = false;
+                }
+            }
+            async void RoundLasts(RoundPhaseChangedEventArgs a)
+            {
+                if (a.CurrentPhase.ToString() == "Live" && onemeth)
+                {
+                    onemeth = false;
+                    Stopwatch at = new Stopwatch();
+                    newRound = true;
+                    at.Start();
+                    while (newRound)
+                    {
+                        if (at.Elapsed.TotalSeconds >= 35)
+                        {
+                            if (sounds && RoundLastsSnd)
+                            {
+                                mediaPlayer.Stream = Properties.Resources.RoundLasts;
+                                mediaPlayer.Load();
+                                mediaPlayer.Play();
+                            }
+                            if (TgBot.connected && MainWindow.settingsObj.Value<bool>("notifies"))
+                                TgBot.SendNotify("Check your game! Round lasts more than 35 seconds");
+                            break;
+                        }
+                        await Task.Delay(5000);
+                    }
+                    onemeth = true;
+                    return;
+                }
+                if (a.CurrentPhase.ToString() == "FreezeTime")
+                {
+                    newRound = false;
+                }
+            }
         }
 
         private async void RestartSearch(bool t2)
@@ -958,11 +968,14 @@ namespace CSGO_Boost_Panel
             {
                 AutoAcceptStatus.Fill = Brushes.Yellow;
             });
+            AutoAcceptStatusCircle = "🟡";
             List<String> ldrTitles = new List<String>();
-            for (int i = 0; i < accWindowsTitle.Count; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (accWindowsTitle[i].Contains("LEADER"))
-                    ldrTitles.Add(accWindowsTitle[i]);
+                if (string.IsNullOrEmpty(PArray[i].WindowTitle))
+                    continue;
+                if (PArray[i].WindowTitle.Contains("LEADER"))
+                    ldrTitles.Add(PArray[i].WindowTitle);
             }
             if (t2)
                 ldrTitles.Reverse();
@@ -998,6 +1011,7 @@ namespace CSGO_Boost_Panel
             {
                 AutoAcceptStatus.Fill = Brushes.Green;
             });
+            AutoAcceptStatusCircle = "🟢";
         }
 
         private void AcceptGame()
@@ -1008,23 +1022,28 @@ namespace CSGO_Boost_Panel
                 mediaPlayer.Load();
                 mediaPlayer.Play();
             }
-            for (int i = 0; i < accWindowsTitle.Count; i++)
+            if (TgBot.connected && MainWindow.settingsObj.Value<bool>("notifies"))
+                TgBot.SendNotify("Match found");
+            for (int i = 0; i < 10; i++)
             {
-                if (IsIconic(FindWindow(null, accWindowsTitle[i])))
-                    ShowWindow(FindWindow(null, accWindowsTitle[i]), 9);
-                SetForegroundWindow(FindWindow(null, accWindowsTitle[i]));
+                if (string.IsNullOrEmpty(PArray[i].WindowTitle))
+                    continue;
+                if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
+                    ShowWindow(FindWindow(null, PArray[i].WindowTitle), 9);
+                SetForegroundWindow(FindWindow(null, PArray[i].WindowTitle));
                 Rect WindowRect = new Rect();
                 Coords CSGO = new Coords();
-                GetWindowRect(FindWindow(null, accWindowsTitle[i]), ref WindowRect);
-                ClientToScreen(FindWindow(null, accWindowsTitle[i]), ref CSGO);
+                GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
+                ClientToScreen(FindWindow(null, PArray[i].WindowTitle), ref CSGO);
                 Thread.Sleep(250);
                 LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 2.35 + (WindowRect.Right - WindowRect.Left - 6) / 6.6 / 2) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 2.52 - (WindowRect.Bottom - WindowRect.Top - 29) / 12.5 / 2) + CSGO.y);
                 Thread.Sleep(250);
             }
             InvokeUI(() =>
             {
-                AutoAcceptStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404"); AutoAcceptS = false;
+                AutoAcceptStatus.Fill = Red;
             });
+            AutoAcceptStatusCircle = "🔴";
         }
 
         private void WinTeam1_Checked(object sender, RoutedEventArgs e)
@@ -1034,7 +1053,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT1;
             if (on && AutoDisconnect.IsOn)
             {
-                _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => CSGSILogic(true, false));
             }
         }
 
@@ -1045,7 +1064,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT2;
             if (on && AutoDisconnect.IsOn)
             {
-                _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => CSGSILogic(true, false));
             }
         }
 
@@ -1057,34 +1076,13 @@ namespace CSGO_Boost_Panel
 
             if (on && AutoDisconnect.IsOn)
             {
-                _ = Task.Run(() => AutoDisconnectFunc(false));
+                _ = Task.Run(() => CSGSILogic(true, false));
             }
         }
 
         private void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-            if (!((ToggleSwitch)this.GetType().GetField("ToggleButton" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn ||
-                ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text == "" ||
-                ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password == "")
-                return;
-            string res;
-            foreach (Process proc in Process.GetProcessesByName("steam"))
-            {
-                String parameters = CommandLineUtilities.getCommandLines(proc);
-                if (parameters.Contains(((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text))
-                {
-                    proc.Kill();
-                    break;
-                }
-            }
-            if (Convert.ToInt16(((Button)sender).Tag) == 1 || Convert.ToInt16(((Button)sender).Tag) == 6)
-                res = LeaderResX.Text + " " + LeaderResY.Text;
-            else
-                res = BotResX.Text + " " + BotResY.Text;
-            Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " +
-                ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text +
-                " " + ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password +
-                " " + accPos[Convert.ToInt16(((Button)sender).Tag)-1] + " " + res);
+            CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
@@ -1159,98 +1157,18 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private void AutomationTgl(object sender, RoutedEventArgs e)
+        private async void AutomationTgl(object sender, RoutedEventArgs e)
         {
-            List<String> ldrTitles = new List<String>();
-            for (int i = 0; i < accWindowsTitle.Count; i++)
-            {
-                if (accWindowsTitle[i].Contains("LEADER"))
-                    ldrTitles.Add(accWindowsTitle[i]);
-            }
-            List<string> TeamWinTitle = T1WinTitle;
-            for (int i = 1, n = 0; n < 2; i++)
-            {
-                Rect WindowRect = new Rect();
-                Coords CSGO = new Coords();
-                if (IsIconic(FindWindow(null, TeamWinTitle[i])))
-                    ShowWindow(FindWindow(null, TeamWinTitle[i]), 9);
-                SetForegroundWindow(FindWindow(null, TeamWinTitle[i]));
-                GetWindowRect(FindWindow(null, TeamWinTitle[i]), ref WindowRect);
-                ClientToScreen(FindWindow(null, TeamWinTitle[i]), ref CSGO);
-                Thread.Sleep(500);
-                SetCursorPos(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 30.476) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 4.285) + CSGO.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 30.476) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 4.285) + CSGO.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 4.353) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 3.404) + CSGO.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 2.154) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 2.364) + CSGO.y);
-                Thread.Sleep(500);
-                SendKeyPress(0x1);
+            await CSGOIntercation.GatherLobby();
+        }
 
-                Rect WindowRect2 = new Rect();
-                Coords CSGO2 = new Coords();
-                if (IsIconic(FindWindow(null, ldrTitles[n])))
-                    ShowWindow(FindWindow(null, ldrTitles[n]), 9);
-                SetForegroundWindow(FindWindow(null, ldrTitles[n]));
-                GetWindowRect(FindWindow(null, ldrTitles[n]), ref WindowRect2);
-                ClientToScreen(FindWindow(null, ldrTitles[n]), ref CSGO2);
-                Thread.Sleep(500);
-                SetCursorPos(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 30.476) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 4.285) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 30.476) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 4.285) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 4.353) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 3.404) + CSGO2.y);
-                Thread.Sleep(500);
-                SetCursorPos(Convert.ToInt16((WindowRect2.Right - WindowRect2.Left - 6) / 2.310) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 2.060) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16((WindowRect2.Right - WindowRect2.Left - 6) / 2.310) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 2.060) + CSGO2.y);
-                Thread.Sleep(500);
-                SendKeyPress(0x1D, 0x2F);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 2.245) + CSGO2.x, Convert.ToInt16((WindowRect2.Bottom - WindowRect2.Top - 29) / 2.060) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16((WindowRect2.Right - WindowRect2.Left - 6) / 2.452) + CSGO2.x, Convert.ToInt16(WindowRect2.Bottom - WindowRect2.Top - 29 - (WindowRect2.Bottom - WindowRect2.Top - 29) / 2.096) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 3.855) + CSGO2.x, Convert.ToInt16(WindowRect2.Bottom - WindowRect2.Top - 29 - (WindowRect2.Bottom - WindowRect2.Top - 29) / 2.096) + CSGO2.y);
-                Thread.Sleep(500);
-                LeftClick(Convert.ToInt16(WindowRect2.Right - WindowRect2.Left - 6 - (WindowRect2.Right - WindowRect2.Left - 6) / 2.7) + CSGO2.x, Convert.ToInt16(WindowRect2.Bottom - WindowRect2.Top - 29 - (WindowRect2.Bottom - WindowRect2.Top - 29) / 2.594) + CSGO2.y);
-                Thread.Sleep(500);
-
-                if (i == (T1WinTitle.Count - 1) && n == 0)
-                {
-                    n++;
-                    TeamWinTitle = T2WinTitle;
-                    i = 0;
-                }
-                if (i == (T2WinTitle.Count - 1) && n == 1)
-                    n++;
-            }
-
-            TeamWinTitle = T1WinTitle;
-            for (int i = 1, n = 0; n < 2; i++)
-            {
-                Rect WindowRect = new Rect();
-                Coords CSGO = new Coords();
-                if (IsIconic(FindWindow(null, TeamWinTitle[i])))
-                    ShowWindow(FindWindow(null, TeamWinTitle[i]), 9);
-                SetForegroundWindow(FindWindow(null, TeamWinTitle[i]));
-                GetWindowRect(FindWindow(null, TeamWinTitle[i]), ref WindowRect);
-                ClientToScreen(FindWindow(null, TeamWinTitle[i]), ref CSGO);
-                Thread.Sleep(250);
-                SetCursorPos(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 30.476) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 3.779) + CSGO.y);
-                Thread.Sleep(250);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 5.423) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 3.809) + CSGO.y);
-                Thread.Sleep(250);
-                if (i == (T1WinTitle.Count - 1) && n == 0)
-                {
-                    n++;
-                    TeamWinTitle = T2WinTitle;
-                    i = 0;
-                }
-                if (i == (T2WinTitle.Count - 1) && n == 1)
-                    n++;
-            }
+        private void RankBoostTgl(object sender, RoutedEventArgs e)
+        {
+            if (!loaded)
+                return;
+            MessageBox.Show(AutoBoost.ToString());
+            settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
+            //AutoBoost = ((ToggleSwitch)sender).IsOn;
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
@@ -1260,20 +1178,19 @@ namespace CSGO_Boost_Panel
 
         private async void AccountChecker()
         {
-            System.Windows.Shapes.Ellipse[] Status = { Status1, Status2, Status3, Status4, Status5, Status6, Status7, Status8, Status9, Status10 };
             ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
             while (on)
             {
-                for (short i = 0, n = 0; i < 10; i++)
+                for (short i = 0; i < 10; i++)
                 {
                     short index = i;
-                    if (ToggleButton[index].IsOn && FindWindow(null, accWindowsTitle[n++]).ToInt32() != 0)
+                    if (ToggleButton[index].IsOn && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
                     {
-                        Status[index].Fill = Brushes.Green;
+                        PArray[index].Status = Brushes.Green;
                     }
                     else
                     {
-                        Status[index].Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
+                        PArray[index].Status = Red;
                     }
                 }
                 await Task.Delay(15000);
@@ -1293,7 +1210,8 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             bool[] accB = { false, false, false, false, false, false, false, false, false, false };
             bool done = false;
-            PlayerStatus.Fill = Brushes.Green; PlayerStatusS = true;
+            PlayerStatus.Fill = Brushes.Green;
+            PlayerStatusCircle = "🟢";
             while (!done && on)
             {
                 string Team1String = Team1log.ReadToEnd();
@@ -1347,7 +1265,8 @@ namespace CSGO_Boost_Panel
                 }
                 await Task.Delay(2000);
             }
-            PlayerStatus.Fill = (Brush)new BrushConverter().ConvertFrom("#FFA20404"); PlayerStatusS = false;
+            PlayerStatus.Fill = Red;
+            PlayerStatusCircle = "🔴";
             Team1logStream.Close();
             Team2logStream.Close();
             Team1log.Close();
@@ -1356,7 +1275,6 @@ namespace CSGO_Boost_Panel
 
         private void Test(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Testing Button");
         }
 
         private void SoundSettingsOn(object sender, RoutedEventArgs e)
@@ -1365,6 +1283,29 @@ namespace CSGO_Boost_Panel
                 SoundSettings.Visibility = Visibility.Visible;
             else
                 SoundSettings.Visibility = Visibility.Collapsed;
+        }
+
+        private void APIKeySave(object sender, TextChangedEventArgs e)
+        {
+            if (((TextBox)sender).Text.Length < 44)
+            {
+                TgCheckApiButton.IsEnabled = false;
+                return;
+            }
+            TgCheckApiButton.IsEnabled = true;
+            settingsObj[((TextBox)sender).Name] = ((TextBox)sender).Text;
+            TgAPIKey = ((TextBox)sender).Text;
+        }
+
+        private void TgCheckApi(object sender, RoutedEventArgs e)
+        {
+            if(!TgBot.TestApiKey(TgAPIKey))
+            { 
+                MessageBox.Show("Check your key");
+                return;
+            }
+            TgBotStatus.Fill = Brushes.Green;
+            TgBot.WaitingForCommand(TgAPIKey);
         }
 
         private void InvokeUI(Action a)
