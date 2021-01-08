@@ -48,7 +48,7 @@ namespace CSGO_Boost_Panel
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
         public static JObject settingsObj, accInfo;
         public string loadedPreset;
-        public static short WinTeamNum, score, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0;
+        public static short WinTeamNum, score, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0, DisNumber = 15;
         public static int LobbyCount = 0, RoundNumber = 0;
         public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true, connected = false;
         public static bool AutoAcceptRestartS = false, WarmUp = false;
@@ -448,6 +448,7 @@ namespace CSGO_Boost_Panel
                 PArray[i].Status = Red;
             on = false;
             WarmUp = false;
+            connected = false;
             if (choosedObj != null)
                 choosedObj.BorderBrush = null;
             choosed = false;
@@ -740,40 +741,53 @@ namespace CSGO_Boost_Panel
                 gslT2.RoundPhaseChanged += RoundLasts;
             }
 
-            gslT1.RoundPhaseChanged -= RoundFast;
-            gslT2.RoundPhaseChanged -= RoundFast;
             gslT1.RoundPhaseChanged -= Round;
             gslT2.RoundPhaseChanged -= Round;
-            gslT1.NewGameState -= RoundHalf;
-            gslT2.NewGameState -= RoundHalf;
-            gslT1.NewGameState -= RoundHalfScore;
-            gslT2.NewGameState -= RoundHalfScore;
             
             if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
-            {
                 return;
-            }
 
             WinTeam.RoundPhaseChanged += Round;
-            if (WinTeam == gslT1)
-                gslT2.NewGameState += ConnectedChk;
-            else
-                gslT1.NewGameState += ConnectedChk;
-
-            if (settingsObj.Value<short>("WinTeam") == 2)
+            WinTeam.NewGameState += RoundChk;
+            if (settingsObj.Value<short>("WinTeam") == 2 && RoundNumber >= 15)
             {
-                WinTeam.NewGameState += RoundHalfScore;
+                WinTeam.NewGameState -= RoundChk;
+                WinTeamNum = 1;
+                WinTeam = gslT2;
+                WinTeam.NewGameState += RoundChk;
+                gslT2.NewGameState -= ConnectedChk;
+                gslT1.NewGameState += ConnectedChk;
+            }
+            if (WinTeam == gslT1)
+            {
+                gslT1.NewGameState -= ConnectedChk;
+                gslT2.NewGameState += ConnectedChk;
+            }
+            else
+            {
+                gslT2.NewGameState -= ConnectedChk;
+                gslT1.NewGameState += ConnectedChk;
             }
 
-            void ConnectedChk(GameState a)
+            async void ConnectedChk(GameState a)
             {
                 if (a.Map.Round != -1)
+                {
+                    await Task.Delay(75);
                     connected = true;
+                }
+                else
+                    connected = false;
+            }
+
+            void RoundChk(GameState a)
+            {
+                RoundNumber = a.Map.Round;
             }
 
             async void Round(RoundPhaseChangedEventArgs a)
             {
-                if (RoundNumber == 0 && a.CurrentPhase.ToString() == "FreezeTime")
+                if (RoundNumber == 0 && a.CurrentPhase.ToString() == "Live")
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -787,7 +801,7 @@ namespace CSGO_Boost_Panel
                     return;
                 }
 
-                if (RoundNumber == 15 && a.CurrentPhase.ToString() == "FreezeTime")
+                if (RoundNumber == DisNumber && a.CurrentPhase.ToString() == "FreezeTime")
                 {
                     await Task.Delay(5500);
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
@@ -803,11 +817,57 @@ namespace CSGO_Boost_Panel
                         LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
                         await Task.Delay(250);
                     }
+                    if (settingsObj.Value<short>("WinTeam") == 2)
+                    {
+                        WinTeam.NewGameState -= RoundChk;
+                        WinTeamNum = 1;
+                        WinTeam = gslT2;
+                        WinTeam.NewGameState += RoundChk;
+                        gslT2.NewGameState -= ConnectedChk;
+                        gslT1.NewGameState += ConnectedChk;
+                    }
                     return;
+                }
+
+                if (settingsObj.Value<short>("WinTeam") == 2)
+                {
+                    if (RoundNumber == 15 && a.CurrentPhase.ToString() == "Live")
+                    {
+                        for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
+                        {
+                            if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
+                                ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
+                            SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
+                            await Task.Delay(250);
+                            SendKeyPress(0x44);
+                            await Task.Delay(250);
+                        }
+                        return;
+                    }
+
+                    if (RoundNumber == 29 && a.CurrentPhase.ToString() == "FreezeTime")
+                    {
+                        await Task.Delay(5500);
+                        for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
+                        {
+                            if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
+                                ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
+                            SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
+                            Rect WindowRect = new Rect();
+                            Coords CSGO = new Coords();
+                            GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][i]), ref WindowRect);
+                            ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][i]), ref CSGO);
+                            await Task.Delay(250);
+                            LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                            await Task.Delay(250);
+                        }
+                        return;
+                    }
                 }
 
                 if (a.CurrentPhase.ToString() == "Over")
                 {
+                    await Task.Delay(1000);
                     if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][0])))
                         ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][0]), 9);
                     SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][0]));
@@ -828,130 +888,15 @@ namespace CSGO_Boost_Panel
                     await Task.Delay(250);
                     return;
                 }
-
-
-                /*if (a.CurrentPhase.ToString() == "Live")
-                {
-                    if (live)
-                    {
-                        for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
-                        {
-                            if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                                ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                            SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
-                            await Task.Delay(250);
-                            SendKeyPress(0x44);
-                            await Task.Delay(250);
-                        }
-                    }
-                }
-                if (a.CurrentPhase.ToString() == "FreezeTime")
-                {
-                    if (live)
-                    {
-                        await Task.Delay(5500);
-                        for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
-                        {
-                            if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                                ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                            SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
-                            Rect WindowRect = new Rect();
-                            Coords CSGO = new Coords();
-                            GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][i]), ref WindowRect);
-                            ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][i]), ref CSGO);
-                            await Task.Delay(250);
-                            LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
-                            await Task.Delay(250);
-                        }
-                    }
-                    live = !live;
-                }*/
-            }
-
-            async void RoundFast(RoundPhaseChangedEventArgs a)
-            {
-                if (a.CurrentPhase.ToString() == "FreezeTime")
-                {
-                    for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
-                    {
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
-                        await Task.Delay(250);
-                        SendKeyPress(0x44);
-                        await Task.Delay(250);
-                    }
-                }
-            }
-
-            void RoundHalfScore(GameState a)
-            {
-                if (Convert.ToInt16(a.Map.Round) < 15 && Convert.ToInt16(a.Map.Round) > -1)
-                {
-                    if (WinTeam == gslT2 || WinTeamNum == 1)
-                    {
-                        WinTeam = gslT1;
-                        WinTeamNum = 0;
-                    }
-                    score = Convert.ToInt16(a.Map.Round);
-                    gslT1.NewGameState -= RoundHalfScore;
-                    gslT2.NewGameState -= RoundHalfScore;
-                    WinTeam.NewGameState += RoundHalf;
-                }
-                if (Convert.ToInt16(a.Map.Round) > 15)
-                {
-                    if (WinTeam == gslT1 || WinTeamNum == 0)
-                    {
-                        WinTeam = gslT2;
-                        WinTeamNum = 1;
-                    }
-                    score = Convert.ToInt16(a.Map.Round);
-                    gslT1.NewGameState -= RoundHalfScore;
-                    gslT2.NewGameState -= RoundHalfScore;
-                    WinTeam.NewGameState += RoundHalf;
-                }
-            }
-
-            void RoundHalf(GameState a)
-            {
-                if (Convert.ToInt16(a.Map.Round) == 12 && score == 12)
-                {
-                    live = !live;
-                    gslT1.RoundPhaseChanged -= RoundFast;
-                    gslT2.RoundPhaseChanged -= RoundFast;
-                    WinTeam.RoundPhaseChanged += RoundFast;
-                }
-                if (Convert.ToInt16(a.Map.Round) == 15 && score == 15)
-                {
-                    live = !live;
-                    WinTeam = gslT2;
-                    WinTeamNum = 1;
-                    gslT1.RoundPhaseChanged -= Round;
-                    gslT2.RoundPhaseChanged -= Round;
-                    WinTeam.RoundPhaseChanged += Round;
-                    gslT1.NewGameState -= RoundHalf;
-                    gslT2.NewGameState -= RoundHalf;
-                    WinTeam.NewGameState += RoundHalf;
-                    gslT1.RoundPhaseChanged -= RoundFast;
-                    gslT2.RoundPhaseChanged -= RoundFast;
-                    WinTeam.RoundPhaseChanged += RoundFast;
-                }
-                if (Convert.ToInt16(a.Map.Round) == 13 && score == 13 || Convert.ToInt16(a.Map.Round) == 16 && score == 16)
-                {
-                    gslT1.RoundPhaseChanged -= RoundFast;
-                    gslT2.RoundPhaseChanged -= RoundFast;
-                }
-
-                if (Convert.ToInt16(a.Map.Round) == score) score++;
             }
 
             void Indicators(GameState a)
             {
-                RoundNumber = a.Map.Round;
                 if (a.Map.Phase.ToString() == "GameOver" & !WarmUp)
                 {
                     WarmUp = true;
                     newRound = false;
+                    connected = false;
                     GamesPlayerForAppSession++; GamesPlayerForGameSession++;
                     if (settingsObj.Value<bool>("AutoAccept"))
                     {
@@ -979,9 +924,6 @@ namespace CSGO_Boost_Panel
                         gslT1.RoundPhaseChanged -= Round;
                         gslT2.RoundPhaseChanged -= Round;
                         WinTeam.RoundPhaseChanged += Round;
-                        gslT1.NewGameState -= RoundHalf;
-                        gslT2.NewGameState -= RoundHalf;
-                        WinTeam.NewGameState += RoundHalf;
                     }
                 }
 
@@ -1113,6 +1055,8 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 0;
             WinTeamNum = 0;
             WinTeam = gslT1;
+            DisNumber = 15;
+
             if (on && AutoDisconnect.IsOn)
             {
                 _ = Task.Run(() => CSGSILogic(true, false));
@@ -1124,6 +1068,8 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 1;
             WinTeamNum = 1;
             WinTeam = gslT2;
+            DisNumber = 15;
+
             if (on && AutoDisconnect.IsOn)
             {
                 _ = Task.Run(() => CSGSILogic(true, false));
@@ -1135,6 +1081,7 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 2;
             WinTeamNum = 0;
             WinTeam = gslT1;
+            DisNumber = 14;
 
             if (on && AutoDisconnect.IsOn)
             {
