@@ -18,7 +18,7 @@ using System.Windows.Media;
 
 namespace CSGO_Boost_Panel
 {
-    static class TgBot
+    class TgBot
     {
         private static TelegramBotClient botClient;
         public static bool connected = false;
@@ -27,18 +27,18 @@ namespace CSGO_Boost_Panel
             new KeyboardButton[] { "/screenshot", "/gather", "/playone" },
             new KeyboardButton[] { "/startsearch T1", "/startsearch T2", "/startsearch BOTH" },
             new KeyboardButton[] { "/notify", "/info" } };
-static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, false);
+        static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, false);
 
         public static bool TestApiKey(string key)
         {
-            botClient = new TelegramBotClient(key);
             try
             {
+                botClient = new TelegramBotClient(key);
                 var me = botClient.GetMeAsync().Result;
                 connected = true;
                 return true;
             }
-            catch (AggregateException)
+            catch (Exception ex) when (ex is AggregateException || ex is ArgumentException)
             {
                 return false;
             }
@@ -65,15 +65,20 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
                 );
         }
 
-        private static void BotOnMessageReceivedCatch(object sender, MessageEventArgs messageEventArgs)
+        private static async void BotOnMessageReceivedCatch(object sender, MessageEventArgs messageEventArgs)
         {
             try
             {
-                BotOnMessageReceived(sender, messageEventArgs);
+                await BotOnMessageReceived(sender, messageEventArgs);
             }
             catch(Exception ex)
             {
-                SendNotify(ex.Message);
+                try
+                {
+                    log.LogWrite("Received error: " + ex.HResult + " — " + ex.Message);
+                    SendNotify("Received error: " + ex.HResult + " — " + ex.Message);
+                }
+                catch(Exception) { }
             }
         }   
 
@@ -88,7 +93,7 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
               );
         }
 
-        private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
+        private static async Task BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             Message message = messageEventArgs.Message;
             if (message == null || message.Type != MessageType.Text || message.Date < DateTime.UtcNow.AddSeconds(-15))
@@ -109,13 +114,13 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
 
                 // soon
                 case "/startsearch":
-                    if (!Check(message)) return;
+                    if (!Check()) return;
                     await StartSearch(message);
                     break;
 
                 // soon
                 case "/gather":
-                    if (!Check(message)) return;
+                    if (!Check()) return;
                     await GatherLobby();
                     SendNotify("Lobby gathered");
                     await Task.Delay(1000);
@@ -123,7 +128,7 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
                     break;
 
                 case "/playone":
-                    if (!Check(message)) return;
+                    if (!Check()) return;
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
                     botClient.OnMessageEdited -= BotOnMessageReceivedCatch;
                     botClient.OnMessage += PlayOne;
@@ -140,7 +145,7 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
 
                 // soon
                 case "/info":
-                    if (!Check(message)) return;
+                    if (!Check()) return;
                     SendInfo(message);
                     break;
 
@@ -150,7 +155,7 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
             }
         }
 
-        private static bool Check(Message message)
+        private static bool Check()
         {
             if (!on)
             {
@@ -279,8 +284,14 @@ static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, fa
 
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
-            MessageBox.Show("Received error: " + receiveErrorEventArgs.ApiRequestException.ErrorCode + 
-                " — " + receiveErrorEventArgs.ApiRequestException.Message);
+            try
+            {
+                log.LogWrite("Received error: " + receiveErrorEventArgs.ApiRequestException.ErrorCode +
+    " — " + receiveErrorEventArgs.ApiRequestException.Message);
+                SendNotify("Received error: " + receiveErrorEventArgs.ApiRequestException.ErrorCode +
+    " — " + receiveErrorEventArgs.ApiRequestException.Message);
+            }
+            catch (Exception) { }
         }
     }
 }

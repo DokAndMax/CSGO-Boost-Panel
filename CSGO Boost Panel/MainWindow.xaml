@@ -507,8 +507,8 @@
                     <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Click="SoundSettingsOn" mah:ControlsHelper.ContentCharacterCasing="Normal" Margin="593,184,127,182" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,216,0,144" Content="Automation" Grid.Row="1"/>
-                    <mah:ToggleSwitch Margin="481,253,0,107" Content="Rank Boost" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
+                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,216,0,144" Content="Gather Lobbies" Grid.Row="1"/>
+                    <mah:ToggleSwitch Margin="481,253,0,107" Content="Automation" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,193,279,167" Checked="WinTeamTie_Checked" Grid.Row="1"/>
@@ -530,6 +530,7 @@
                     <TextBlock Margin="29,303,610,59" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
                     <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="134,304,323,58" Background="{x:Null}" BorderBrush="#FF460808" Grid.Row="1"/>
                     <Button x:Name="TgCheckApiButton" Padding="0" Content="OK" HorizontalAlignment="Left" Margin="424,304,0,0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="29" Click="TgCheckApi" IsEnabled="False" FontSize="16"/>
+                    <Button Margin="620,338,10,21" Grid.Row="1" Content="Check for updates" Padding="0" mah:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="CheckUpdates"/>
                     <TextBlock Margin="659,375,0,0" Grid.Row="1" Text="{Binding StringFormat=Version: {0}, RelativeSource={RelativeSource AncestorType=Window}, Path=AssemblyVersion}" Foreground="#FF8D8C8C"/>
                 </Grid>
             </TabItem>

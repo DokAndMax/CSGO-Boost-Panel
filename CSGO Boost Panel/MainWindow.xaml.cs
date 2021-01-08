@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -39,13 +41,8 @@ namespace CSGO_Boost_Panel
 
     public partial class MainWindow : MetroWindow
     {
-        public Version AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetEntryAssembly().GetName().Version;
-            }
-        }
+        public Version AssemblyVersion => Assembly.GetEntryAssembly().GetName().Version;
+        public static readonly LogWriter log = new LogWriter("Start");
         public static string TgAPIKey;
         private readonly SoundPlayer mediaPlayer = new SoundPlayer();
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
@@ -86,7 +83,7 @@ namespace CSGO_Boost_Panel
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            MessageBox.Show(e.ExceptionObject.ToString());
+            log.LogWrite(e.ExceptionObject.ToString() + "\n Crash");
         }
 
         private Point _dragStartPoint;
@@ -168,6 +165,7 @@ namespace CSGO_Boost_Panel
             File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
             if (TgBot.connected)
                 TgBot.RemoveKeyboard();
+            log.LogWrite("Exit");
             Environment.Exit(0);
         }
 
@@ -623,12 +621,6 @@ namespace CSGO_Boost_Panel
                 return;
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
             RoundLastsSnd = ((ToggleSwitch)sender).IsOn;
-        }
-
-        public void LoadPresetTg(short num)
-        {
-
-            LoadPreset(null, null);
         }
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
@@ -1306,6 +1298,43 @@ namespace CSGO_Boost_Panel
             }
             TgBotStatus.Fill = Brushes.Green;
             TgBot.WaitingForCommand(TgAPIKey);
+        }
+
+        private void CheckUpdates(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                JObject version = CheckForNewVersion();
+                if (version.Value<String>("actualversion") == Assembly.GetEntryAssembly().GetName().Version.ToString())
+                {
+                    MessageBox.Show("UpToDate");
+                    return;
+                }
+                var client = new WebClient();
+                client.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/IziBoost.zip"), "temp_myprogram");
+                if (Directory.Exists("temp_myprogram_folder")) Directory.Delete("temp_myprogram_folder", true);
+                ZipFile.ExtractToDirectory("temp_myprogram", "temp_myprogram_folder");
+                if (File.Exists("updater.exe")) { File.Delete("updater.exe"); }
+                File.Move("temp_myprogram_folder\\updater.exe", "updater.exe");
+                Process.Start("updater.exe", "IziBoost.exe");
+                Application_Exit(null, null);
+            }
+            catch (Exception) { }
+        }
+
+        private static JObject CheckForNewVersion()
+        {
+            using (var webClient = new WebClient())
+            {
+                var jsonData = string.Empty;
+                try
+                {
+                    jsonData = webClient.DownloadString("https://hippocratic-fishes.000webhostapp.com/version.json");
+                }
+                catch (Exception) { }
+                JObject version = JsonConvert.DeserializeObject<JObject>(jsonData);
+                return version;
+            }
         }
 
         private void InvokeUI(Action a)
