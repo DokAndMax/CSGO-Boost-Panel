@@ -49,8 +49,8 @@ namespace CSGO_Boost_Panel
         public static JObject settingsObj, accInfo;
         public string loadedPreset;
         public static short WinTeamNum, score, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0;
-        public static int LobbyCount = 0;
-        public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true;
+        public static int LobbyCount = 0, RoundNumber = 0;
+        public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true, connected = false;
         public static bool AutoAcceptRestartS = false, WarmUp = false;
         public bool AutoBoost { get; set; }
         public static string AutoAcceptStatusCircle = "🔴", PlayerStatusCircle = "🔴";
@@ -748,20 +748,89 @@ namespace CSGO_Boost_Panel
             gslT2.NewGameState -= RoundHalf;
             gslT1.NewGameState -= RoundHalfScore;
             gslT2.NewGameState -= RoundHalfScore;
+            
             if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
             {
                 return;
             }
+
             WinTeam.RoundPhaseChanged += Round;
+            if (WinTeam == gslT1)
+                gslT2.NewGameState += ConnectedChk;
+            else
+                gslT1.NewGameState += ConnectedChk;
 
             if (settingsObj.Value<short>("WinTeam") == 2)
             {
                 WinTeam.NewGameState += RoundHalfScore;
             }
 
+            void ConnectedChk(GameState a)
+            {
+                if (a.Map.Round != -1)
+                    connected = true;
+            }
+
             async void Round(RoundPhaseChangedEventArgs a)
             {
-                if (a.CurrentPhase.ToString() == "Live")
+                if (RoundNumber == 0 && a.CurrentPhase.ToString() == "FreezeTime")
+                {
+                    for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
+                    {
+                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
+                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
+                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
+                        await Task.Delay(250);
+                        SendKeyPress(0x44);
+                        await Task.Delay(250);
+                    }
+                    return;
+                }
+
+                if (RoundNumber == 15 && a.CurrentPhase.ToString() == "FreezeTime")
+                {
+                    await Task.Delay(5500);
+                    for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
+                    {
+                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
+                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
+                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
+                        Rect WindowRect = new Rect();
+                        Coords CSGO = new Coords();
+                        GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][i]), ref WindowRect);
+                        ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][i]), ref CSGO);
+                        await Task.Delay(250);
+                        LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                        await Task.Delay(250);
+                    }
+                    return;
+                }
+
+                if (a.CurrentPhase.ToString() == "Over")
+                {
+                    if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][0])))
+                        ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][0]), 9);
+                    SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][0]));
+                    Rect WindowRect = new Rect();
+                    Coords CSGO = new Coords();
+                    GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][0]), ref WindowRect);
+                    ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][0]), ref CSGO);
+                    await Task.Delay(250);
+                    LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                    await Task.Delay(250);
+                    while (!connected)
+                        await Task.Delay(250);
+                    if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][0])))
+                        ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][0]), 9);
+                    SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][0]));
+                    await Task.Delay(250);
+                    SendKeyPress(0x44);
+                    await Task.Delay(250);
+                    return;
+                }
+
+
+                /*if (a.CurrentPhase.ToString() == "Live")
                 {
                     if (live)
                     {
@@ -796,7 +865,7 @@ namespace CSGO_Boost_Panel
                         }
                     }
                     live = !live;
-                }
+                }*/
             }
 
             async void RoundFast(RoundPhaseChangedEventArgs a)
@@ -878,6 +947,7 @@ namespace CSGO_Boost_Panel
 
             void Indicators(GameState a)
             {
+                RoundNumber = a.Map.Round;
                 if (a.Map.Phase.ToString() == "GameOver" & !WarmUp)
                 {
                     WarmUp = true;
@@ -1156,11 +1226,11 @@ namespace CSGO_Boost_Panel
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            if (!loaded)
+            /*if (!loaded)
                 return;
             MessageBox.Show(AutoBoost.ToString());
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
-            //AutoBoost = ((ToggleSwitch)sender).IsOn;
+            //AutoBoost = ((ToggleSwitch)sender).IsOn;*/
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
@@ -1263,10 +1333,6 @@ namespace CSGO_Boost_Panel
             Team2logStream.Close();
             Team1log.Close();
             Team2log.Close();
-        }
-
-        private void Test(object sender, RoutedEventArgs e)
-        {
         }
 
         private void SoundSettingsOn(object sender, RoutedEventArgs e)
