@@ -769,26 +769,27 @@ namespace CSGO_Boost_Panel
                 gslT1.NewGameState += ConnectedChk;
             }
 
-            void ConnectedChk(GameState a)
+            async void ConnectedChk(GameState a)
             {
                 if (a.Map.Phase != CSGSI.Nodes.MapPhase.Undefined)
-                {
                     connected = true;
-                }
                 else
                     connected = false;
+                await Task.Yield();
             }
 
-            void RoundChk(GameState a)
+            async void RoundChk(GameState a)
             {
                 RoundNumber = a.Map.Round;
+                if (a.Map.Round == DisNumber || a.Map.Round == 29)
+                    DisconnectActive = false;
+                await Task.Yield();
             }
 
             async void Round(RoundPhaseChangedEventArgs a)
             {
                 if (RoundNumber == 0 && a.CurrentPhase == CSGSI.Nodes.RoundPhase.Live)
                 {
-                    DisconnectActive = false;
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
                         if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
@@ -803,7 +804,6 @@ namespace CSGO_Boost_Panel
 
                 if (RoundNumber == DisNumber && a.CurrentPhase == CSGSI.Nodes.RoundPhase.FreezeTime)
                 {
-                    DisconnectActive = false;
                     await Task.Delay(5500);
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -852,7 +852,6 @@ namespace CSGO_Boost_Panel
 
                     if (RoundNumber == 29 && a.CurrentPhase == CSGSI.Nodes.RoundPhase.FreezeTime)
                     {
-                        DisconnectActive = false;
                         await Task.Delay(5500);
                         for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                         {
@@ -870,14 +869,13 @@ namespace CSGO_Boost_Panel
                         return;
                     }
                 }
-
-                if (a.CurrentPhase == CSGSI.Nodes.RoundPhase.Over && !DisconnectActive && RoundNumber == (RoundNumber + 1))
+                if (!DisconnectActive && a.CurrentPhase == CSGSI.Nodes.RoundPhase.Over && RoundNumber != (DisNumber + 1) && RoundNumber != DisNumber && RoundNumber != 29)
                 {
                     DisconnectActive = true;
                     while (DisconnectActive)
                     {
                         short WinTeamNumTemp = WinTeamNum;
-                        await Task.Delay(1000);
+                        await Task.Delay(750);
                         if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
                             ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
                         SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
@@ -895,7 +893,6 @@ namespace CSGO_Boost_Panel
                         SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
                         await Task.Delay(250);
                         SendKeyPress(0x44);
-                        await Task.Delay(250);
                     }
                 }
             }
