@@ -48,8 +48,8 @@ namespace CSGO_Boost_Panel
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
         public static JObject settingsObj, accInfo;
         public string loadedPreset;
-        public static short WinTeamNum, score, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0, DisNumber = 15;
-        public static int LobbyCount = 0, RoundNumber = 0;
+        public static short WinTeamNum, score = 0, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0;
+        public static int LobbyCount = 0, RoundNumber = 0, DisNumber = 15;
         public static bool on = false, live = true, freezetime = true, loaded = false, choosed = false, sounds = false, MatchFoundSnd = true, MatchEndedSnd = true, RoundLastsSnd = true, newRound = true, onemeth = true, connected = false;
         public static bool AutoAcceptRestartS = false, WarmUp = false, DisconnectActive = false;
         public bool AutoBoost { get; set; }
@@ -729,6 +729,7 @@ namespace CSGO_Boost_Panel
         }
         private void CSGSILogic(bool enabled, bool indicators)
         {
+            CSGSI.Nodes.RoundPhase roundPhase = CSGSI.Nodes.RoundPhase.Undefined;
             if (indicators)
             {
                 gslT1.NewGameState -= Indicators;
@@ -741,20 +742,17 @@ namespace CSGO_Boost_Panel
                 gslT2.RoundPhaseChanged += RoundLasts;
             }
 
-            gslT1.RoundPhaseChanged -= Round;
-            gslT2.RoundPhaseChanged -= Round;
+            gslT1.NewGameState -= Round;
+            gslT2.NewGameState -= Round;
             
             if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
                 return;
 
-            WinTeam.RoundPhaseChanged += Round;
-            WinTeam.NewGameState += RoundChk;
+            WinTeam.NewGameState += Round;
             if (settingsObj.Value<short>("WinTeam") == 2 && RoundNumber >= 15)
             {
-                WinTeam.NewGameState -= RoundChk;
                 WinTeamNum = 1;
                 WinTeam = gslT2;
-                WinTeam.NewGameState += RoundChk;
                 gslT2.NewGameState -= ConnectedChk;
                 gslT1.NewGameState += ConnectedChk;
             }
@@ -772,23 +770,28 @@ namespace CSGO_Boost_Panel
             async void ConnectedChk(GameState a)
             {
                 if (a.Map.Phase != CSGSI.Nodes.MapPhase.Undefined)
+                {
+                    await Task.Delay(250);
                     connected = true;
+                }
                 else
                     connected = false;
                 await Task.Yield();
             }
 
-            async void RoundChk(GameState a)
+            async void Round(GameState a)
             {
-                RoundNumber = a.Map.Round;
-                if (a.Map.Round == DisNumber || a.Map.Round == 29)
-                    DisconnectActive = false;
-                await Task.Yield();
-            }
+                if (RoundNumber == a.Map.Round && roundPhase == a.Round.Phase)
+                    return;
+                else
+                {
+                    RoundNumber = a.Map.Round;
+                    roundPhase = a.Round.Phase;
+                }
 
-            async void Round(RoundPhaseChangedEventArgs a)
-            {
-                if (RoundNumber == 0 && a.CurrentPhase == CSGSI.Nodes.RoundPhase.Live)
+                if (a.Map.Round == (DisNumber-1) || a.Map.Round == 29)
+                    DisconnectActive = false;
+                if (a.Map.Round == 0 && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -801,10 +804,9 @@ namespace CSGO_Boost_Panel
                     }
                     return;
                 }
-
-                if (RoundNumber == DisNumber && a.CurrentPhase == CSGSI.Nodes.RoundPhase.FreezeTime)
+                if (a.Map.Round == DisNumber && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
                 {
-                    await Task.Delay(5500);
+                    await Task.Delay(8500);
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
                         if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
@@ -820,24 +822,20 @@ namespace CSGO_Boost_Panel
                     }
                     if (settingsObj.Value<short>("WinTeam") == 2)
                     {
-                        WinTeam.NewGameState -= RoundChk;
-                        gslT1.RoundPhaseChanged -= Round;
+                        gslT1.NewGameState -= Round;
                         WinTeamNum = 1;
                         WinTeam = gslT2;
-                        WinTeam.NewGameState += RoundChk;
-                        WinTeam.RoundPhaseChanged += Round;
+                        WinTeam.NewGameState += Round;
                         gslT2.NewGameState -= ConnectedChk;
                         gslT1.NewGameState += ConnectedChk;
-
                     }
                     return;
                 }
 
                 if (settingsObj.Value<short>("WinTeam") == 2)
                 {
-                    if (RoundNumber == 15 && a.CurrentPhase == CSGSI.Nodes.RoundPhase.Live)
+                    if (a.Map.Round == 15 && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
                     {
-                        DisconnectActive = false;
                         for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                         {
                             if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
@@ -850,7 +848,7 @@ namespace CSGO_Boost_Panel
                         return;
                     }
 
-                    if (RoundNumber == 29 && a.CurrentPhase == CSGSI.Nodes.RoundPhase.FreezeTime)
+                    if (a.Map.Round == 29 && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
                     {
                         await Task.Delay(5500);
                         for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
@@ -869,7 +867,7 @@ namespace CSGO_Boost_Panel
                         return;
                     }
                 }
-                if (!DisconnectActive && a.CurrentPhase == CSGSI.Nodes.RoundPhase.Over && RoundNumber != (DisNumber + 1) && RoundNumber != DisNumber && RoundNumber != 29)
+                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != (DisNumber + 1) && a.Map.Round != DisNumber && a.Map.Round != 29)
                 {
                     DisconnectActive = true;
                     while (DisconnectActive)
@@ -902,6 +900,7 @@ namespace CSGO_Boost_Panel
                 if (a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver & !WarmUp)
                 {
                     WarmUp = true;
+                    DisconnectActive = false;
                     newRound = false;
                     connected = false;
                     GamesPlayerForAppSession++; GamesPlayerForGameSession++;
@@ -923,14 +922,16 @@ namespace CSGO_Boost_Panel
                     if (TgBot.connected && MainWindow.settingsObj.Value<bool>("notifies"))
                         TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
                     live = true;
-                    score = 0;
+                    //score = 0;
                     if (settingsObj.Value<short>("WinTeam") == 2 && settingsObj.Value<bool>("AutoDisconnect"))
                     {
                         WinTeam = gslT1;
                         WinTeamNum = 0;
-                        gslT1.RoundPhaseChanged -= Round;
-                        gslT2.RoundPhaseChanged -= Round;
-                        WinTeam.RoundPhaseChanged += Round;
+                        gslT1.NewGameState -= Round;
+                        gslT2.NewGameState -= Round;
+                        WinTeam.NewGameState += Round;
+                        gslT1.NewGameState -= ConnectedChk;
+                        gslT2.NewGameState += ConnectedChk;
                     }
                 }
 
@@ -1180,13 +1181,6 @@ namespace CSGO_Boost_Panel
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            gslT1.NewGameState += ConnectedChk;
-            void ConnectedChk(GameState a)
-            {
-                MessageBox.Show(a.Map.Phase.ToString());
-            }
-            if (!gslT1.Start())
-                MessageBox.Show("Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC");
 
             /*if (!loaded)
                 return;
