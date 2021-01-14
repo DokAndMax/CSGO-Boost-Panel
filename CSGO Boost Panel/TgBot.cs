@@ -15,18 +15,19 @@ using static CSGO_Boost_Panel.MainWindow;
 using System.Windows;
 using System.Collections.Generic;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace CSGO_Boost_Panel
 {
     class TgBot
     {
         private static TelegramBotClient botClient;
-        public static bool connected = false;
+        public static bool BotIsOn = false;
 
         static readonly IEnumerable<IEnumerable<KeyboardButton>> keyboardRow = new KeyboardButton[][] {
             new KeyboardButton[] { "/screenshot", "/gather", "/playone" },
             new KeyboardButton[] { "/startsearch T1", "/startsearch T2", "/startsearch BOTH" },
-            new KeyboardButton[] { "/notify", "/info" } };
+            new KeyboardButton[] { "/notify", "/info", "/shutdown" } };
         static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, false);
 
         public static bool TestApiKey(string key)
@@ -35,7 +36,7 @@ namespace CSGO_Boost_Panel
             {
                 botClient = new TelegramBotClient(key);
                 var me = botClient.GetMeAsync().Result;
-                connected = true;
+                BotIsOn = true;
                 return true;
             }
             catch (Exception ex) when (ex is AggregateException || ex is ArgumentException)
@@ -149,6 +150,15 @@ namespace CSGO_Boost_Panel
                     SendInfo(message);
                     break;
 
+                case "/shutdown":
+                    var psi = new ProcessStartInfo("shutdown", "/sg /t 0")
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    };
+                    Process.Start(psi);
+                    break;
+
                 default:
                     await Usage(message);
                     break;
@@ -249,7 +259,7 @@ namespace CSGO_Boost_Panel
             Message message = messageEventArgs.Message;
             if (Int16.TryParse(message.Text.Split(' ')[0], out short result) && result < 11 && result > 0)
             {
-                RestartCSGO(result);
+                await RestartCSGO(result);
                 SendNotify("ok");
                 botClient.OnMessage -= PlayOne;
                 botClient.OnMessageEdited -= PlayOne;
@@ -274,7 +284,8 @@ namespace CSGO_Boost_Panel
                                     "/playone - перезапуск клієнта Steam і відповідно СSGO, якщо виникли проблеми\n" +
                                     "/startsearch (T1, T2, BOTH) - почати пошук\n" +
                                     "/notify - вимкнути / вимкнути сповіщення\n" +
-                                    "/info - інформація про активну сесію бусту";
+                                    "/info - інформація про активну сесію бусту\n" +
+                                    "/shutdown - вимнкути ПК";
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: usage,

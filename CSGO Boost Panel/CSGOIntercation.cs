@@ -178,10 +178,10 @@ namespace CSGO_Boost_Panel
             return;
         }
 
-       public static void RestartCSGO(short WinNum)
+       public static Task RestartCSGO(short WinNum)
        {
-            if (!PArray[WinNum-1].State || string.IsNullOrEmpty(PArray[WinNum-1].Login))
-                return;
+            if (!PArray[WinNum - 1].State || string.IsNullOrEmpty(PArray[WinNum - 1].Login))
+                return Task.CompletedTask;
             string res;
             foreach (Process proc in  Process.GetProcessesByName("steam"))
             {
@@ -218,6 +218,7 @@ namespace CSGO_Boost_Panel
             res = x + " " + y;
             Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " + PArray[WinNum-1].Login + " " + PArray[WinNum-1].Password +
                 " " + PArray[WinNum-1].Position + " " + res);
+            return Task.CompletedTask;
        }
 
        [DllImport("user32.dll")]
