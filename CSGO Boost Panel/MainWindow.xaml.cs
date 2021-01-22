@@ -83,6 +83,12 @@ namespace CSGO_Boost_Panel
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            if (on)
+                settingsObj["CSGOsRunning"] = true;
+            File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
+            if (TgBot.BotIsOn)
+                TgBot.RemoveKeyboard();
+            log.LogWrite("Exit");
             log.LogWrite(e.ExceptionObject.ToString() + "\n Crash");
         }
 
@@ -193,6 +199,11 @@ namespace CSGO_Boost_Panel
                 SteamFolder.Text = settingsObj.Value<string>("SteamFolder");
                 LoadSteamAccs();
             }
+            if (settingsObj.Value<bool>("CSGOsRunning") == true)
+            {
+                CSGOsRunning.IsChecked = true;
+                settingsObj["CSGOsRunning"] = false;
+            }
             if (settingsObj.Property("CSGOFolder") != null)
                 CSGOFolder.Text = settingsObj.Value<string>("CSGOFolder");
             if (settingsObj.Property("LeaderResX") != null)
@@ -207,7 +218,7 @@ namespace CSGO_Boost_Panel
                 TgApi.Text = settingsObj.Value<string>("TgApi");
             String[] BoolOptions = new string[] { "AutoAccept", "AutoDisconnect", "Sounds", "MatchFoundSound", "MatchEndedSound", "RoundLastsSound", "LongDisconnect" };
 
-            for(int i = 0; i < BoolOptions.Length; i++)
+            for (int i = 0; i < BoolOptions.Length; i++)
             {
                 if (settingsObj.Property(BoolOptions[i]) != null)
                     ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn = settingsObj.Value<bool>("AutoAccept");
@@ -350,13 +361,11 @@ namespace CSGO_Boost_Panel
             on = true;
             for (int i = 0; i < Logins.Count; i++)
             {
-                if (controlContainer.IsEnabled)
-                {
-                    return;
-                }
-                Process.Start("Launcher.exe", "false \"" + settingsObj["SteamFolder"].ToString() + "\" " + Logins[i] + " \"" + settingsObj["CSGOFolder"].ToString() + "\" ");
+                if (CSGOsRunning.IsChecked == true)
+                    continue;
                 if (!on)
                     return;
+                Process.Start("Launcher.exe", "false \"" + settingsObj["SteamFolder"].ToString() + "\" " + Logins[i] + " \"" + settingsObj["CSGOFolder"].ToString() + "\" ");
                 await Task.Delay(4000);
             }
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
@@ -385,18 +394,18 @@ namespace CSGO_Boost_Panel
                 {
                     if (ToggleButton[i].IsOn && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
                     {
-                            int x;
-                            Rect WindowRect = new Rect();
-                            if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
-                                ShowWindow(FindWindow(null, PArray[i].WindowTitle), 4);
-                            GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
-                            if (WindowRect.Left < 0)
-                                x = 0;
-                            else
-                                x = WindowRect.Left;
-                            if (!string.IsNullOrEmpty(loadedPreset))
-                                lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"] = x + " " + WindowRect.Top;
-                            PArray[i].Position = x + " " + WindowRect.Top;
+                        int x;
+                        Rect WindowRect = new Rect();
+                        if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
+                            ShowWindow(FindWindow(null, PArray[i].WindowTitle), 4);
+                        GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
+                        if (WindowRect.Left < 0)
+                            x = 0;
+                        else
+                            x = WindowRect.Left;
+                        if (!string.IsNullOrEmpty(loadedPreset))
+                            lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"] = x + " " + WindowRect.Top;
+                        PArray[i].Position = x + " " + WindowRect.Top;
                     }
                     PArray[i].WindowTitle = "";
                 }
@@ -510,7 +519,7 @@ namespace CSGO_Boost_Panel
         {
             TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            for(short i = 0; i < 10; i++)
+            for (short i = 0; i < 10; i++)
             {
                 Login[i].Text = "";
                 Password[i].Password = "";
@@ -541,7 +550,7 @@ namespace CSGO_Boost_Panel
                 return;
             if (((Button)sender).Tag.ToString() == "SteamFolder")
             {
-                if(!File.Exists(dialog.FileName + @"/config/loginusers.vdf"))
+                if (!File.Exists(dialog.FileName + @"/config/loginusers.vdf"))
                 {
                     MessageBox.Show("Wrong Steam Directory");
                     return;
@@ -567,11 +576,11 @@ namespace CSGO_Boost_Panel
             settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
             if (((ToggleSwitch)sender).Name == "AutoDisconnect" || ((ToggleSwitch)sender).Name == "LongDisconnect")
             {
-                if (((ToggleSwitch)sender).IsOn && on)
+                if (AutoDisconnect.IsOn && on)
                 {
                     Task.Run(() => CSGSILogic(true, false));
                 }
-                if (!((ToggleSwitch)sender).IsOn && on)
+                if (!AutoDisconnect.IsOn && on)
                 {
                     Task.Run(() => CSGSILogic(false, false));
                 }
@@ -641,7 +650,7 @@ namespace CSGO_Boost_Panel
             StreamReader Team2log = new StreamReader(Team2logStream);
             InvokeUI(() =>
             {
-                AutoAcceptStatus.Fill = Brushes.Green; 
+                AutoAcceptStatus.Fill = Brushes.Green;
             });
             AutoAcceptStatusCircle = "🟢";
             while (on)
@@ -700,6 +709,7 @@ namespace CSGO_Boost_Panel
             gslT2.NewGameState -= Round;
             gslT1.NewGameState -= RoundLong;
             gslT2.NewGameState -= RoundLong;
+            DisconnectActive = false;
 
             if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
                 return;
@@ -717,7 +727,7 @@ namespace CSGO_Boost_Panel
 
             async void Round(GameState a)
             {
-                if (RoundNumber == a.Map.Round && roundPhase == a.Round.Phase || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
+                if ((RoundNumber == a.Map.Round && roundPhase == a.Round.Phase) || a.Map.Phase == CSGSI.Nodes.MapPhase.Undefined || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
                     return;
                 else
                 {
@@ -725,9 +735,9 @@ namespace CSGO_Boost_Panel
                     roundPhase = a.Round.Phase;
                 }
 
-                if (a.Map.Round == (DisNumber-1))
+                if (a.Map.Round == (DisNumber - 1))
                     DisconnectActive = false;
-                if (a.Map.Round == 0 && a.Map.Round == (DisNumber+1) && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
+                if (a.Round.Phase == CSGSI.Nodes.RoundPhase.Live && (a.Map.Round == 0 || (a.Map.Round == 15 && settingsObj.Value<short>("WinTeam") == 2)))
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -742,7 +752,7 @@ namespace CSGO_Boost_Panel
                 }
                 if (a.Map.Round == DisNumber && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
                 {
-                    await Task.Delay(10000);
+                    await Task.Delay(11000);
                     if (settingsObj.Value<bool>("LongDisconnect"))
                         return;
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
@@ -806,10 +816,10 @@ namespace CSGO_Boost_Panel
                     roundPhase = a.Round.Phase;
                 }
 
-                if (a.Map.Round == 6 || a.Map.Round == (DisNumber-1) || a.Map.Round == 14)
+                if (a.Map.Round == 5 || a.Map.Round == (DisNumber - 2) || a.Map.Round == 20)
                     DisconnectActive = false;
 
-                if ((a.Map.Round == 0 || a.Map.Round == 8 || a.Map.Round == (DisNumber+1) || a.Map.Round == 23) && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
+                if ((a.Map.Round == 0 || a.Map.Round == 7 || a.Map.Round == DisNumber || a.Map.Round == 22) && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -822,7 +832,7 @@ namespace CSGO_Boost_Panel
                     }
                     return;
                 }
-                if ((a.Map.Round == 7 || a.Map.Round == DisNumber || a.Map.Round == 22) && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
+                if ((a.Map.Round == 6 || a.Map.Round == (DisNumber - 1) || a.Map.Round == 21) && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
                 {
                     await Task.Delay(10000);
                     if (!settingsObj.Value<bool>("LongDisconnect"))
@@ -842,7 +852,7 @@ namespace CSGO_Boost_Panel
                     }
                     if (settingsObj.Value<short>("WinTeam") == 2)
                     {
-                        if (a.Map.Round == 7 || a.Map.Round == 22)
+                        if (a.Map.Round == 6 || a.Map.Round == 21)
                         {
                             gslT1.NewGameState -= RoundLong;
                             gslT2.NewGameState -= RoundLong;
@@ -862,7 +872,7 @@ namespace CSGO_Boost_Panel
                     return;
                 }
 
-                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != 7 && a.Map.Round != 8 && a.Map.Round != DisNumber && a.Map.Round != (DisNumber+1) && a.Map.Round != 22 && a.Map.Round != 23)
+                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != 6 && a.Map.Round != 7 && a.Map.Round != (DisNumber - 1) && a.Map.Round != DisNumber && a.Map.Round != 21 && a.Map.Round != 22)
                 {
                     DisconnectActive = true;
                     while (DisconnectActive)
@@ -1096,7 +1106,7 @@ namespace CSGO_Boost_Panel
 
         private async void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-           await CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
+            await CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
@@ -1350,6 +1360,8 @@ namespace CSGO_Boost_Panel
                 ZipFile.ExtractToDirectory("temp_myprogram", "temp_myprogram_folder");
                 if (File.Exists("updater.exe")) { File.Delete("updater.exe"); }
                 File.Move("temp_myprogram_folder\\updater.exe", "updater.exe");
+                if (on)
+                    settingsObj["CSGOsRunning"] = true;
                 Process.Start("updater.exe", "IziBoost.exe");
                 Application_Exit(null, null);
             }

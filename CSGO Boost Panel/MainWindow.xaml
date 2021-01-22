@@ -166,6 +166,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Brush x:Key="CheckBoxRunning">#00CF91</Brush>
     </mah:MetroWindow.Resources>
 
     <Grid x:Name="grid1" FocusVisualStyle="{x:Null}" Focusable="True">
@@ -387,13 +388,42 @@
                     <Button x:Name="SaveButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="133,0,2,10" Width="40" Height="40" Click="Save" FocusVisualStyle="{x:Null}" Grid.Column="2">
                         <iconPacks:PackIconModern Kind="Save" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
                     </Button>
-                    <Grid x:Name="AcceptGrid"  Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="83,328,42,40" Height="74" Width="162" Grid.ColumnSpan="2" Grid.Column="1">
+                    <Grid x:Name="AcceptGrid" Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="83,328,42,40" Height="74" Width="162" Grid.ColumnSpan="2" Grid.Column="1">
                         <Grid.Background>
                             <ImageBrush ImageSource="{StaticResource bcgDrawingImage}"/>
                         </Grid.Background>
                         <TextBlock Text="Name for your lobby:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16,10,32,48" Foreground="#FFFF8B8B"/>
                         <TextBox x:Name="PresetName" Background="#7FFBABAB" AcceptsReturn="False" KeyDown="Accept" Margin="10,31,10,17" MinHeight="0"/>
                     </Grid>
+                    <CheckBox x:Name="CSGOsRunning" Margin="97,447,2,-21" Content="Running?" Grid.Column="2" FocusVisualStyle="{x:Null}"
+                              mah:CheckBoxHelper.ForegroundUnchecked="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundUncheckedMouseOver="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundCheckedPressed="{StaticResource CheckBoxRunning}"
+                              mah:CheckBoxHelper.ForegroundChecked="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundCheckedMouseOver="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundUncheckedPressed="{StaticResource CheckBoxRunning}">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox}">
+                                <Setter Property="Opacity" Value="0.15"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard BeginTime="00:00:00">
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                                                    Duration="00:00:00.25" To="1" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard Name="Storyboard">
+                                                <Storyboard BeginTime="00:00:00">
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                                                    Duration="00:00:00.25" To="0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
                 </Grid>
             </TabItem>
             <TabItem x:Name="lobbies" Margin="-60,103,60,-103" Width="66" Height="65" BorderThickness="0" Padding="0">
@@ -495,12 +525,12 @@
                     <TextBlock x:Name="CSGOFolder" HorizontalAlignment="Left" Height="62" Margin="71,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" FontWeight="Bold" FontSize="15" Grid.Row="1"/>
                     <TextBlock HorizontalAlignment="Left" Margin="424,10,0,0" TextWrapping="Wrap" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
                     <TextBlock HorizontalAlignment="Left" Margin="639,8,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346" Grid.Row="1"/>
-                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,6,104,356" Background="{x:Null}" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,6,35,356" Background="{x:Null}" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,6,104,356" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,6,35,356" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings" Grid.Row="1"/>
                     <TextBlock HorizontalAlignment="Left" Margin="424,58,0,0" TextWrapping="Wrap" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
                     <TextBlock HorizontalAlignment="Left" Margin="639,55,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Grid.Row="1"/>
-                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,54,104,308" Background="{x:Null}" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,54,35,308" Background="{x:Null}" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,54,104,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings" Grid.Row="1"/>
+                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,54,35,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="481,105,0,255" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="481,142,0,218" Content="AutoDisconnect" Grid.Row="1"/>
                     <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" mah:ControlsHelper.ContentCharacterCasing="Normal" Margin="644,146,76,220" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">

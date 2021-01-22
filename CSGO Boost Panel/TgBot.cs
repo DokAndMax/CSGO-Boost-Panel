@@ -123,11 +123,12 @@ namespace CSGO_Boost_Panel
                 case "/gather":
                     if (!Check()) return;
                     await GatherLobby();
+                    await Task.Delay(2000);
                     SendNotify("Lobby gathered");
-                    await Task.Delay(1000);
                     await SendScreenshot(message);
                     break;
 
+                //
                 case "/playone":
                     if (!Check()) return;
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
@@ -136,7 +137,8 @@ namespace CSGO_Boost_Panel
                     botClient.OnMessageEdited += PlayOne;
                     IEnumerable<IEnumerable<KeyboardButton>> OneToTen = new KeyboardButton[][] {
                     new KeyboardButton[] { "1", "2", "3", "4", "5" },
-                    new KeyboardButton[] { "6", "7", "8", "9", "10" } };
+                    new KeyboardButton[] { "6", "7", "8", "9", "10" },
+                    new KeyboardButton[] { "All red" }};
                     await botClient.SendTextMessageAsync(
                         chatId: MainWindow.settingsObj.Value<String>("chatID"),
                         text: "Choose 1 - 10",
@@ -150,6 +152,7 @@ namespace CSGO_Boost_Panel
                     SendInfo(message);
                     break;
 
+                //
                 case "/shutdown":
                     var psi = new ProcessStartInfo("shutdown", "/sg /t 0")
                     {
@@ -261,19 +264,23 @@ namespace CSGO_Boost_Panel
             {
                 await RestartCSGO(result);
                 SendNotify("ok");
-                botClient.OnMessage -= PlayOne;
-                botClient.OnMessageEdited -= PlayOne;
-                botClient.OnMessage += BotOnMessageReceivedCatch;
-                botClient.OnMessageEdited += BotOnMessageReceivedCatch;
+            }
+            else if(message.Text.ToLower() == "all red")
+            {
+                for (short i = 1; i < 11; i++)
+                {
+                    if (string.IsNullOrEmpty(PArray[i-1].WindowTitle))
+                        continue;
+                    if (PArray[i-1].Status == Red)
+                        await RestartCSGO(i);
+                }
             }
             else
-            {
-                botClient.OnMessage -= PlayOne;
-                botClient.OnMessageEdited -= PlayOne;
-                botClient.OnMessage += BotOnMessageReceivedCatch;
-                botClient.OnMessageEdited += BotOnMessageReceivedCatch;
                 await Usage(message);
-            }
+            botClient.OnMessage -= PlayOne;
+            botClient.OnMessageEdited -= PlayOne;
+            botClient.OnMessage += BotOnMessageReceivedCatch;
+            botClient.OnMessageEdited += BotOnMessageReceivedCatch;
         }
 
         static async Task Usage(Message message)
