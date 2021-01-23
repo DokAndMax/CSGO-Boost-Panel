@@ -274,6 +274,7 @@ namespace CSGO_Boost_Panel
                     if (PArray[i-1].Status == Red)
                         await RestartCSGO(i);
                 }
+                SendNotify("ok");
             }
             else
                 await Usage(message);

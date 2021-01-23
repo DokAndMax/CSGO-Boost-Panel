@@ -216,12 +216,12 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            String[] BoolOptions = new string[] { "AutoAccept", "AutoDisconnect", "Sounds", "MatchFoundSound", "MatchEndedSound", "RoundLastsSound", "LongDisconnect" };
+            string[] BoolOptions = new string[] { "AutoAccept", "AutoDisconnect", "Sounds", "MatchFoundSound", "MatchEndedSound", "RoundLastsSound", "LongDisconnect" };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
                 if (settingsObj.Property(BoolOptions[i]) != null)
-                    ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn = settingsObj.Value<bool>("AutoAccept");
+                    ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn = settingsObj.Value<bool>(BoolOptions[i]);
                 else
                     settingsObj[BoolOptions[i]] = ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn;
             }
@@ -381,6 +381,8 @@ namespace CSGO_Boost_Panel
             CSGSILogic(true, true);
             AccountChecker();
             StatsUpdate();
+            if (CSGOsRunning.IsChecked == true)
+                CSGOsRunning.IsChecked = false;
             exChange.IsEnabled = true;
         }
 
@@ -388,11 +390,10 @@ namespace CSGO_Boost_Panel
         {
             if (!controlContainer.IsEnabled)
             {
-                ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
                 JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
                 for (int i = 0; i < 10; i++)
                 {
-                    if (ToggleButton[i].IsOn && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
+                    if (PArray[i].State && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
                     {
                         int x;
                         Rect WindowRect = new Rect();
@@ -693,6 +694,7 @@ namespace CSGO_Boost_Panel
         private void CSGSILogic(bool enabled, bool indicators)
         {
             CSGSI.Nodes.RoundPhase roundPhase = CSGSI.Nodes.RoundPhase.Undefined;
+
             if (indicators)
             {
                 gslT1.NewGameState -= Indicators;
@@ -717,7 +719,7 @@ namespace CSGO_Boost_Panel
             if (settingsObj.Value<short>("WinTeam") == 2 && RoundNumber >= 15)
             {
                 WinTeamNum = 1;
-                WinTeam = gslT2; TeamConnectedChk = gslT1;
+                WinTeam = gslT2;
             }
 
             if (settingsObj.Value<bool>("LongDisconnect"))
@@ -773,7 +775,7 @@ namespace CSGO_Boost_Panel
                         gslT1.NewGameState -= Round;
                         gslT2.NewGameState -= Round;
                         WinTeamNum = 1;
-                        WinTeam = gslT2; TeamConnectedChk = gslT1;
+                        WinTeam = gslT2;
                         WinTeam.NewGameState += Round;
                     }
                     return;
@@ -781,7 +783,14 @@ namespace CSGO_Boost_Panel
 
                 if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != (DisNumber + 1) && a.Map.Round != DisNumber)
                 {
-                    DisconnectActive = true;
+                    short num;
+                    if (WinTeam == gslT1)
+                        num = 1;
+                    else
+                        num = 0;
+                    Stream TeamlogStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\" + num + ".log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    StreamReader Teamlog = new StreamReader(TeamlogStream);
+
                     while (DisconnectActive)
                     {
                         short WinTeamNumTemp = WinTeamNum;
@@ -796,14 +805,21 @@ namespace CSGO_Boost_Panel
                         await Task.Delay(250);
                         LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
                         await Task.Delay(250);
-                        while (TeamConnectedChk.CurrentGameState.Map.Phase == CSGSI.Nodes.MapPhase.Undefined)
+                        while (true)
+                        {
+                            string TeamString = Teamlog.ReadToEnd();
+                            if (!String.IsNullOrEmpty(Regex.Match(TeamString, @"ChangeGameUIState: CSGO_GAME_UI_STATE_LOADINGSCREEN -> CSGO_GAME_UI_STATE_INGAME", RegexOptions.Singleline).Value))
+                                break;
                             await Task.Delay(250);
+                        }
                         if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
                             ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
                         SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
                         await Task.Delay(250);
                         SendKeyPress(0x44);
                     }
+                    TeamlogStream.Close();
+                    Teamlog.Close();
                 }
             }
             async void RoundLong(GameState a)
@@ -857,7 +873,7 @@ namespace CSGO_Boost_Panel
                             gslT1.NewGameState -= RoundLong;
                             gslT2.NewGameState -= RoundLong;
                             WinTeamNum = 1;
-                            WinTeam = gslT2; TeamConnectedChk = gslT1;
+                            WinTeam = gslT2;
                             WinTeam.NewGameState += RoundLong;
                         }
                         else
@@ -865,7 +881,7 @@ namespace CSGO_Boost_Panel
                             gslT1.NewGameState -= RoundLong;
                             gslT2.NewGameState -= RoundLong;
                             WinTeamNum = 0;
-                            WinTeam = gslT1; TeamConnectedChk = gslT2;
+                            WinTeam = gslT1;
                             WinTeam.NewGameState += RoundLong;
                         }
                     }
@@ -874,6 +890,13 @@ namespace CSGO_Boost_Panel
 
                 if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != 6 && a.Map.Round != 7 && a.Map.Round != (DisNumber - 1) && a.Map.Round != DisNumber && a.Map.Round != 21 && a.Map.Round != 22)
                 {
+                    short num;
+                    if (WinTeam == gslT1)
+                        num = 1;
+                    else
+                        num = 0;
+                    Stream TeamlogStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\" + num + ".log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    StreamReader Teamlog = new StreamReader(TeamlogStream);
                     DisconnectActive = true;
                     while (DisconnectActive)
                     {
@@ -889,8 +912,13 @@ namespace CSGO_Boost_Panel
                         await Task.Delay(250);
                         LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
                         await Task.Delay(250);
-                        while (TeamConnectedChk.CurrentGameState.Map.Phase == CSGSI.Nodes.MapPhase.Undefined)
+                        while (true)
+                        {
+                            string TeamString = Teamlog.ReadToEnd();
+                            if (!String.IsNullOrEmpty(Regex.Match(TeamString, @"ChangeGameUIState: CSGO_GAME_UI_STATE_LOADINGSCREEN -> CSGO_GAME_UI_STATE_INGAME", RegexOptions.Singleline).Value))
+                                break;
                             await Task.Delay(250);
+                        }
                         if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
                             ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
                         SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
@@ -932,7 +960,7 @@ namespace CSGO_Boost_Panel
                         gslT2.NewGameState -= Round;
                         gslT1.NewGameState -= RoundLong;
                         gslT2.NewGameState -= RoundLong;
-                        WinTeam = gslT1; TeamConnectedChk = gslT2;
+                        WinTeam = gslT1;
                         WinTeamNum = 0;
                         if (settingsObj.Value<bool>("LongDisconnect"))
                             WinTeam.NewGameState += RoundLong;
@@ -1069,7 +1097,7 @@ namespace CSGO_Boost_Panel
         {
             settingsObj["WinTeam"] = 0;
             WinTeamNum = 0;
-            WinTeam = gslT1; TeamConnectedChk = gslT2;
+            WinTeam = gslT1;
             DisNumber = 15;
 
             if (on && AutoDisconnect.IsOn)
@@ -1082,7 +1110,7 @@ namespace CSGO_Boost_Panel
         {
             settingsObj["WinTeam"] = 1;
             WinTeamNum = 1;
-            WinTeam = gslT2; TeamConnectedChk = gslT1;
+            WinTeam = gslT2;
             DisNumber = 15;
 
             if (on && AutoDisconnect.IsOn)
@@ -1095,7 +1123,7 @@ namespace CSGO_Boost_Panel
         {
             settingsObj["WinTeam"] = 2;
             WinTeamNum = 0;
-            WinTeam = gslT1; TeamConnectedChk = gslT2;
+            WinTeam = gslT1;
             DisNumber = 14;
 
             if (on && AutoDisconnect.IsOn)
@@ -1202,13 +1230,12 @@ namespace CSGO_Boost_Panel
 
         private async void AccountChecker()
         {
-            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
             while (on)
             {
                 for (short i = 0; i < 10; i++)
                 {
                     short index = i;
-                    if (ToggleButton[index].IsOn && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
+                    if (PArray[index].State && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
                     {
                         PArray[index].Status = Brushes.Green;
                     }
@@ -1226,7 +1253,6 @@ namespace CSGO_Boost_Panel
             if (string.IsNullOrEmpty(loadedPreset))
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
-            ToggleSwitch[] ToggleButton = { ToggleButton1, ToggleButton2, ToggleButton3, ToggleButton4, ToggleButton5, ToggleButton6, ToggleButton7, ToggleButton8, ToggleButton9, ToggleButton10 };
             Directory.CreateDirectory(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\");
             Stream Team1logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             Stream Team2logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -1245,9 +1271,9 @@ namespace CSGO_Boost_Panel
                 {
                     if (i == 6)
                         TeamString = Team2String;
-                    if (!accB[i - 1])
+                    if (!accB[i - 1] && PArray[i - 1].State)
                     {
-                        if (!String.IsNullOrEmpty(lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
+                        if (!string.IsNullOrEmpty(lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
                         {
                             foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
                             {
@@ -1259,28 +1285,27 @@ namespace CSGO_Boost_Panel
                         }
                         string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
                         string accRank = Regex.Match(RegExStr, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
-                        if ((!string.IsNullOrEmpty(accRank) && Regex.Match(RegExStr, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0") || !ToggleButton[i - 1].IsOn)
+                        if (!string.IsNullOrEmpty(accRank) && Regex.Match(RegExStr, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0")
                         {
-                            if (ToggleButton[i - 1].IsOn)
+                            short accLevel = Int16.Parse(Regex.Match(RegExStr, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
+                            string accXP = Regex.Match(RegExStr, @"(?<=327680{0,3})(0{1}|[1-9]\d*)", RegexOptions.Singleline | RegexOptions.RightToLeft).Value;
+                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
                             {
-                                short accLevel = Int16.Parse(Regex.Match(RegExStr, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
-                                string accXP = Regex.Match(RegExStr, @"(?<=327680{0,3})(0{1}|[1-9]\d*)", RegexOptions.Singleline | RegexOptions.RightToLeft).Value;
-                                foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
-                                {
-                                    tkn["Level"] = accLevel;
-                                    tkn["XP"] = accXP;
-                                    tkn["Rank"] = accRank;
-                                }
-                                foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
-                                {
-                                    plr.Level = accLevel;
-                                    plr.XP = accXP;
-                                    plr.Rank = "Images/" + accRank + ".png";
-                                }
+                                tkn["Level"] = accLevel;
+                                tkn["XP"] = accXP;
+                                tkn["Rank"] = accRank;
+                            }
+                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
+                            {
+                                plr.Level = accLevel;
+                                plr.XP = accXP;
+                                plr.Rank = "Images/" + accRank + ".png";
                             }
                             accB[i - 1] = true;
                         }
                     }
+                    else
+                        accB[i - 1] = true;
                 }
                 if (accB[0] && accB[1] && accB[2] && accB[3] && accB[4] && accB[5] && accB[6] && accB[7] && accB[8] && accB[9])
                 {
@@ -1619,7 +1644,7 @@ namespace CSGO_Boost_Panel
             EnableRaisingIntricateEvents = true
         };
 
-        public GameStateListener WinTeam, TeamConnectedChk;
+        public GameStateListener WinTeam;
 
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
