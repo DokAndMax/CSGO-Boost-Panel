@@ -117,6 +117,7 @@ namespace CSGO_Boost_Panel
                 case "/startsearch":
                     if (!Check()) return;
                     await StartSearch(message);
+                    SendNotify("ok");
                     break;
 
                 // soon
@@ -125,6 +126,7 @@ namespace CSGO_Boost_Panel
                     await GatherLobby();
                     await Task.Delay(2000);
                     SendNotify("Lobby gathered");
+                    await Task.Delay(1000);
                     await SendScreenshot(message);
                     break;
 

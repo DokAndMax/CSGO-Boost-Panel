@@ -216,14 +216,14 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            string[] BoolOptions = new string[] { "AutoAccept", "AutoDisconnect", "Sounds", "MatchFoundSound", "MatchEndedSound", "RoundLastsSound", "LongDisconnect" };
+            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
-                if (settingsObj.Property(BoolOptions[i]) != null)
-                    ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn = settingsObj.Value<bool>(BoolOptions[i]);
+                if (settingsObj.Property(BoolOptions[i].Name) != null)
+                    BoolOptions[i].IsOn = settingsObj.Value<bool>(BoolOptions[i].Name);
                 else
-                    settingsObj[BoolOptions[i]] = ((ToggleSwitch)this.GetType().GetField(BoolOptions[i], BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn;
+                    settingsObj[BoolOptions[i].Name] = BoolOptions[i].IsOn;
             }
             if (settingsObj.Property("WinTeam") != null)
             {
@@ -275,11 +275,6 @@ namespace CSGO_Boost_Panel
         private void SelectSettings(object sender, RoutedEventArgs e)
         {
             tab.SelectedIndex = 3;
-        }
-
-        public void StartTg()
-        {
-            Start(null, null);
         }
 
         private async void Start(object sender, RoutedEventArgs e)
@@ -393,13 +388,11 @@ namespace CSGO_Boost_Panel
                 JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
                 for (int i = 0; i < 10; i++)
                 {
-                    if (PArray[i].State && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
+                    if (PArray[i].State && WindowHelper.IsExist(PArray[i].WindowTitle))
                     {
                         int x;
-                        Rect WindowRect = new Rect();
-                        if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
-                            ShowWindow(FindWindow(null, PArray[i].WindowTitle), 4);
-                        GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
+                        WindowHelper.Rect WindowRect = new WindowHelper.Rect();
+                        WindowHelper.GetRect(PArray[i].WindowTitle, ref WindowRect);
                         if (WindowRect.Left < 0)
                             x = 0;
                         else
@@ -737,47 +730,34 @@ namespace CSGO_Boost_Panel
                     roundPhase = a.Round.Phase;
                 }
 
-                if (a.Map.Round == (DisNumber - 1))
+                if (a.Map.Round == (DisNumber - 1) || a.Map.Round == 29)
                     DisconnectActive = false;
                 if (a.Round.Phase == CSGSI.Nodes.RoundPhase.Live && (a.Map.Round == 0 || (a.Map.Round == 15 && settingsObj.Value<short>("WinTeam") == 2)))
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
                         await Task.Delay(250);
-                        SendKeyPress(0x44);
+                        WindowHelper.SendKey(TWinTitle[WinTeamNum][i], WindowHelper.VK_F10);
                         await Task.Delay(250);
                     }
                     return;
                 }
-                if (a.Map.Round == DisNumber && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime)
+                if (a.Map.Round == DisNumber && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && settingsObj.Value<short>("WinTeam") == 2)
                 {
                     await Task.Delay(11000);
                     if (settingsObj.Value<bool>("LongDisconnect"))
                         return;
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
-                        Rect WindowRect = new Rect();
-                        Coords CSGO = new Coords();
-                        GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][i]), ref WindowRect);
-                        ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][i]), ref CSGO);
                         await Task.Delay(250);
-                        LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect, false);
                         await Task.Delay(250);
                     }
-                    if (settingsObj.Value<short>("WinTeam") == 2)
-                    {
-                        gslT1.NewGameState -= Round;
-                        gslT2.NewGameState -= Round;
-                        WinTeamNum = 1;
-                        WinTeam = gslT2;
-                        WinTeam.NewGameState += Round;
-                    }
+                    gslT1.NewGameState -= Round;
+                    gslT2.NewGameState -= Round;
+                    WinTeamNum = 1;
+                    WinTeam = gslT2;
+                    WinTeam.NewGameState += Round;
                     return;
                 }
 
@@ -790,33 +770,22 @@ namespace CSGO_Boost_Panel
                         num = 0;
                     Stream TeamlogStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\" + num + ".log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                     StreamReader Teamlog = new StreamReader(TeamlogStream);
-
+                    DisconnectActive = true;
                     while (DisconnectActive)
                     {
                         short WinTeamNumTemp = WinTeamNum;
-                        await Task.Delay(750);
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
-                        Rect WindowRect = new Rect();
-                        Coords CSGO = new Coords();
-                        GetWindowRect(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), ref WindowRect);
-                        ClientToScreen(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), ref CSGO);
-                        await Task.Delay(250);
-                        LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                        await Task.Delay(1000);
+                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect, false);
                         await Task.Delay(250);
                         while (true)
                         {
                             string TeamString = Teamlog.ReadToEnd();
-                            if (!String.IsNullOrEmpty(Regex.Match(TeamString, @"ChangeGameUIState: CSGO_GAME_UI_STATE_LOADINGSCREEN -> CSGO_GAME_UI_STATE_INGAME", RegexOptions.Singleline).Value))
+                            if (!string.IsNullOrEmpty(Regex.Match(TeamString, @"ChangeGameUIState: CSGO_GAME_UI_STATE_LOADINGSCREEN -> CSGO_GAME_UI_STATE_INGAME", RegexOptions.Singleline).Value))
                                 break;
                             await Task.Delay(250);
                         }
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
                         await Task.Delay(250);
-                        SendKeyPress(0x44);
+                        WindowHelper.SendKey(TWinTitle[WinTeamNumTemp][0], WindowHelper.VK_F10);
                     }
                     TeamlogStream.Close();
                     Teamlog.Close();
@@ -839,11 +808,8 @@ namespace CSGO_Boost_Panel
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
                         await Task.Delay(250);
-                        SendKeyPress(0x44);
+                        WindowHelper.SendKey(TWinTitle[WinTeamNum][i], WindowHelper.VK_F10);
                         await Task.Delay(250);
                     }
                     return;
@@ -855,15 +821,8 @@ namespace CSGO_Boost_Panel
                         return;
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNum][i])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNum][i]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNum][i]));
-                        Rect WindowRect = new Rect();
-                        Coords CSGO = new Coords();
-                        GetWindowRect(FindWindow(null, TWinTitle[WinTeamNum][i]), ref WindowRect);
-                        ClientToScreen(FindWindow(null, TWinTitle[WinTeamNum][i]), ref CSGO);
                         await Task.Delay(250);
-                        LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect, false);
                         await Task.Delay(250);
                     }
                     if (settingsObj.Value<short>("WinTeam") == 2)
@@ -901,16 +860,8 @@ namespace CSGO_Boost_Panel
                     while (DisconnectActive)
                     {
                         short WinTeamNumTemp = WinTeamNum;
-                        await Task.Delay(750);
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
-                        Rect WindowRect = new Rect();
-                        Coords CSGO = new Coords();
-                        GetWindowRect(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), ref WindowRect);
-                        ClientToScreen(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), ref CSGO);
-                        await Task.Delay(250);
-                        LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 1.348) + CSGO.x, Convert.ToInt16((WindowRect.Bottom - WindowRect.Top - 29) / 30 + (WindowRect.Bottom - WindowRect.Top - 29) / 22 / 2 + CSGO.y));
+                        await Task.Delay(1000);
+                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect, false);
                         await Task.Delay(250);
                         while (true)
                         {
@@ -919,16 +870,15 @@ namespace CSGO_Boost_Panel
                                 break;
                             await Task.Delay(250);
                         }
-                        if (IsIconic(FindWindow(null, TWinTitle[WinTeamNumTemp][0])))
-                            ShowWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]), 9);
-                        SetForegroundWindow(FindWindow(null, TWinTitle[WinTeamNumTemp][0]));
                         await Task.Delay(250);
-                        SendKeyPress(0x44);
+                        WindowHelper.SendKey(TWinTitle[WinTeamNumTemp][0], WindowHelper.VK_F10);
                     }
+                    TeamlogStream.Close();
+                    Teamlog.Close();
                 }
             }
 
-            void Indicators(GameState a)
+            async void Indicators(GameState a)
             {
                 if (a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver & !WarmUp)
                 {
@@ -945,6 +895,21 @@ namespace CSGO_Boost_Panel
                     {
                         StatsUpdate();
                     });
+
+
+                    if (settingsObj.Value<bool>("AutoDisconnect"))
+                    {
+                        for (short b = 0; b < 2; b++)
+                        {
+                            for (short i = 0; i < TWinTitle[b].Count; i++)
+                            {
+                                await Task.Delay(250);
+                                WindowHelper.SendKey(TWinTitle[b][i], WindowHelper.VK_F10);
+                                await Task.Delay(250);
+                            }
+                        }
+                    }
+
                     if (settingsObj.Value<bool>("Sounds") && settingsObj.Value<bool>("MatchEndedSound"))
                     {
                         newRound = false;
@@ -972,6 +937,19 @@ namespace CSGO_Boost_Panel
                 if (a.Map.Phase == CSGSI.Nodes.MapPhase.Warmup && WarmUp)
                 {
                     WarmUp = false;
+                    if (settingsObj.Value<short>("WinTeam") == 2 && settingsObj.Value<bool>("AutoDisconnect"))
+                    {
+                        gslT1.NewGameState -= Round;
+                        gslT2.NewGameState -= Round;
+                        gslT1.NewGameState -= RoundLong;
+                        gslT2.NewGameState -= RoundLong;
+                        WinTeam = gslT1;
+                        WinTeamNum = 0;
+                        if (settingsObj.Value<bool>("LongDisconnect"))
+                            WinTeam.NewGameState += RoundLong;
+                        else
+                            WinTeam.NewGameState += Round;
+                    }
                 }
             }
 
@@ -1028,29 +1006,15 @@ namespace CSGO_Boost_Panel
                 ldrTitles.Reverse();
             for (int i = 0; i < ldrTitles.Count; i++)
             {
-                if (IsIconic(FindWindow(null, ldrTitles[i])))
-                    ShowWindow(FindWindow(null, ldrTitles[i]), 9);
-                SetForegroundWindow(FindWindow(null, ldrTitles[i]));
-                Rect WindowRect = new Rect();
-                Coords CSGO = new Coords();
-                GetWindowRect(FindWindow(null, ldrTitles[i]), ref WindowRect);
-                ClientToScreen(FindWindow(null, ldrTitles[i]), ref CSGO);
                 await Task.Delay(250);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 3.36) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 22.85) + CSGO.y);
+                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO, false);
                 await Task.Delay(250);
             }
             await Task.Delay(55000);
             for (int i = 0; i < ldrTitles.Count; i++)
             {
-                if (IsIconic(FindWindow(null, ldrTitles[i])))
-                    ShowWindow(FindWindow(null, ldrTitles[i]), 9);
-                SetForegroundWindow(FindWindow(null, ldrTitles[i]));
-                Rect WindowRect = new Rect();
-                Coords CSGO = new Coords();
-                GetWindowRect(FindWindow(null, ldrTitles[i]), ref WindowRect);
-                ClientToScreen(FindWindow(null, ldrTitles[i]), ref CSGO);
                 await Task.Delay(250);
-                LeftClick(Convert.ToInt16(WindowRect.Right - WindowRect.Left - 6 - (WindowRect.Right - WindowRect.Left - 6) / 3.36) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 22.85) + CSGO.y);
+                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO, false);
                 await Task.Delay(250);
             }
             AutoAcceptRestartS = false;
@@ -1075,15 +1039,8 @@ namespace CSGO_Boost_Panel
             {
                 if (string.IsNullOrEmpty(PArray[i].WindowTitle))
                     continue;
-                if (IsIconic(FindWindow(null, PArray[i].WindowTitle)))
-                    ShowWindow(FindWindow(null, PArray[i].WindowTitle), 9);
-                SetForegroundWindow(FindWindow(null, PArray[i].WindowTitle));
-                Rect WindowRect = new Rect();
-                Coords CSGO = new Coords();
-                GetWindowRect(FindWindow(null, PArray[i].WindowTitle), ref WindowRect);
-                ClientToScreen(FindWindow(null, PArray[i].WindowTitle), ref CSGO);
                 Thread.Sleep(250);
-                LeftClick(Convert.ToInt16((WindowRect.Right - WindowRect.Left - 6) / 2.35 + (WindowRect.Right - WindowRect.Left - 6) / 6.6 / 2) + CSGO.x, Convert.ToInt16(WindowRect.Bottom - WindowRect.Top - 29 - (WindowRect.Bottom - WindowRect.Top - 29) / 2.52 - (WindowRect.Bottom - WindowRect.Top - 29) / 12.5 / 2) + CSGO.y);
+                WindowHelper.Click(PArray[i].WindowTitle, CSGOCoefficients.Accept, false);
                 Thread.Sleep(250);
             }
             InvokeUI(() =>
@@ -1098,7 +1055,7 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 0;
             WinTeamNum = 0;
             WinTeam = gslT1;
-            DisNumber = 15;
+            DisNumber = 16;
 
             if (on && AutoDisconnect.IsOn)
             {
@@ -1111,7 +1068,7 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 1;
             WinTeamNum = 1;
             WinTeam = gslT2;
-            DisNumber = 15;
+            DisNumber = 16;
 
             if (on && AutoDisconnect.IsOn)
             {
@@ -1132,9 +1089,9 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private async void PlayOneFunc(object sender, RoutedEventArgs e)
+        private void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-            await CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
+            _ = Task.Run(() => CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString())));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
@@ -1216,11 +1173,7 @@ namespace CSGO_Boost_Panel
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            /*if (!loaded)
-                return;
-            MessageBox.Show(AutoBoost.ToString());
-            settingsObj[((ToggleSwitch)sender).Name] = ((ToggleSwitch)sender).IsOn;
-            //AutoBoost = ((ToggleSwitch)sender).IsOn;*/
+            WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept, false);
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
@@ -1235,7 +1188,7 @@ namespace CSGO_Boost_Panel
                 for (short i = 0; i < 10; i++)
                 {
                     short index = i;
-                    if (PArray[index].State && FindWindow(null, PArray[i].WindowTitle).ToInt32() != 0)
+                    if (PArray[index].State && WindowHelper.IsExist(PArray[i].WindowTitle))
                     {
                         PArray[index].Status = Brushes.Green;
                     }
@@ -1413,228 +1366,6 @@ namespace CSGO_Boost_Panel
             this.BeginInvoke(a);
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern uint SendInput(uint numberOfInputs, INPUT[] inputs, int sizeOfInputStructure);
-
-        /// <summary>
-        /// simulate key press
-        /// </summary>
-        /// <param name="keyCode"></param>
-        public static void SendKeyPress(ushort keyCode)
-        {
-            INPUT input = new INPUT
-            {
-                Type = 1
-            };
-            input.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCode,
-                Scan = (ushort)keyCode,
-                Flags = 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero,
-            };
-
-            INPUT input2 = new INPUT
-            {
-                Type = 1
-            };
-            input2.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCode,
-                Scan = (ushort)keyCode,
-                Flags = 2 | 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero
-            };
-            INPUT[] inputs = new INPUT[] { input, input2 };
-            if (SendInput(2, inputs, Marshal.SizeOf(typeof(INPUT))) == 0)
-                throw new Exception();
-        }
-
-        public static void SendKeyPress(ushort keyCodeModifier, ushort keyCode)
-        {
-            INPUT input = new INPUT
-            {
-                Type = 1
-            };
-            input.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCodeModifier,
-                Scan = (ushort)keyCodeModifier,
-                Flags = 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero,
-            };
-
-            INPUT input2 = new INPUT
-            {
-                Type = 1
-            };
-            input2.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCode,
-                Scan = (ushort)keyCode,
-                Flags = 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero,
-            };
-
-            INPUT input3 = new INPUT
-            {
-                Type = 1
-            };
-            input3.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCode,
-                Scan = (ushort)keyCode,
-                Flags = 2 | 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero
-            };
-
-            INPUT input4 = new INPUT
-            {
-                Type = 1
-            };
-            input4.Data.Keyboard = new KEYBDINPUT()
-            {
-                Vk = (ushort)keyCodeModifier,
-                Scan = (ushort)keyCodeModifier,
-                Flags = 2 | 8,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero
-            };
-
-            INPUT[] inputs = new INPUT[] { input, input2 };
-            INPUT[] inputs2 = new INPUT[] { input3, input4 };
-            if (SendInput(2, inputs, Marshal.SizeOf(typeof(INPUT))) == 0)
-                throw new Exception();
-            Thread.Sleep(50);
-            if (SendInput(2, inputs2, Marshal.SizeOf(typeof(INPUT))) == 0)
-                throw new Exception();
-        }
-
-        public static void LeftClick(int x, int y)
-        {
-            INPUT input = new INPUT
-            {
-                Type = 0
-            };
-            input.Data.Mouse = new MOUSEINPUT()
-            {
-                X = (x + 1) * 65536 / System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
-                Y = (y + 1) * 65536 / System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,
-                MouseData = 0,
-                Flags = 2 | 0x8000 | 1,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero
-            };
-            INPUT input2 = new INPUT
-            {
-                Type = 0
-            };
-            input2.Data.Mouse = new MOUSEINPUT()
-            {
-                X = (x + 1) * 65536 / System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
-                Y = (y + 1) * 65536 / System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,
-                MouseData = 0,
-                Flags = 4 | 0x8000 | 1,
-                Time = 0,
-                ExtraInfo = IntPtr.Zero
-            };
-            INPUT[] inputs = new INPUT[] { input, input2 };
-            if (SendInput(2, inputs, Marshal.SizeOf(typeof(INPUT))) == 0)
-                throw new Exception();
-        }
-
-        /// <summary>
-        /// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646270(v=vs.85).aspx
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct INPUT
-        {
-            public uint Type;
-            public MOUSEKEYBDHARDWAREINPUT Data;
-        }
-
-        /// <summary>
-        /// http://social.msdn.microsoft.com/Forums/en/csharplanguage/thread/f0e82d6e-4999-4d22-b3d3-32b25f61fb2a
-        /// </summary>
-        [StructLayout(LayoutKind.Explicit)]
-        internal struct MOUSEKEYBDHARDWAREINPUT
-        {
-            [FieldOffset(0)]
-            public HARDWAREINPUT Hardware;
-            [FieldOffset(0)]
-            public KEYBDINPUT Keyboard;
-            [FieldOffset(0)]
-            public MOUSEINPUT Mouse;
-        }
-
-        /// <summary>
-        /// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct HARDWAREINPUT
-        {
-            public uint Msg;
-            public ushort ParamL;
-            public ushort ParamH;
-        }
-
-        /// <summary>
-        /// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct KEYBDINPUT
-        {
-            public ushort Vk;
-            public ushort Scan;
-            public uint Flags;
-            public uint Time;
-            public IntPtr ExtraInfo;
-        }
-
-        /// <summary>
-        /// http://social.msdn.microsoft.com/forums/en-US/netfxbcl/thread/2abc6be8-c593-4686-93d2-89785232dacd
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct MOUSEINPUT
-        {
-            public int X;
-            public int Y;
-            public uint MouseData;
-            public uint Flags;
-            public uint Time;
-            public IntPtr ExtraInfo;
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr FindWindow(string strClassName, string strWindowName);
-
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-        public struct Rect
-        {
-            public int Left { get; set; }
-            public int Top { get; set; }
-            public int Right { get; set; }
-            public int Bottom { get; set; }
-        }
-
-        [DllImport("user32.dll")]
-        public static extern bool ClientToScreen(IntPtr hwnd, ref Coords cordinates);
-
-        [DllImport("user32.dll")]
-        public static extern bool SetCursorPos(int x, int y);
-
-        public struct Coords
-        {
-            public int x;
-            public int y;
-        }
-
         public GameStateListener gslT1 = new GameStateListener(3001)
         {
             EnableRaisingIntricateEvents = true
@@ -1645,14 +1376,5 @@ namespace CSGO_Boost_Panel
         };
 
         public GameStateListener WinTeam;
-
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        public static extern bool IsIconic(IntPtr handle);
     }
 }
