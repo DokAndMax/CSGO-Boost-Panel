@@ -78,7 +78,7 @@ namespace CSGO_Boost_Panel
         /// </summary>
         /// <param name="MouseMove">Is it mouse move or it is just click</param>
         /// <param name="Coefficient">Use value from CSGOCoefficients class</param>
-        public static async void Click(string WinTitle, CSGOCoefficients Coefficient, bool MouseMove = false)
+        public static void Click(string WinTitle, CSGOCoefficients Coefficient, bool MouseMove = false)
         {
             Rect WindowRect = new Rect();
             IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
@@ -88,7 +88,6 @@ namespace CSGO_Boost_Panel
             int CoordX = Convert.ToInt16(WindowRect.Right / Coefficient.XCoefficient);
             if (Coefficient.RectPosX == 2)
                 CoordX = WindowRect.Right - CoordX;
-
             int CoordY = Convert.ToInt16(WindowRect.Bottom / Coefficient.YCoefficient);
             if (Coefficient.RectPosY == 2)
                 CoordY = WindowRect.Bottom - CoordY;
@@ -105,12 +104,8 @@ namespace CSGO_Boost_Panel
             IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
             foreach (char c in text)
             {
-                int charValue = c;
                 IntPtr lParam = new IntPtr(c);
-                PostMessage(WindowHWND, WM_KEYDOWN, lParam, wParam);
                 PostMessage(WindowHWND, WM_CHAR, lParam, wParam);
-                PostMessage(WindowHWND, WM_KEYUP, lParam, wParam);
-
             }
             PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)VK_RETURN, wParam);
             PostMessage(WindowHWND, WM_KEYUP, (IntPtr)VK_RETURN, wParam);

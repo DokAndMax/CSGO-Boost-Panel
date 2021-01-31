@@ -1089,9 +1089,9 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private void PlayOneFunc(object sender, RoutedEventArgs e)
+        private async void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-            _ = Task.Run(() => CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString())));
+            await CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
@@ -1166,14 +1166,14 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private void AutomationTgl(object sender, RoutedEventArgs e)
+        private async void AutomationTgl(object sender, RoutedEventArgs e)
         {
-            _ = Task.Run(() => CSGOIntercation.GatherLobby());
+            await CSGOIntercation.GatherLobby();
         }
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept);
+            //
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)

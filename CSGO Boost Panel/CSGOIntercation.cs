@@ -107,7 +107,7 @@ namespace CSGO_Boost_Panel
             {
                 await Task.Delay(250);
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightInvitesMenu, true);
-                await Task.Delay(500);
+                await Task.Delay(750);
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.Invitation);
                 await Task.Delay(250);
                 if (i == (T1WinTitle.Count - 1) && n == 0)
