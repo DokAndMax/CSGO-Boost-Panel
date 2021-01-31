@@ -18,18 +18,18 @@ namespace CSGO_Boost_Panel
                 case 1:
                     {
                         await Task.Delay(600);
-                        WindowHelper.Click(ldr1Title, CSGOCoefficients.Play, false);
+                        WindowHelper.Click(ldr1Title, CSGOCoefficients.Play);
                         await Task.Delay(600);
-                        WindowHelper.Click(ldr1Title, CSGOCoefficients.GO, false);
+                        WindowHelper.Click(ldr1Title, CSGOCoefficients.GO);
                         await Task.Delay(600);
                     }
                     break;
                 case 2:
                     {
                          await Task.Delay(600);
-                         WindowHelper.Click(ldr2Title, CSGOCoefficients.Play, false);
+                         WindowHelper.Click(ldr2Title, CSGOCoefficients.Play);
                          await Task.Delay(600);
-                         WindowHelper.Click(ldr2Title, CSGOCoefficients.GO, false);
+                         WindowHelper.Click(ldr2Title, CSGOCoefficients.GO);
                          await Task.Delay(600);
                     }
                     break;
@@ -39,9 +39,9 @@ namespace CSGO_Boost_Panel
                         for (int i = 0; i < ldrTitles.Length; i++)
                         {
                             await Task.Delay(600);
-                            WindowHelper.Click(ldrTitles[i], CSGOCoefficients.Play, false);
+                            WindowHelper.Click(ldrTitles[i], CSGOCoefficients.Play);
                             await Task.Delay(600);
-                            WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO, false);
+                            WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO);
                             await Task.Delay(600);
                         }
                     }
@@ -60,36 +60,36 @@ namespace CSGO_Boost_Panel
             for (int i = 1, n = 0; n < 2; i++)
             {
                 await Task.Delay(500);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons, false);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons, true);
                 await Task.Delay(500);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons, false);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons);
                 await Task.Delay(500);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.AddFriend, false);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.AddFriend);
                 await Task.Delay(500);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.CopyCode, false);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.CopyCode);
                 await Task.Delay(500);
                 WindowHelper.SendKey(TeamWinTitle[i], WindowHelper.VK_ESCAPE);
 
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons, true);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.FriendCodeField, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.FriendCodeField);
                 await Task.Delay(500);
                 WindowHelper.SendText(ldrTitles[n], Clipboard.GetText());
                 await Task.Delay(500);
-                //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.СheckMark, false);
+                //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.СheckMark);
                 //await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.PlayerField, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.PlayerField);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Invite, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Invite);
                 await Task.Delay(500);
-                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Cancel, false);
+                WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Cancel);
                 await Task.Delay(500);
 
                 if (i == (T1WinTitle.Count - 1) && n == 0)
@@ -106,9 +106,9 @@ namespace CSGO_Boost_Panel
             for (int i = 1, n = 0; n < 2; i++)
             {
                 await Task.Delay(250);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightInvitesMenu, false);
-                await Task.Delay(250);
-                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.Invitation, false);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightInvitesMenu, true);
+                await Task.Delay(500);
+                WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.Invitation);
                 await Task.Delay(250);
                 if (i == (T1WinTitle.Count - 1) && n == 0)
                 {

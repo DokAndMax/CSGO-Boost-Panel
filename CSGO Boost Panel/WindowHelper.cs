@@ -32,9 +32,9 @@ namespace CSGO_Boost_Panel
 
     public class WindowHelper
     {
-        static IntPtr wParam = IntPtr.Zero;
+        static readonly IntPtr wParam = IntPtr.Zero;
         [DllImport("User32.DLL")]
-        static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        static extern int PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
         static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter,
             string lpszClass, string lpszWindow);
@@ -76,10 +76,9 @@ namespace CSGO_Boost_Panel
         /// <summary>
         /// Simulate mouse click in a certain place of window.
         /// </summary>
-        /// <param name="RectPosX">Where to use the coefficient. Can be: 1 (Left) or 2 (Right)</param>
-        /// <param name="RectPosY">Where to use the coefficient. Can be: 1 (Top) or 2 (Bottom)</param>
-        /// <param name="coefficient">Use value from CSGOCoefficients class</param>
-        public static async void Click(string WinTitle, CSGOCoefficients Coefficient, bool MouseMove)
+        /// <param name="MouseMove">Is it mouse move or it is just click</param>
+        /// <param name="Coefficient">Use value from CSGOCoefficients class</param>
+        public static async void Click(string WinTitle, CSGOCoefficients Coefficient, bool MouseMove = false)
         {
             Rect WindowRect = new Rect();
             IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
@@ -94,11 +93,13 @@ namespace CSGO_Boost_Panel
             if (Coefficient.RectPosY == 2)
                 CoordY = WindowRect.Bottom - CoordY;
             IntPtr lParam = MakeLParam(CoordX, CoordY);
-            MessageBox.Show(CoordX + " " + CoordY);
-            SendMessage(WindowHWND, WM_MOUSEMOVE, wParam, lParam);
-            SendMessage(WindowHWND, WM_LBUTTONDOWN, (IntPtr)MK_LBUTTON, lParam);
-            SendMessage(WindowHWND, WM_LBUTTONUP, wParam, lParam);
+            PostMessage(WindowHWND, WM_MOUSEMOVE, wParam, lParam);
+            if (MouseMove)
+                return;
+            PostMessage(WindowHWND, WM_LBUTTONDOWN, (IntPtr)MK_LBUTTON, lParam);
+            PostMessage(WindowHWND, WM_LBUTTONUP, wParam, lParam);
         }
+
         public static void SendText(string WinTitle, string text)
         {
             IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
@@ -106,19 +107,19 @@ namespace CSGO_Boost_Panel
             {
                 int charValue = c;
                 IntPtr lParam = new IntPtr(c);
-                SendMessage(WindowHWND, WM_KEYDOWN, lParam, wParam);
-                SendMessage(WindowHWND, WM_CHAR, lParam, wParam);
-                SendMessage(WindowHWND, WM_KEYUP, lParam, wParam);
+                PostMessage(WindowHWND, WM_KEYDOWN, lParam, wParam);
+                PostMessage(WindowHWND, WM_CHAR, lParam, wParam);
+                PostMessage(WindowHWND, WM_KEYUP, lParam, wParam);
 
             }
-            SendMessage(WindowHWND, WM_KEYDOWN, (IntPtr)VK_RETURN, wParam);
-            SendMessage(WindowHWND, WM_KEYUP, (IntPtr)VK_RETURN, wParam);
+            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)VK_RETURN, wParam);
+            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)VK_RETURN, wParam);
         }
         public static void SendKey(string WinTitle, int key)
         {
             IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
-            SendMessage(WindowHWND, WM_KEYDOWN, (IntPtr)key, wParam);
-            SendMessage(WindowHWND, WM_KEYUP, (IntPtr)key, wParam);
+            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)key, wParam);
+            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)key, wParam);
         }
         public static void GetRect(string WinTitle, ref Rect WindowRect)
         {

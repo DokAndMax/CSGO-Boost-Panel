@@ -750,7 +750,7 @@ namespace CSGO_Boost_Panel
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
                         await Task.Delay(250);
-                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect, false);
+                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect);
                         await Task.Delay(250);
                     }
                     gslT1.NewGameState -= Round;
@@ -775,7 +775,7 @@ namespace CSGO_Boost_Panel
                     {
                         short WinTeamNumTemp = WinTeamNum;
                         await Task.Delay(1000);
-                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect, false);
+                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect);
                         await Task.Delay(250);
                         while (true)
                         {
@@ -822,7 +822,7 @@ namespace CSGO_Boost_Panel
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
                         await Task.Delay(250);
-                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect, false);
+                        WindowHelper.Click(TWinTitle[WinTeamNum][i], CSGOCoefficients.Reconnect);
                         await Task.Delay(250);
                     }
                     if (settingsObj.Value<short>("WinTeam") == 2)
@@ -861,7 +861,7 @@ namespace CSGO_Boost_Panel
                     {
                         short WinTeamNumTemp = WinTeamNum;
                         await Task.Delay(1000);
-                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect, false);
+                        WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect);
                         await Task.Delay(250);
                         while (true)
                         {
@@ -1007,14 +1007,14 @@ namespace CSGO_Boost_Panel
             for (int i = 0; i < ldrTitles.Count; i++)
             {
                 await Task.Delay(250);
-                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO, false);
+                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO);
                 await Task.Delay(250);
             }
             await Task.Delay(55000);
             for (int i = 0; i < ldrTitles.Count; i++)
             {
                 await Task.Delay(250);
-                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO, false);
+                WindowHelper.Click(ldrTitles[i], CSGOCoefficients.GO);
                 await Task.Delay(250);
             }
             AutoAcceptRestartS = false;
@@ -1040,7 +1040,7 @@ namespace CSGO_Boost_Panel
                 if (string.IsNullOrEmpty(PArray[i].WindowTitle))
                     continue;
                 Thread.Sleep(250);
-                WindowHelper.Click(PArray[i].WindowTitle, CSGOCoefficients.Accept, false);
+                WindowHelper.Click(PArray[i].WindowTitle, CSGOCoefficients.Accept);
                 Thread.Sleep(250);
             }
             InvokeUI(() =>
@@ -1166,14 +1166,14 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private async void AutomationTgl(object sender, RoutedEventArgs e)
+        private void AutomationTgl(object sender, RoutedEventArgs e)
         {
-            await CSGOIntercation.GatherLobby();
+            _ = Task.Run(() => CSGOIntercation.GatherLobby());
         }
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept, false);
+            WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept);
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)

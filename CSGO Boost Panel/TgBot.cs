@@ -262,6 +262,10 @@ namespace CSGO_Boost_Panel
         private static async void PlayOne(object sender, MessageEventArgs messageEventArgs)
         {
             Message message = messageEventArgs.Message;
+            botClient.OnMessage -= PlayOne;
+            botClient.OnMessageEdited -= PlayOne;
+            botClient.OnMessage += BotOnMessageReceivedCatch;
+            botClient.OnMessageEdited += BotOnMessageReceivedCatch;
             if (Int16.TryParse(message.Text.Split(' ')[0], out short result) && result < 11 && result > 0)
             {
                 await RestartCSGO(result);
@@ -280,10 +284,6 @@ namespace CSGO_Boost_Panel
             }
             else
                 await Usage(message);
-            botClient.OnMessage -= PlayOne;
-            botClient.OnMessageEdited -= PlayOne;
-            botClient.OnMessage += BotOnMessageReceivedCatch;
-            botClient.OnMessageEdited += BotOnMessageReceivedCatch;
         }
 
         static async Task Usage(Message message)
