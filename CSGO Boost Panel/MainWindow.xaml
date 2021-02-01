@@ -186,7 +186,7 @@
                         <BeginStoryboard Name="Storyboard">
                             <Storyboard BeginTime="00:00:00">
                                 <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" 
-                                                    Duration="00:00:00.15" To="Transparent" />
+                                                    Duration="00:00:00.15" From="#939598" To="Transparent" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -224,6 +224,12 @@
                         <ColumnDefinition Width="112"></ColumnDefinition>
                         <ColumnDefinition Width="175"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
+                    <Grid x:Name="AdditionOptions" IsEnabled="False" Grid.ColumnSpan="3" Margin="10,209,8,211">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Click="AutomationTgl" Content="Gather Lobbies" mah:ControlsHelper.ContentCharacterCasing="Normal" Padding="0" Width="120" Height="23" MinHeight="0" Background="#FFE6FFB9" BorderBrush="Black"/>
+                    </Grid>
                     <Grid x:Name="controlContainer" Grid.Column="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20"/>
@@ -581,21 +587,21 @@
                     <TextBlock HorizontalAlignment="Left" Margin="639,55,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Grid.Row="1"/>
                     <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,54,104,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings" Grid.Row="1"/>
                     <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,54,35,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="481,105,0,255" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="481,142,0,218" Content="AutoDisconnect" Grid.Row="1"/>
-                    <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" mah:ControlsHelper.ContentCharacterCasing="Normal" Margin="644,146,76,220" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="496,117,0,243" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="496,154,0,206" Content="AutoDisconnect" Grid.Row="1"/>
+                    <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="658,158,62,208" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="Sounds" Toggled="SettingsTgl" Margin="481,179,0,181" Content="Sounds" Grid.Row="1" Width="111"/>
-                    <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" mah:ControlsHelper.ContentCharacterCasing="Normal" Margin="593,184,127,182" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                    <mah:ToggleSwitch x:Name="Sounds" Toggled="SettingsTgl" Margin="496,191,0,169" Content="Sounds" Grid.Row="1" Width="111"/>
+                    <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="607,194,113,170" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="Automation" Toggled="AutomationTgl" Margin="481,216,0,144" Content="Gather Lobbies" Grid.Row="1"/>
-                    <mah:ToggleSwitch Margin="481,253,0,107" Content="Automation" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
+                    <mah:ToggleSwitch x:Name="Focus" Toggled="SettingsTgl" Margin="496,227,0,133" Content="Focus windows" Grid.Row="1"/>
+                    <mah:ToggleSwitch Margin="496,263,0,97" Content="Automation" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Width="100" Background="{x:Null}" Margin="340,193,279,167" Checked="WinTeamTie_Checked" Grid.Row="1"/>
-                    <Grid x:Name="SoundSettings" Margin="357,58,146,204" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
+                    <Grid x:Name="SoundSettings" Margin="372,69,131,193" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -610,7 +616,7 @@
                         <mah:ToggleSwitch x:Name="MatchEndedSound" Grid.Row="1" Toggled="SettingsTgl" Grid.Column="1" IsOn="True" Content="Match ended"/>
                         <mah:ToggleSwitch x:Name="RoundLastsSound" Toggled="SettingsTgl" Grid.Row="2" Grid.Column="1" IsOn="True" Content="Round lasts 35 seconds"/>
                     </Grid>
-                    <Grid x:Name="DisconnectSettings" Margin="408,96,95,242" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
+                    <Grid x:Name="DisconnectSettings" Margin="422,108,81,230" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                         </Grid.RowDefinitions>

@@ -216,7 +216,7 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect };
+            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, Focus };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
@@ -379,6 +379,7 @@ namespace CSGO_Boost_Panel
             if (CSGOsRunning.IsChecked == true)
                 CSGOsRunning.IsChecked = false;
             exChange.IsEnabled = true;
+            AdditionOptions.IsEnabled = true;
         }
 
         private void Stop(object sender, RoutedEventArgs e)
@@ -443,6 +444,7 @@ namespace CSGO_Boost_Panel
                 choosedObj.BorderBrush = null;
             choosed = false;
             controlContainer.IsEnabled = true;
+            AdditionOptions.IsEnabled = false;
             exChange.IsEnabled = false;
             ClearButton.IsEnabled = true;
         }
@@ -1168,6 +1170,8 @@ namespace CSGO_Boost_Panel
 
         private async void AutomationTgl(object sender, RoutedEventArgs e)
         {
+            if (!on)
+                return;
             await CSGOIntercation.GatherLobby();
         }
 

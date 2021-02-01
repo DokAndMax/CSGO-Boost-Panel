@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using CSGO_Boost_Panel;
-using System.Windows;
+using static CSGO_Boost_Panel.MainWindow;
 
 namespace CSGO_Boost_Panel
 {
@@ -32,7 +28,7 @@ namespace CSGO_Boost_Panel
 
     public class WindowHelper
     {
-        static readonly IntPtr wParam = IntPtr.Zero;
+        static readonly IntPtr zero = IntPtr.Zero;
         [DllImport("User32.DLL")]
         static extern int PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
@@ -53,6 +49,9 @@ namespace CSGO_Boost_Panel
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
         public static extern bool IsIconic(IntPtr handle);
 
         static IntPtr MakeLParam(int x, int y) => (IntPtr)((y << 16) | (x & 0xFFFF));
@@ -64,7 +63,11 @@ namespace CSGO_Boost_Panel
         const int WM_CHAR = 0x0102;
         const int WM_KEYDOWN = 0x0100;
         const int WM_KEYUP = 0x0101;
+        const int WM_PASTE = 0x0302;
         const int VK_RETURN = 0x0D;
+        const int VK_CONTROL = 0x11;
+        const int VK_V = 0x56;
+        public const int VK_MENU = 0x12;
         public const int VK_ESCAPE = 0x1B;
         public const int VK_F10 = 0x79;
 
@@ -81,9 +84,11 @@ namespace CSGO_Boost_Panel
         public static void Click(string WinTitle, CSGOCoefficients Coefficient, bool MouseMove = false)
         {
             Rect WindowRect = new Rect();
-            IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
+            IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             if (IsIconic(WindowHWND))
                 ShowWindow(WindowHWND, 4);
+            if(settingsObj.Value<bool>("Focus"))
+                SetForegroundWindow(WindowHWND);
             GetClientRect(WindowHWND, ref WindowRect);
             int CoordX = Convert.ToInt16(WindowRect.Right / Coefficient.XCoefficient);
             if (Coefficient.RectPosX == 2)
@@ -92,33 +97,37 @@ namespace CSGO_Boost_Panel
             if (Coefficient.RectPosY == 2)
                 CoordY = WindowRect.Bottom - CoordY;
             IntPtr lParam = MakeLParam(CoordX, CoordY);
-            PostMessage(WindowHWND, WM_MOUSEMOVE, wParam, lParam);
+            PostMessage(WindowHWND, WM_MOUSEMOVE, zero, lParam);
             if (MouseMove)
                 return;
             PostMessage(WindowHWND, WM_LBUTTONDOWN, (IntPtr)MK_LBUTTON, lParam);
-            PostMessage(WindowHWND, WM_LBUTTONUP, wParam, lParam);
+            PostMessage(WindowHWND, WM_LBUTTONUP, zero, lParam);
         }
 
         public static void SendText(string WinTitle, string text)
         {
-            IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
+            IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             foreach (char c in text)
             {
                 IntPtr lParam = new IntPtr(c);
-                PostMessage(WindowHWND, WM_CHAR, lParam, wParam);
+                PostMessage(WindowHWND, WM_CHAR, lParam, zero);
             }
-            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)VK_RETURN, wParam);
-            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)VK_RETURN, wParam);
+            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)VK_RETURN, zero);
+            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)VK_RETURN, zero);
         }
         public static void SendKey(string WinTitle, int key)
         {
-            IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
-            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)key, wParam);
-            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)key, wParam);
+            IntPtr lParam = IntPtr.Zero;
+            if (key == VK_F10)
+                lParam = (IntPtr)0x00440001;
+            IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
+            PostMessage(WindowHWND, WM_KEYDOWN, (IntPtr)key, lParam);
+            PostMessage(WindowHWND, WM_KEYUP, (IntPtr)key, lParam);
         }
+
         public static void GetRect(string WinTitle, ref Rect WindowRect)
         {
-            IntPtr WindowHWND = FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle);
+            IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             GetWindowRect(WindowHWND, ref WindowRect);
         }
     }
