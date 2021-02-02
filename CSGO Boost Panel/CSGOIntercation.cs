@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using MahApps.Metro.Controls;
 using System.Windows;
 using static CSGO_Boost_Panel.MainWindow;
 using System.Threading;
@@ -84,10 +82,14 @@ namespace CSGO_Boost_Panel
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.FriendCodeField);
                 await Task.Delay(250);
                 string ClipboardText = "unkown";
-                RunAsSTAThread( () =>
+                void somethingToRunInThread()
                 {
                     ClipboardText = Clipboard.GetText();
-                });
+                }
+                Thread clipboardThread = new Thread(somethingToRunInThread);
+                clipboardThread.SetApartmentState(ApartmentState.STA);
+                clipboardThread.IsBackground = false;
+                clipboardThread.Start();
                 WindowHelper.SendText(ldrTitles[n], ClipboardText);
                 await Task.Delay(250);
                 //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.СheckMark);
@@ -171,22 +173,5 @@ namespace CSGO_Boost_Panel
                 " " + PArray[WinNum-1].Position + " " + res);
             return Task.CompletedTask;
        }
-
-        static void RunAsSTAThread(Action goForIt)
-        {
-            AutoResetEvent @event = new AutoResetEvent(false);
-            Thread thread = new Thread(
-                () =>
-                {
-                    goForIt();
-                    @event.Set();
-                });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            @event.WaitOne();
-        }
-
-        [DllImport("user32.dll")]
-       private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }

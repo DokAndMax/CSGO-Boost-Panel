@@ -905,9 +905,8 @@ namespace CSGO_Boost_Panel
                         {
                             for (short i = 0; i < TWinTitle[b].Count; i++)
                             {
-                                await Task.Delay(250);
+                                await Task.Delay(200);
                                 WindowHelper.SendKey(TWinTitle[b][i], WindowHelper.VK_F10);
-                                await Task.Delay(250);
                             }
                         }
                     }

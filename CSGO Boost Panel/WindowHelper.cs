@@ -48,13 +48,14 @@ namespace CSGO_Boost_Panel
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
         [DllImport("user32.dll")]
         public static extern bool IsIconic(IntPtr handle);
 
         static IntPtr MakeLParam(int x, int y) => (IntPtr)((y << 16) | (x & 0xFFFF));
+
 
         const int WM_LBUTTONUP = 0x202;
         const int WM_LBUTTONDOWN = 0x201;
@@ -66,6 +67,8 @@ namespace CSGO_Boost_Panel
         const int WM_PASTE = 0x0302;
         const int VK_RETURN = 0x0D;
         const int VK_CONTROL = 0x11;
+        const int SWP_NOMOVE = 0x0002;
+        const int SWP_NOSIZE = 0x0001;
         const int VK_V = 0x56;
         public const int VK_MENU = 0x12;
         public const int VK_ESCAPE = 0x1B;
@@ -73,7 +76,7 @@ namespace CSGO_Boost_Panel
 
         public static bool IsExist(string WinTitle)
         {
-            return FindWindowEx(IntPtr.Zero, IntPtr.Zero, null, WinTitle) != IntPtr.Zero;
+            return FindWindowEx(zero, zero, null, WinTitle) != zero;
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace CSGO_Boost_Panel
             if (IsIconic(WindowHWND))
                 ShowWindow(WindowHWND, 4);
             if(settingsObj.Value<bool>("Focus"))
-                SetForegroundWindow(WindowHWND);
+                SetWindowPos(WindowHWND, zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             GetClientRect(WindowHWND, ref WindowRect);
             int CoordX = Convert.ToInt16(WindowRect.Right / Coefficient.XCoefficient);
             if (Coefficient.RectPosX == 2)
