@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using static CSGO_Boost_Panel.MainWindow;
 
 namespace CSGO_Boost_Panel
@@ -36,6 +37,11 @@ namespace CSGO_Boost_Panel
             string lpszClass, string lpszWindow);
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref Rect rectangle);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
         public struct Rect
@@ -47,9 +53,6 @@ namespace CSGO_Boost_Panel
         }
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
         [DllImport("user32.dll")]
         public static extern bool IsIconic(IntPtr handle);
@@ -64,15 +67,13 @@ namespace CSGO_Boost_Panel
         const int WM_CHAR = 0x0102;
         const int WM_KEYDOWN = 0x0100;
         const int WM_KEYUP = 0x0101;
-        const int WM_PASTE = 0x0302;
         const int VK_RETURN = 0x0D;
-        const int VK_CONTROL = 0x11;
-        const int SWP_NOMOVE = 0x0002;
-        const int SWP_NOSIZE = 0x0001;
-        const int VK_V = 0x56;
+        const int ALT = 0xA4;
+        const int EXTENDEDKEY = 0x1;
+        const int KEYUP = 0x2;
         public const int VK_MENU = 0x12;
         public const int VK_ESCAPE = 0x1B;
-        public const int VK_F10 = 0x79;
+        public const int VK_F10 = 0x79; 
 
         public static bool IsExist(string WinTitle)
         {
@@ -90,8 +91,12 @@ namespace CSGO_Boost_Panel
             IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             if (IsIconic(WindowHWND))
                 ShowWindow(WindowHWND, 4);
-            if(settingsObj.Value<bool>("Focus"))
-                SetWindowPos(WindowHWND, zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            if (settingsObj.Value<bool>("Focus"))
+            {
+                keybd_event((byte)ALT, 0x45, EXTENDEDKEY | 0, 0);
+                keybd_event((byte)ALT, 0x45, EXTENDEDKEY | KEYUP, 0);
+                SetForegroundWindow(WindowHWND);
+            }
             GetClientRect(WindowHWND, ref WindowRect);
             int CoordX = Convert.ToInt16(WindowRect.Right / Coefficient.XCoefficient);
             if (Coefficient.RectPosX == 2)

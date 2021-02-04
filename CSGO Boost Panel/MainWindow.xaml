@@ -253,33 +253,33 @@
                             <ColumnDefinition Width="162"/>
                             <ColumnDefinition Width="182"/>
                         </Grid.ColumnDefinitions>
-                        <Ellipse x:Name="Status1" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse x:Name="Status2" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status3" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status4" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status5" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status6" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status7" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status8" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status9" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status10" Fill="{Binding Path=Status}" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton1" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton2" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton3" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton4" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton5" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton6" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton7" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton8" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton9" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton10" IsOn="{Binding Path=State}" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <Ellipse x:Name="Status1" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="Status2" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status3" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status4" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status5" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status6" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status7" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status8" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status9" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status10" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton1" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton2" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton3" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton4" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton5" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton6" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton7" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton8" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton9" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton10" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
 
                         <TextBox x:Name="Login1" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <TextBox x:Name="Login2" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <TextBox x:Name="Login3" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <TextBox x:Name="Login4" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <TextBox x:Name="Login5" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <PasswordBox x:Name="Password1" MaxLength="250" Grid.Column="4" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
+                        <PasswordBox Style="{StaticResource MahApps.Styles.PasswordBox.Button.Revealed}" x:Name="Password1" MaxLength="250" Grid.Column="4" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password2" MaxLength="250" Grid.Column="4" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password3" MaxLength="250" Grid.Column="4" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password4" MaxLength="250" Grid.Column="4" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
@@ -394,34 +394,34 @@
                             <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
                         </Button>
 
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="1" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="0" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="2" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="2" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="2" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="1" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="3" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="3" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="3" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="2" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="4" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="4" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="4" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="3" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="5" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="5" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="5" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="4" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="7" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="6" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="7" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="5" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="8" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="7" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="8" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="6" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="9" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="8" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="9" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="7" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="10" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="9" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="10" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="8" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="11" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="10" Foreground="White" Click="ExChangeBot" BorderThickness="1">
+                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="11" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="9" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
                     </Grid>
@@ -596,7 +596,7 @@
                     <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="607,194,113,170" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="Focus" Toggled="SettingsTgl" Margin="496,227,0,133" Content="Focus windows" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="FocusWindows" Toggled="SettingsTgl" Margin="496,227,0,133" Content="Focus windows" Grid.Row="1"/>
                     <mah:ToggleSwitch Margin="496,263,0,97" Content="Automation" Toggled="RankBoostTgl" Grid.Row="1" DataContext="AutoBoost"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Width="100" Background="{x:Null}" Margin="340,105,279,255" Checked="WinTeam1_Checked" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Width="100" Background="{x:Null}" Margin="340,149,279,211" Checked="WinTeam2_Checked" Grid.Row="1"/>

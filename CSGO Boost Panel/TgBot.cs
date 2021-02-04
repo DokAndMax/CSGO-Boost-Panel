@@ -227,7 +227,7 @@ namespace CSGO_Boost_Panel
             {
                 if (string.IsNullOrEmpty(PArray[i].WindowTitle))
                     continue;
-                if (PArray[i].Status == Red)
+                if (PArray[i].IsStarted == Red)
                     status = " 🔴 ";
                 else
                     status = " 🟢 ";
@@ -277,7 +277,7 @@ namespace CSGO_Boost_Panel
                 {
                     if (string.IsNullOrEmpty(PArray[i-1].WindowTitle))
                         continue;
-                    if (PArray[i-1].Status == Red)
+                    if (PArray[i-1].IsStarted == Red)
                         await RestartCSGO(i);
                 }
                 SendNotify("ok");

@@ -82,14 +82,10 @@ namespace CSGO_Boost_Panel
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.FriendCodeField);
                 await Task.Delay(250);
                 string ClipboardText = "unkown";
-                void somethingToRunInThread()
+                RunAsSTAThread(() =>
                 {
                     ClipboardText = Clipboard.GetText();
-                }
-                Thread clipboardThread = new Thread(somethingToRunInThread);
-                clipboardThread.SetApartmentState(ApartmentState.STA);
-                clipboardThread.IsBackground = false;
-                clipboardThread.Start();
+                });
                 WindowHelper.SendText(ldrTitles[n], ClipboardText);
                 await Task.Delay(250);
                 //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.СheckMark);
@@ -133,7 +129,7 @@ namespace CSGO_Boost_Panel
 
        public static Task RestartCSGO(short WinNum)
        {
-            if (!PArray[WinNum - 1].State || string.IsNullOrEmpty(PArray[WinNum - 1].Login))
+            if (!PArray[WinNum - 1].IsOn || string.IsNullOrEmpty(PArray[WinNum - 1].Login))
                 return Task.CompletedTask;
             string res;
             foreach (Process proc in  Process.GetProcessesByName("steam"))
@@ -173,5 +169,18 @@ namespace CSGO_Boost_Panel
                 " " + PArray[WinNum-1].Position + " " + res);
             return Task.CompletedTask;
        }
+        static void RunAsSTAThread(Action goForIt)
+        {
+            AutoResetEvent @event = new AutoResetEvent(false);
+            Thread thread = new Thread(
+                () =>
+                {
+                    goForIt();
+                    @event.Set();
+                });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            @event.WaitOne();
+        }
     }
 }

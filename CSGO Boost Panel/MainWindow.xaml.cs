@@ -216,7 +216,7 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, Focus };
+            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, FocusWindows };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
@@ -306,7 +306,7 @@ namespace CSGO_Boost_Panel
             string[] Names = { "LEADER", "BOT" }, Res = { LeaderResX.Text + " " + LeaderResY.Text, BotResX.Text + " " + BotResY.Text };
             for (short i = 0, n = 0, l = 0; i < 10; i++)
             {
-                if (PArray[i].State)
+                if (PArray[i].IsOn)
                 {
                     if (string.IsNullOrEmpty(PArray[i].Login) || string.IsNullOrEmpty(Password[i].Password))
                     {
@@ -389,7 +389,7 @@ namespace CSGO_Boost_Panel
                 JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
                 for (int i = 0; i < 10; i++)
                 {
-                    if (PArray[i].State && WindowHelper.IsExist(PArray[i].WindowTitle))
+                    if (PArray[i].IsOn && WindowHelper.IsExist(PArray[i].WindowTitle))
                     {
                         int x;
                         WindowHelper.Rect WindowRect = new WindowHelper.Rect();
@@ -436,7 +436,7 @@ namespace CSGO_Boost_Panel
             for (short i = 0; i < 2; i++)
                 Status[i].Fill = Red;
             for (short i = 0; i < 10; i++)
-                PArray[i].Status = Red;
+                PArray[i].IsStarted = Red;
             on = false;
             WarmUp = false;
             connected = false;
@@ -481,7 +481,7 @@ namespace CSGO_Boost_Panel
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = PArray[i].State;
+                    lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Toggled"] = PArray[i].IsOn;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Login"] = PArray[i].Login.ToLower();
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["Password"] = Password[i].Password;
                     lobbiesObj[PresetName.Text]["Acc" + (i + 1)]["SteamID64"] = accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown";
@@ -592,7 +592,7 @@ namespace CSGO_Boost_Panel
             loadedPreset = _items[lobbiesList.SelectedIndex].Name;
             for (int i = 0; i < 10; i++)
             {
-                PArray[i].State = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
+                PArray[i].IsOn = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
                 PArray[i].Login = AccObj["Acc" + (i + 1)].Value<string>("Login");
                 Password[i].Password = AccObj["Acc" + (i + 1)].Value<string>("Password");
                 PArray[i].Position = lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"].ToString();
@@ -1101,22 +1101,24 @@ namespace CSGO_Boost_Panel
             {
                 choosedObj.BorderBrush = null;
                 choosed = false;
-                if (Convert.ToInt16(choosedObj.Tag) < 6 && Convert.ToInt16(((Button)sender).Tag) < 6 || Convert.ToInt16(choosedObj.Tag) > 5 && Convert.ToInt16(((Button)sender).Tag) > 5)
+                short ChoosedObjNum = Convert.ToInt16(choosedObj.Tag);
+                short ButtonSenderNum = Convert.ToInt16(((Button)sender).Tag);
+                if (ChoosedObjNum < 5 && ButtonSenderNum < 5 || (ChoosedObjNum > 4 && ButtonSenderNum > 4))
                     return;
-                if (!((ToggleSwitch)this.GetType().GetField("ToggleButton" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn || !((ToggleSwitch)this.GetType().GetField("ToggleButton" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
+                if (!PArray[ChoosedObjNum].IsOn || !PArray[ButtonSenderNum].IsOn)
                     return;
                 for (int i = 0, n = 0; i < 1 && n < 5; n++)
                 {
-                    if (((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n + 1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
+                    if (PArray[n].IsOn)
                     {
-                        if (Convert.ToInt16(choosedObj.Tag) < 6)
+                        if (ChoosedObjNum < 5)
                         {
-                            if (Convert.ToInt16(choosedObj.Tag) == (n + 1))
+                            if (ChoosedObjNum == n)
                                 return;
                         }
                         else
                         {
-                            if (Convert.ToInt16(((Button)sender).Tag) == (n + 1))
+                            if (ButtonSenderNum == n)
                                 return;
                         }
                         i++;
@@ -1125,39 +1127,43 @@ namespace CSGO_Boost_Panel
 
                 for (int i = 0, n = 5; i < 1 && n < 10; n++)
                 {
-                    if (((ToggleSwitch)this.GetType().GetField("ToggleButton" + (n + 1), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).IsOn)
+                    if (PArray[n].IsOn)
                     {
-                        if (Convert.ToInt16(choosedObj.Tag) > 5)
+                        if (ChoosedObjNum > 4)
                         {
-                            if (Convert.ToInt16(choosedObj.Tag) == (n + 1))
+                            if (ChoosedObjNum == n)
                                 return;
                         }
                         else
                         {
-                            if (Convert.ToInt16(((Button)sender).Tag) == (n + 1))
+                            if (ButtonSenderNum == n)
                                 return;
                         }
                         i++;
                     }
                 }
-                if (Convert.ToInt16(choosedObj.Tag) < 6)
+                if (ChoosedObjNum < 5)
                 {
-                    string changetitle = T1WinTitle[Convert.ToInt16(choosedObj.Tag) - 1];
-                    T1WinTitle[Convert.ToInt16(choosedObj.Tag) - 1] = T2WinTitle[Convert.ToInt16(((Button)sender).Tag) - 6];
-                    T2WinTitle[Convert.ToInt16(((Button)sender).Tag) - 6] = changetitle;
+                    string changetitle = T1WinTitle[ChoosedObjNum];
+                    T1WinTitle[ChoosedObjNum] = T2WinTitle[ButtonSenderNum - 5];
+                    T2WinTitle[ButtonSenderNum - 5] = changetitle;
                 }
                 else
                 {
-                    string changetitle = T2WinTitle[Convert.ToInt16(choosedObj.Tag) - 6];
-                    T2WinTitle[Convert.ToInt16(choosedObj.Tag) - 6] = T1WinTitle[Convert.ToInt16(((Button)sender).Tag) - 1];
-                    T1WinTitle[Convert.ToInt16(((Button)sender).Tag) - 1] = changetitle;
+                    string changetitle = T2WinTitle[ChoosedObjNum - 5];
+                    T2WinTitle[ChoosedObjNum - 5] = T1WinTitle[ButtonSenderNum];
+                    T1WinTitle[ButtonSenderNum] = changetitle;
                 }
-                string changeLog = ((TextBox)this.GetType().GetField("Login" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text;
-                ((TextBox)this.GetType().GetField("Login" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text = ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text;
-                ((TextBox)this.GetType().GetField("Login" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text = changeLog;
-                string changePass = ((PasswordBox)this.GetType().GetField("Password" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password;
-                ((PasswordBox)this.GetType().GetField("Password" + choosedObj.Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password = ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password;
-                ((PasswordBox)this.GetType().GetField("Password" + ((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Password = changePass;
+                string changeLog = PArray[ChoosedObjNum].Login;
+                PArray[ChoosedObjNum].Login = PArray[ButtonSenderNum].Login;
+                PArray[ButtonSenderNum].Login = changeLog;
+                PasswordBox[] passwordBox = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
+                string changePass = passwordBox[ChoosedObjNum].Password;
+                passwordBox[ChoosedObjNum].Password = passwordBox[ButtonSenderNum].Password;
+                passwordBox[ButtonSenderNum].Password = changePass;
+                PArray[ChoosedObjNum].Password = passwordBox[ChoosedObjNum].Password;
+                PArray[ButtonSenderNum].Password = passwordBox[ButtonSenderNum].Password;
+
             }
             else
             {
@@ -1176,7 +1182,7 @@ namespace CSGO_Boost_Panel
 
         private void RankBoostTgl(object sender, RoutedEventArgs e)
         {
-            //
+            //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept);
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
@@ -1191,13 +1197,13 @@ namespace CSGO_Boost_Panel
                 for (short i = 0; i < 10; i++)
                 {
                     short index = i;
-                    if (PArray[index].State && WindowHelper.IsExist(PArray[i].WindowTitle))
+                    if (PArray[index].IsOn && WindowHelper.IsExist(PArray[i].WindowTitle))
                     {
-                        PArray[index].Status = Brushes.Green;
+                        PArray[index].IsStarted = Brushes.Green;
                     }
                     else
                     {
-                        PArray[index].Status = Red;
+                        PArray[index].IsStarted = Red;
                     }
                 }
                 await Task.Delay(15000);
@@ -1222,12 +1228,10 @@ namespace CSGO_Boost_Panel
             {
                 string Team1String = Team1log.ReadToEnd();
                 string Team2String = Team2log.ReadToEnd();
-                string TeamString = Team1String;
+                string TeamString = Team1String + "\n" + Team2String;
                 for (short i = 1; i < 11; i++)
                 {
-                    if (i == 6)
-                        TeamString = Team2String;
-                    if (!accB[i - 1] && PArray[i - 1].State)
+                    if (!accB[i - 1] && PArray[i - 1].IsOn)
                     {
                         if (!string.IsNullOrEmpty(lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
                         {
