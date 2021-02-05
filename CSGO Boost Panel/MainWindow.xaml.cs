@@ -193,7 +193,7 @@ namespace CSGO_Boost_Panel
             if (!File.Exists("Settings.json"))
                 File.WriteAllText("Settings.json", "{}");
             settingsObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Settings.json"));
-            if (settingsObj.Property("SteamFolder") != null && String.IsNullOrEmpty(settingsObj.Value<string>("SteamFolder")))
+            if (settingsObj.Property("SteamFolder") != null && !String.IsNullOrEmpty(settingsObj.Value<string>("SteamFolder")))
             {
                 SteamFolder.Text = settingsObj.Value<string>("SteamFolder");
                 LoadSteamAccs();
@@ -215,7 +215,7 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, FocusWindows };
+            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, FocusWindows, Automation };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
@@ -293,7 +293,7 @@ namespace CSGO_Boost_Panel
                     return;
                 }
             }
-            if (settingsObj["CSGOFolder"] == null || settingsObj["SteamFolder"] == null)
+            if (string.IsNullOrEmpty(settingsObj.Value<string>("CSGOFolder")) || string.IsNullOrEmpty(settingsObj.Value<string>("SteamFolder")))
             {
                 InfoMessage(sender, "Please specify Steam and CSGO folders",  MessageBoxImage.Information);
                 return;
@@ -605,16 +605,16 @@ namespace CSGO_Boost_Panel
         }
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
-            LoadPreset(sender, e);
+            LoadPreset(sender, e, -1);
         }
         private void LoadPreset(object sender, MouseButtonEventArgs e, int num)
         {
             int index;
-            if (sender == null)
-                index = num;
-            else
+            if (num == -1)
                 index = lobbiesList.SelectedIndex;
-            if (lobbiesList.SelectedItem == null || on)
+            else
+                index = num;
+            if ((sender != null && lobbiesList.SelectedItem == null) || on)
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
             JObject AccObj = lobbiesObj.Property(_items[index].Name).Value.ToObject<JObject>();
