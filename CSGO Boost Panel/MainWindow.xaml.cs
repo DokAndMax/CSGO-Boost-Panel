@@ -52,18 +52,19 @@ namespace CSGO_Boost_Panel
         public static int LobbyCount = 0, RoundNumber = 0, DisNumber = 15, ZIndex = 0;
         public static bool on = false, freezetime = true, loaded = false, choosed = false, newRound = true, onemeth = true, connected = false;
         public static bool AutoAcceptRestartS = false, WarmUp = false, DisconnectActive = false;
-        public bool AutoBoost { get; set; }
         public static string AutoAcceptStatusCircle = "🔴", PlayerStatusCircle = "🔴";
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
         public Button choosedObj;
         public static Brush Red = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
         static public LobbyPlayer[] PArray = new LobbyPlayer[10];
-
         public MainWindow()
         {
             InitializeComponent();
             Loaded += LoadSettings;
 
+            #if DEBUG
+            TestBtn.Visibility = Visibility.Visible;
+            #endif
             for (short i = 0; i < 10; i++)
                 PArray[i] = new LobbyPlayer();
             TextBox[] Login = { Login1, Login2, Login3, Login4, Login5, Login6, Login7, Login8, Login9, Login10 };
@@ -86,8 +87,7 @@ namespace CSGO_Boost_Panel
             if (on)
                 settingsObj["CSGOsRunning"] = true;
             File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
-            if (TgBot.BotIsOn)
-                TgBot.RemoveKeyboard();
+            TgBot.RemoveKeyboard();
             log.LogWrite("Exit");
             log.LogWrite(e.ExceptionObject.ToString() + "\n Crash");
         }
@@ -104,7 +104,7 @@ namespace CSGO_Boost_Panel
             return FindVisualParent<T>(parentObject);
         }
 
-        private readonly IList<Item> _items = new ObservableCollection<Item>();
+        public static readonly IList<Item> _items = new ObservableCollection<Item>();
         private readonly IList<Player> _player = new ObservableCollection<Player>();
 
         private void ListBox_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -169,8 +169,7 @@ namespace CSGO_Boost_Panel
         private void Application_Exit(object sender, EventArgs e)
         {
             File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
-            if (TgBot.BotIsOn)
-                TgBot.RemoveKeyboard();
+            TgBot.RemoveKeyboard();
             log.LogWrite("Exit");
             Environment.Exit(0);
         }
@@ -194,7 +193,7 @@ namespace CSGO_Boost_Panel
             if (!File.Exists("Settings.json"))
                 File.WriteAllText("Settings.json", "{}");
             settingsObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Settings.json"));
-            if (settingsObj.Property("SteamFolder") != null && settingsObj.Value<dynamic>("SteamFolder") != null)
+            if (settingsObj.Property("SteamFolder") != null && String.IsNullOrEmpty(settingsObj.Value<string>("SteamFolder")))
             {
                 SteamFolder.Text = settingsObj.Value<string>("SteamFolder");
                 LoadSteamAccs();
@@ -277,26 +276,26 @@ namespace CSGO_Boost_Panel
             tab.SelectedIndex = 3;
         }
 
-        private async void Start(object sender, RoutedEventArgs e)
+        public async void Start(object sender, RoutedEventArgs e)
         {
             if (on)
                 return;
             if (!File.Exists("Settings.json"))
             {
-                MessageBox.Show("Please specify Steam and CSGO folders");
+                InfoMessage(sender, "Please specify Steam and CSGO folders", MessageBoxImage.Information);
                 return;
             }
             else
             {
                 if (string.IsNullOrEmpty(File.ReadAllText("Settings.json")))
                 {
-                    MessageBox.Show("Please specify Steam and CSGO folders");
+                    InfoMessage(sender, "Please specify Steam and CSGO folders",  MessageBoxImage.Information);
                     return;
                 }
             }
             if (settingsObj["CSGOFolder"] == null || settingsObj["SteamFolder"] == null)
             {
-                MessageBox.Show("Please specify Steam and CSGO folders");
+                InfoMessage(sender, "Please specify Steam and CSGO folders",  MessageBoxImage.Information);
                 return;
             }
             List<String> Logins = new List<String>();
@@ -310,7 +309,7 @@ namespace CSGO_Boost_Panel
                 {
                     if (string.IsNullOrEmpty(PArray[i].Login) || string.IsNullOrEmpty(Password[i].Password))
                     {
-                        MessageBox.Show("Please type login or password");
+                        InfoMessage(sender, "Please type login or password",  MessageBoxImage.Information);
                         return;
                     }
                     if (accInfo[PArray[i].Login.ToLower()] == null)
@@ -318,7 +317,7 @@ namespace CSGO_Boost_Panel
                         LoadSteamAccs();
                         if (accInfo[PArray[i].Login.ToLower()] == null)
                         {
-                            MessageBox.Show("First login to this account: \"" + PArray[i].Login + "\" and then try again");
+                            InfoMessage(sender, "First login to this account: \"" + PArray[i].Login + "\" and then try again",  MessageBoxImage.Information);
                             return;
                         }
                     }
@@ -348,7 +347,7 @@ namespace CSGO_Boost_Panel
             }
             if (Logins.Count < 1)
             {
-                MessageBox.Show("Please turn on at least one account");
+                InfoMessage(sender, "Please turn on at least one account", MessageBoxImage.Information);
                 return;
             }
             controlContainer.IsEnabled = false;
@@ -366,9 +365,9 @@ namespace CSGO_Boost_Panel
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
                 WinTeam1.IsChecked = true;
             if (!gslT1.Start())
-                MessageBox.Show("Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC");
+                InfoMessage(sender, "Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC", MessageBoxImage.Warning);
             if (!gslT2.Start())
-                MessageBox.Show("Cannot start GameStateListener #2. AutoDisconnect won't work! Try reboot your PC");
+                InfoMessage(sender, "Cannot start GameStateListener #2. AutoDisconnect won't work! Try reboot your PC", MessageBoxImage.Warning);
             if (AutoAccept.IsOn)
             {
                 _ = Task.Run(() => AutoAcceptFunc());
@@ -381,8 +380,25 @@ namespace CSGO_Boost_Panel
             exChange.IsEnabled = true;
             AdditionOptions.IsEnabled = true;
         }
+        private void InfoMessage(object sender, string message, MessageBoxImage type)
+        {
+            if (sender != null)
+                MessageBox.Show(message, "", MessageBoxButton.OK, type);
+            else
+            {
+                string emoji = "";
+                if (type == MessageBoxImage.Information)
+                {
+                    emoji = "ℹ️  ";
+                    TgBot.StartResult = false;
+                }
+                else if (type == MessageBoxImage.Warning)
+                    emoji = "⚠️  ";
+                TgBot.SendNotify(emoji + message);
+            }
+        }
 
-        private void Stop(object sender, RoutedEventArgs e)
+        public void Stop(object sender, RoutedEventArgs e)
         {
             if (!controlContainer.IsEnabled)
             {
@@ -582,14 +598,28 @@ namespace CSGO_Boost_Panel
                 }
             }
         }
+
+        public void LoadPreset(int num)
+        {
+            LoadPreset(null, null, num);
+        }
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
+            LoadPreset(sender, e);
+        }
+        private void LoadPreset(object sender, MouseButtonEventArgs e, int num)
+        {
+            int index;
+            if (sender == null)
+                index = num;
+            else
+                index = lobbiesList.SelectedIndex;
             if (lobbiesList.SelectedItem == null || on)
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
-            JObject AccObj = lobbiesObj.Property(_items[lobbiesList.SelectedIndex].Name).Value.ToObject<JObject>();
+            JObject AccObj = lobbiesObj.Property(_items[index].Name).Value.ToObject<JObject>();
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            loadedPreset = _items[lobbiesList.SelectedIndex].Name;
+            loadedPreset = _items[index].Name;
             for (int i = 0; i < 10; i++)
             {
                 PArray[i].IsOn = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
@@ -918,7 +948,7 @@ namespace CSGO_Boost_Panel
                         mediaPlayer.Load();
                         mediaPlayer.Play();
                     }
-                    if (TgBot.BotIsOn && MainWindow.settingsObj.Value<bool>("notifies"))
+                    if (MainWindow.settingsObj.Value<bool>("notifies"))
                         TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
                     if (settingsObj.Value<short>("WinTeam") == 2 && settingsObj.Value<bool>("AutoDisconnect"))
                     {
@@ -932,6 +962,11 @@ namespace CSGO_Boost_Panel
                             WinTeam.NewGameState += RoundLong;
                         else
                             WinTeam.NewGameState += Round;
+                    }
+                    if(settingsObj.Value<bool>("Automation"))
+                    {
+                        await CSGOIntercation.GatherLobby();
+                        await CSGOIntercation.StartSearching(3);
                     }
                 }
 
@@ -972,7 +1007,7 @@ namespace CSGO_Boost_Panel
                                 mediaPlayer.Load();
                                 mediaPlayer.Play();
                             }
-                            if (TgBot.BotIsOn && MainWindow.settingsObj.Value<bool>("notifies"))
+                            if (MainWindow.settingsObj.Value<bool>("notifies"))
                                 TgBot.SendNotify("Check your game! Round lasts more than 35 seconds");
                             break;
                         }
@@ -1034,7 +1069,7 @@ namespace CSGO_Boost_Panel
                 mediaPlayer.Load();
                 mediaPlayer.Play();
             }
-            if (TgBot.BotIsOn && MainWindow.settingsObj.Value<bool>("notifies"))
+            if (MainWindow.settingsObj.Value<bool>("notifies"))
                 TgBot.SendNotify("Match found");
             for (int i = 0; i < 10; i++)
             {
@@ -1173,21 +1208,29 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private async void AutomationTgl(object sender, RoutedEventArgs e)
+        private async void GatherLobbies(object sender, RoutedEventArgs e)
         {
             if (!on)
                 return;
             await CSGOIntercation.GatherLobby();
         }
 
-        private void RankBoostTgl(object sender, RoutedEventArgs e)
+        private void TestButton(object sender, RoutedEventArgs e)
         {
-            //WindowHelper.Click("Counter-Strike: Global Offensive", CSGOCoefficients.Accept);
+            string a = _items[0].Name;
+            MessageBox.Show(a);
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
         {
-            Process.Start(@"BES\BES.exe");
+            try
+            {
+                Process.Start(@"BES\BES.exe");
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("File not found", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async void AccountChecker()

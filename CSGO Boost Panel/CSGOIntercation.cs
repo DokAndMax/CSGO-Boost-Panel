@@ -63,7 +63,7 @@ namespace CSGO_Boost_Panel
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons, true);
                 await Task.Delay(1000);
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.RightMenuButtons);
-                await Task.Delay(250);
+                await Task.Delay(500);
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.AddFriend);
                 await Task.Delay(250);
                 WindowHelper.Click(TeamWinTitle[i], CSGOCoefficients.CopyCode);
@@ -74,7 +74,7 @@ namespace CSGO_Boost_Panel
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons, true);
                 await Task.Delay(1000);
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.RightMenuButtons);
-                await Task.Delay(250);
+                await Task.Delay(500);
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend);
                 await Task.Delay(250);
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.AddFriend);

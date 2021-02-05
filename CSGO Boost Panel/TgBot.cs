@@ -14,7 +14,6 @@ using static CSGO_Boost_Panel.CSGOIntercation;
 using static CSGO_Boost_Panel.MainWindow;
 using System.Windows;
 using System.Collections.Generic;
-using System.Windows.Media;
 using System.Diagnostics;
 
 namespace CSGO_Boost_Panel
@@ -22,12 +21,13 @@ namespace CSGO_Boost_Panel
     class TgBot
     {
         private static TelegramBotClient botClient;
-        public static bool BotIsOn = false;
+        public static bool BotIsOn = false, StartResult = true;
 
         static readonly IEnumerable<IEnumerable<KeyboardButton>> keyboardRow = new KeyboardButton[][] {
-            new KeyboardButton[] { "/screenshot", "/gather", "/playone" },
-            new KeyboardButton[] { "/startsearch T1", "/startsearch T2", "/startsearch BOTH" },
-            new KeyboardButton[] { "/notify", "/info", "/shutdown" } };
+            new KeyboardButton[] { "Screenshot", "Gather", "Playone" },
+            new KeyboardButton[] { "Start", "Stop", "Change preset" },
+            new KeyboardButton[] { "Startsearch T1", "Startsearch T2", "Startsearch BOTH" },
+            new KeyboardButton[] { "Notify", "Info", "Shutdown" } };
         static readonly IReplyMarkup rmu = new ReplyKeyboardMarkup(keyboardRow, true, false);
 
         public static bool TestApiKey(string key)
@@ -59,6 +59,8 @@ namespace CSGO_Boost_Panel
 
         public static async void RemoveKeyboard()
         {
+            if (!BotIsOn)
+                return;
             await botClient.SendTextMessageAsync(
                 chatId: MainWindow.settingsObj.Value<String>("chatID"),
                 text: "Disconnected",
@@ -85,7 +87,7 @@ namespace CSGO_Boost_Panel
 
         public async static void SendNotify(string message)
         {
-            if (MainWindow.settingsObj.Value<String>("chatID") == null)
+            if (MainWindow.settingsObj.Value<String>("chatID") == null || !BotIsOn)
                 return;
             await botClient.SendTextMessageAsync(
               chatId: MainWindow.settingsObj.Value<String>("chatID"),
@@ -104,24 +106,24 @@ namespace CSGO_Boost_Panel
             switch (message.Text.Split(' ').First())
             {
                 // change notify settings
-                case "/notify":
+                case "Notify":
                     ChangeNotify(message);
                     break;
 
                 // send a screenshot
-                case "/screenshot":
+                case "Screenshot":
                     await SendScreenshot(message);
                     break;
 
                 // soon
-                case "/startsearch":
+                case "Startsearch":
                     if (!Check()) return;
                     await StartSearch(message);
                     SendNotify("ok");
                     break;
 
                 // soon
-                case "/gather":
+                case "Gather":
                     if (!Check()) return;
                     await GatherLobby();
                     await Task.Delay(2000);
@@ -131,7 +133,7 @@ namespace CSGO_Boost_Panel
                     break;
 
                 //
-                case "/playone":
+                case "Playone":
                     if (!Check()) return;
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
                     botClient.OnMessageEdited -= BotOnMessageReceivedCatch;
@@ -149,19 +151,67 @@ namespace CSGO_Boost_Panel
                     break;
 
                 // soon
-                case "/info":
+                case "Info":
                     if (!Check()) return;
                     SendInfo(message);
                     break;
 
                 //
-                case "/shutdown":
+                case "Shutdown":
                     var psi = new ProcessStartInfo("shutdown", "/sg /t 0")
                     {
                         CreateNoWindow = true,
                         UseShellExecute = false
                     };
                     Process.Start(psi);
+                    break;
+
+                    //
+                case "Start":
+                    if (on)
+                    {
+                        SendNotify("Boost is already running");
+                        return;
+                    }
+                    Application.Current.Dispatcher.Invoke(delegate {
+                        (Application.Current.MainWindow as MainWindow).Start(null, null);
+                    });
+                    if (StartResult)
+                    {
+                        SendNotify("ok");
+                    }
+                    StartResult = true;
+                    break;
+
+                    //
+                case "Stop":
+                    Application.Current.Dispatcher.Invoke(delegate {
+                        (Application.Current.MainWindow as MainWindow).Stop(null, null);
+                    });
+                    SendNotify("ok");
+                    break;
+
+                    //
+                case "Change":
+                    if (on)
+                    {
+                        SendNotify("Boost is already running");
+                        return;
+                    }
+                    string a = "";
+                    for (short i = 0; i < _items.Count; i++)
+                    {
+                        a += (i + 1) + " Lobby name: " + _items[i].Name + "\n";
+                    }
+                    botClient.OnMessage -= BotOnMessageReceivedCatch;
+                    botClient.OnMessageEdited -= BotOnMessageReceivedCatch;
+                    botClient.OnMessage += LoadPreset;
+                    botClient.OnMessageEdited += LoadPreset;
+                    await botClient.SendTextMessageAsync(
+                        chatId: MainWindow.settingsObj.Value<String>("chatID"),
+                        text: a,
+                        replyMarkup: new ReplyKeyboardRemove()
+                    );
                     break;
 
                 default:
@@ -242,7 +292,7 @@ namespace CSGO_Boost_Panel
         {
             if (message.Text.Split(' ').Length != 2)
             {
-                SendNotify("/startsearch (T1, T2, BOTH)");
+                SendNotify("Startsearch (T1, T2, BOTH)");
                 return;
             }
             switch (message.Text.Split(' ')[1].ToLower())
@@ -286,16 +336,37 @@ namespace CSGO_Boost_Panel
                 await Usage(message);
         }
 
+        private static void LoadPreset(object sender, MessageEventArgs messageEventArgs)
+        {
+            Message message = messageEventArgs.Message;
+            botClient.OnMessage -= LoadPreset;
+            botClient.OnMessageEdited -= LoadPreset;
+            botClient.OnMessage += BotOnMessageReceivedCatch;
+            botClient.OnMessageEdited += BotOnMessageReceivedCatch;
+            if (Int16.TryParse(message.Text.Split(' ')[0], out short result) && result <= _items.Count && result > 0)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    (Application.Current.MainWindow as MainWindow).LoadPreset(result-1);
+                });
+                SendNotify("ok");
+            }
+            else
+            {
+                SendNotify("Wrong number");
+            }
+        }
+
         static async Task Usage(Message message)
         {
             const string usage = "Використання:\n" +
-                                    "/screenshot - зробити скріншот робочого столу\n" +
-                                    "/gather - зібрати всіх ботів у два лобі в грі\n" +
-                                    "/playone - перезапуск клієнта Steam і відповідно СSGO, якщо виникли проблеми\n" +
-                                    "/startsearch (T1, T2, BOTH) - почати пошук\n" +
-                                    "/notify - вимкнути / вимкнути сповіщення\n" +
-                                    "/info - інформація про активну сесію бусту\n" +
-                                    "/shutdown - вимнкути ПК";
+                                    "Screenshot - зробити скріншот робочого столу\n" +
+                                    "Gather - зібрати всіх ботів у два лобі в грі\n" +
+                                    "Playone - перезапуск клієнта Steam і відповідно СSGO, якщо виникли проблеми\n" +
+                                    "Startsearch (T1, T2, BOTH) - почати пошук\n" +
+                                    "Notify - вимкнути / увімкнути сповіщення\n" +
+                                    "Info - інформація про активну сесію бусту\n" +
+                                    "Shutdown - вимнкути ПК";
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: usage,
