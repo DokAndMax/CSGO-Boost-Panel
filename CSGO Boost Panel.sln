@@ -4,6 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30406.217
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSGO Boost Panel", "CSGO Boost Panel\CSGO Boost Panel.csproj", "{D0E30137-0E7C-4448-A872-EE421ECF0D23}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF} = {20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}
+		{C976D296-BCA1-4A79-9707-A48450873DB7} = {C976D296-BCA1-4A79-9707-A48450873DB7}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher\Launcher.csproj", "{C976D296-BCA1-4A79-9707-A48450873DB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "updater", "updater\updater\updater.csproj", "{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,11 +23,19 @@ Global
 		{D0E30137-0E7C-4448-A872-EE421ECF0D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0E30137-0E7C-4448-A872-EE421ECF0D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0E30137-0E7C-4448-A872-EE421ECF0D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C976D296-BCA1-4A79-9707-A48450873DB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C976D296-BCA1-4A79-9707-A48450873DB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C976D296-BCA1-4A79-9707-A48450873DB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C976D296-BCA1-4A79-9707-A48450873DB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D02E4F-97C9-48E5-A7D9-E6E2F231C8DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8D544DDB-9985-4EED-84E5-D202AC922172}
+		SolutionGuid = {2AAD9733-8BC9-44C1-9A02-A30E9419E30F}
 	EndGlobalSection
 EndGlobal

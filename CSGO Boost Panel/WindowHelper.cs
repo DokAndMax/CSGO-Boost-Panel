@@ -43,6 +43,9 @@ namespace CSGO_Boost_Panel
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
         [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+        [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
         public struct Rect
         {
@@ -137,6 +140,12 @@ namespace CSGO_Boost_Panel
         {
             IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             GetWindowRect(WindowHWND, ref WindowRect);
+        }
+
+        public static void EnableWindow(string WinTitle, bool enable)
+        {
+            IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
+            EnableWindow(WindowHWND, enable);
         }
     }
 }

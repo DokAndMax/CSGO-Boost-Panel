@@ -199,9 +199,10 @@ namespace CSGO_Boost_Panel
                         return;
                     }
                     string a = "";
+                    a += "Active preset:  " + ActivePreset + "\n\n";
                     for (short i = 0; i < _items.Count; i++)
                     {
-                        a += (i + 1) + " Lobby name: " + _items[i].Name + "\n";
+                        a += (i + 1) + "  Lobby name: " + _items[i].Name + "\n";
                     }
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
                     botClient.OnMessageEdited -= BotOnMessageReceivedCatch;
@@ -283,8 +284,9 @@ namespace CSGO_Boost_Panel
                     status = " 🟢 ";
                 info += (i+1) + "\t" + status + "\t-\t" + PArray[i].WindowTitle + "\n";
             }
-            info += "\n" + "AutoAccept:   " + AutoAcceptStatusCircle + "    Player Statistics:   " + PlayerStatusCircle;
-            info += "\n" + "Games played for: game session - " + GamesPlayerForGameSession + "; app session - " + GamesPlayerForAppSession;
+            info += "\nActive preset:  " + ActivePreset + "\n";
+            info += "\nAutoAccept:   " + AutoAcceptStatusCircle + "    Player Statistics:   " + PlayerStatusCircle + "\n";
+            info += "\nGames played for: game session - " + GamesPlayerForGameSession + "; app session - " + GamesPlayerForAppSession;
             SendNotify(info);
         }
 
@@ -363,6 +365,9 @@ namespace CSGO_Boost_Panel
                                     "Screenshot - зробити скріншот робочого столу\n" +
                                     "Gather - зібрати всіх ботів у два лобі в грі\n" +
                                     "Playone - перезапуск клієнта Steam і відповідно СSGO, якщо виникли проблеми\n" +
+                                    "Start - \n" +
+                                    "Stop - \n" +
+                                    "Change preset - \n" +
                                     "Startsearch (T1, T2, BOTH) - почати пошук\n" +
                                     "Notify - вимкнути / увімкнути сповіщення\n" +
                                     "Info - інформація про активну сесію бусту\n" +

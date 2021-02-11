@@ -14,7 +14,6 @@ using System.Linq;
 using System.Media;
 using System.Net;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +46,7 @@ namespace CSGO_Boost_Panel
         private readonly SoundPlayer mediaPlayer = new SoundPlayer();
         public static List<string> T1WinTitle = new List<string>(), T2WinTitle = new List<string>();
         public static JObject settingsObj, accInfo;
-        public string loadedPreset;
+        public static string ActivePreset;
         public static short WinTeamNum, GamesPlayerForAppSession = 0, GamesPlayerForGameSession = 0;
         public static int LobbyCount = 0, RoundNumber = 0, DisNumber = 15, ZIndex = 0;
         public static bool on = false, freezetime = true, loaded = false, choosed = false, newRound = true, onemeth = true, connected = false;
@@ -184,7 +183,12 @@ namespace CSGO_Boost_Panel
                     _items.Add(new Item(property.Name));
                     for (short i = 0; i < 10; i++)
                     {
-                        _player.Add(new Player(property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", property.Name, "Collapsed"));
+                        _player.Add(new Player(property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), 
+                            property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), 
+                            property.Value.Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), 
+                            property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), 
+                            "Images/" + (property.Value.Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", 
+                            property.Name, "Collapsed"));
                     }
                     _player[_player.Count - 1].Visibility = "Visible";
                 }
@@ -215,7 +219,8 @@ namespace CSGO_Boost_Panel
                 BotResY.Text = settingsObj.Value<string>("BotResY");
             if (settingsObj.Property("TgApi") != null)
                 TgApi.Text = settingsObj.Value<string>("TgApi");
-            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, MatchEndedSound, RoundLastsSound, LongDisconnect, FocusWindows, Automation };
+            ToggleSwitch[] BoolOptions = new ToggleSwitch[] { AutoAccept, AutoDisconnect, Sounds, MatchFoundSound, 
+                MatchEndedSound, RoundLastsSound, LongDisconnect, FocusWindows, Automation };
 
             for (int i = 0; i < BoolOptions.Length; i++)
             {
@@ -414,13 +419,13 @@ namespace CSGO_Boost_Panel
                             x = 0;
                         else
                             x = WindowRect.Left;
-                        if (!string.IsNullOrEmpty(loadedPreset))
-                            lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"] = x + " " + WindowRect.Top;
+                        if (!string.IsNullOrEmpty(ActivePreset))
+                            lobbiesObj[ActivePreset]["Acc" + (i + 1)]["Pos"] = x + " " + WindowRect.Top;
                         PArray[i].Position = x + " " + WindowRect.Top;
                     }
                     PArray[i].WindowTitle = "";
                 }
-                if (!string.IsNullOrEmpty(loadedPreset))
+                if (!string.IsNullOrEmpty(ActivePreset))
                     File.WriteAllText("Lobbies.json", JsonConvert.SerializeObject(lobbiesObj, Formatting.Indented));
             }
 
@@ -513,10 +518,10 @@ namespace CSGO_Boost_Panel
                 {
                     PresetNameObj.Add("Acc" + (i + 1), new JObject(new JProperty("Toggled", ToggleButton[i].IsOn), new JProperty("Login", Login[i].Text.ToLower()), new JProperty("Password", Password[i].Password), new JProperty("Pos", PArray[i].Position), new JProperty("SteamID64", accInfo[Login[i].Text.ToLower()]?["SteamID"] ?? "Unknown"), new JProperty("Nickname", accInfo[Login[i].Text.ToLower()]?["Nickname"] ?? "Unknown"), new JProperty("Level", 0), new JProperty("XP", ""), new JProperty("Rank", "0")));
                 }
-                loadedPreset = PresetName.Text;
+                ActivePreset = PresetName.Text;
                 for (short i = 0; i < 10; i++)
                 {
-                    _player.Add(new Player(lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (lobbiesObj[loadedPreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", loadedPreset, "Collapsed"));
+                    _player.Add(new Player(lobbiesObj[ActivePreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Login"), lobbiesObj[ActivePreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Nickname"), lobbiesObj[ActivePreset].Value<JToken>("Acc" + (i + 1)).Value<short>("Level"), lobbiesObj[ActivePreset].Value<JToken>("Acc" + (i + 1)).Value<string>("XP"), "Images/" + (lobbiesObj[ActivePreset].Value<JToken>("Acc" + (i + 1)).Value<string>("Rank") ?? "0") + ".png", ActivePreset, "Collapsed"));
                 }
                 _player[_player.Count - 1].Visibility = "Visible";
                 MessageBox.Show("Preset successfully saved");
@@ -536,7 +541,7 @@ namespace CSGO_Boost_Panel
                 Login[i].Text = "";
                 Password[i].Password = "";
             }
-            loadedPreset = "";
+            ActivePreset = "";
             PresetName.Text = "";
         }
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
@@ -601,13 +606,13 @@ namespace CSGO_Boost_Panel
 
         public void LoadPreset(int num)
         {
-            LoadPreset(null, null, num);
+            LoadPreset(null, num);
         }
         private void LoadPreset(object sender, MouseButtonEventArgs e)
         {
-            LoadPreset(sender, e, -1);
+            LoadPreset(sender, -1);
         }
-        private void LoadPreset(object sender, MouseButtonEventArgs e, int num)
+        private void LoadPreset(object sender, int num)
         {
             int index;
             if (num == -1)
@@ -619,15 +624,15 @@ namespace CSGO_Boost_Panel
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
             JObject AccObj = lobbiesObj.Property(_items[index].Name).Value.ToObject<JObject>();
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            loadedPreset = _items[index].Name;
+            ActivePreset = _items[index].Name;
             for (int i = 0; i < 10; i++)
             {
                 PArray[i].IsOn = bool.Parse(AccObj["Acc" + (i + 1)].Value<string>("Toggled"));
                 PArray[i].Login = AccObj["Acc" + (i + 1)].Value<string>("Login");
                 Password[i].Password = AccObj["Acc" + (i + 1)].Value<string>("Password");
-                PArray[i].Position = lobbiesObj[loadedPreset]["Acc" + (i + 1)]["Pos"].ToString();
+                PArray[i].Position = lobbiesObj[ActivePreset]["Acc" + (i + 1)]["Pos"].ToString();
             }
-            PresetName.Text = loadedPreset;
+            PresetName.Text = ActivePreset;
             tab.SelectedIndex = 0;
         }
 
@@ -754,17 +759,19 @@ namespace CSGO_Boost_Panel
 
             async void Round(GameState a)
             {
-                if ((RoundNumber == a.Map.Round && roundPhase == a.Round.Phase) || a.Map.Phase == CSGSI.Nodes.MapPhase.Undefined || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
+                if ((RoundNumber == a.Map.Round && roundPhase == a.Round.Phase)
+                    || a.Map.Phase == CSGSI.Nodes.MapPhase.Undefined
+                    || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
                     return;
                 else
                 {
                     RoundNumber = a.Map.Round;
                     roundPhase = a.Round.Phase;
                 }
-
-                if (a.Map.Round == (DisNumber - 1) || a.Map.Round == 29)
+                if (a.Map.Round == DisNumber)
                     DisconnectActive = false;
-                if (a.Round.Phase == CSGSI.Nodes.RoundPhase.Live && (a.Map.Round == 0 || (a.Map.Round == 15 && settingsObj.Value<short>("WinTeam") == 2)))
+
+                if (a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && (a.Map.Round == 0 || (a.Map.Round == 15 && settingsObj.Value<short>("WinTeam") == 2)))
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -774,7 +781,7 @@ namespace CSGO_Boost_Panel
                     }
                     return;
                 }
-                if (a.Map.Round == DisNumber && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && settingsObj.Value<short>("WinTeam") == 2)
+                if (a.Map.Round == 14 && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && settingsObj.Value<short>("WinTeam") == 2)
                 {
                     await Task.Delay(11000);
                     if (settingsObj.Value<bool>("LongDisconnect"))
@@ -793,7 +800,11 @@ namespace CSGO_Boost_Panel
                     return;
                 }
 
-                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != (DisNumber + 1) && a.Map.Round != DisNumber)
+                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime
+                && ((a.Map.Round != DisNumber
+                && a.Map.Round != (DisNumber + 1)
+                && a.Map.Round != 29)
+                || (a.Map.Round == 15 && a.Map.Phase == CSGSI.Nodes.MapPhase.Live && settingsObj.Value<short>("WinTeam") != 2)))
                 {
                     short num;
                     if (WinTeam == gslT1)
@@ -806,9 +817,7 @@ namespace CSGO_Boost_Panel
                     while (DisconnectActive)
                     {
                         short WinTeamNumTemp = WinTeamNum;
-                        await Task.Delay(1000);
                         WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect);
-                        await Task.Delay(250);
                         while (true)
                         {
                             string TeamString = Teamlog.ReadToEnd();
@@ -818,6 +827,7 @@ namespace CSGO_Boost_Panel
                         }
                         await Task.Delay(250);
                         WindowHelper.SendKey(TWinTitle[WinTeamNumTemp][0], WindowHelper.VK_F10);
+                        await Task.Delay(1250);
                     }
                     TeamlogStream.Close();
                     Teamlog.Close();
@@ -825,7 +835,10 @@ namespace CSGO_Boost_Panel
             }
             async void RoundLong(GameState a)
             {
-                if (RoundNumber == a.Map.Round && roundPhase == a.Round.Phase || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
+                if ((RoundNumber == a.Map.Round && roundPhase == a.Round.Phase)
+                   || a.Map.Phase == CSGSI.Nodes.MapPhase.Undefined
+                   || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver
+                   || a.Map.Phase == CSGSI.Nodes.MapPhase.Warmup)
                     return;
                 else
                 {
@@ -836,7 +849,7 @@ namespace CSGO_Boost_Panel
                 if (a.Map.Round == 5 || a.Map.Round == (DisNumber - 2) || a.Map.Round == 20)
                     DisconnectActive = false;
 
-                if ((a.Map.Round == 0 || a.Map.Round == 7 || a.Map.Round == DisNumber || a.Map.Round == 22) && a.Round.Phase == CSGSI.Nodes.RoundPhase.Live)
+                if (a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && (a.Map.Round == 0 || a.Map.Round == 7 || a.Map.Round == DisNumber || a.Map.Round == 22))
                 {
                     for (int i = 0; i < TWinTitle[WinTeamNum].Count; i++)
                     {
@@ -879,7 +892,7 @@ namespace CSGO_Boost_Panel
                     return;
                 }
 
-                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.Over && a.Map.Round != 6 && a.Map.Round != 7 && a.Map.Round != (DisNumber - 1) && a.Map.Round != DisNumber && a.Map.Round != 21 && a.Map.Round != 22)
+                if (!DisconnectActive && a.Round.Phase == CSGSI.Nodes.RoundPhase.FreezeTime && a.Map.Round != 6 && a.Map.Round != 7 && a.Map.Round != (DisNumber - 1) && a.Map.Round != DisNumber && a.Map.Round != 21 && a.Map.Round != 22)
                 {
                     short num;
                     if (WinTeam == gslT1)
@@ -967,6 +980,12 @@ namespace CSGO_Boost_Panel
                     {
                         await CSGOIntercation.GatherLobby();
                         await CSGOIntercation.StartSearching(3);
+                        await Task.Delay(10000);
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            if (PlayerStatus.Fill != Red)
+                                TgBot.SendNotify("Check you lobbies, maybe not all bots entered the lobby");
+                        });
                     }
                 }
 
@@ -1091,7 +1110,7 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 0;
             WinTeamNum = 0;
             WinTeam = gslT1;
-            DisNumber = 16;
+            DisNumber = 15;
 
             if (on && AutoDisconnect.IsOn)
             {
@@ -1104,7 +1123,7 @@ namespace CSGO_Boost_Panel
             settingsObj["WinTeam"] = 1;
             WinTeamNum = 1;
             WinTeam = gslT2;
-            DisNumber = 16;
+            DisNumber = 15;
 
             if (on && AutoDisconnect.IsOn)
             {
@@ -1217,8 +1236,6 @@ namespace CSGO_Boost_Panel
 
         private void TestButton(object sender, RoutedEventArgs e)
         {
-            string a = _items[0].Name;
-            MessageBox.Show(a);
         }
 
         private void CPUReducer(object sender, RoutedEventArgs e)
@@ -1255,7 +1272,7 @@ namespace CSGO_Boost_Panel
 
         private async void StatsUpdate()
         {
-            if (string.IsNullOrEmpty(loadedPreset))
+            if (string.IsNullOrEmpty(ActivePreset))
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
             Directory.CreateDirectory(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\");
@@ -1276,29 +1293,29 @@ namespace CSGO_Boost_Panel
                 {
                     if (!accB[i - 1] && PArray[i - 1].IsOn)
                     {
-                        if (!string.IsNullOrEmpty(lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[loadedPreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
+                        if (!string.IsNullOrEmpty(lobbiesObj[ActivePreset]["Acc" + i].Value<string>("Login")) && lobbiesObj[ActivePreset]["Acc" + i].Value<string>("SteamID64") == "Unknown")
                         {
-                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
+                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[ActivePreset]["Acc" + i].Value<string>("Login") + "')]"))
                             {
                                 tkn["SteamID64"] = accInfo[tkn["Login"].ToString().ToLower()]["SteamID"];
                                 tkn["Nickname"] = accInfo[tkn["Login"].ToString().ToLower()]["Nickname"];
                             }
-                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
+                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[ActivePreset]["Acc" + i].Value<string>("Login")))
                                 plr.nickname = accInfo[plr.Login.ToLower()].Value<string>("Nickname");
                         }
-                        string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + lobbiesObj[loadedPreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
+                        string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + lobbiesObj[ActivePreset]["Acc" + i]["SteamID64"] + " .*? )prime", RegexOptions.Singleline).Value;
                         string accRank = Regex.Match(RegExStr, @"(?<=ranking int[(] )\d+", RegexOptions.Singleline).Value;
                         if (!string.IsNullOrEmpty(accRank) && Regex.Match(RegExStr, @"(?<=ranktype int[(] )\d+", RegexOptions.Singleline).Value != "0")
                         {
                             short accLevel = Int16.Parse(Regex.Match(RegExStr, @"(?<=level int[(] )\d+", RegexOptions.Singleline).Value);
                             string accXP = Regex.Match(RegExStr, @"(?<=327680{0,3})(0{1}|[1-9]\d*)", RegexOptions.Singleline | RegexOptions.RightToLeft).Value;
-                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login") + "')]"))
+                            foreach (JToken tkn in lobbiesObj.SelectTokens("$..[?(@.Login == '" + lobbiesObj[ActivePreset]["Acc" + i].Value<string>("Login") + "')]"))
                             {
                                 tkn["Level"] = accLevel;
                                 tkn["XP"] = accXP;
                                 tkn["Rank"] = accRank;
                             }
-                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[loadedPreset]["Acc" + i].Value<string>("Login")))
+                            foreach (Player plr in _player.Where(c => c.Login == lobbiesObj[ActivePreset]["Acc" + i].Value<string>("Login")))
                             {
                                 plr.Level = accLevel;
                                 plr.XP = accXP;

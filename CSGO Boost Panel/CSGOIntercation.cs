@@ -56,6 +56,9 @@ namespace CSGO_Boost_Panel
                 ldrTitles.Add(PArray[0].WindowTitle);
             if (PArray[5].WindowTitle.Contains("LEADER"))
                 ldrTitles.Add(PArray[5].WindowTitle);
+            for (short i = 0; i < 10; i++)
+                if (PArray[i].IsOn)
+                    WindowHelper.EnableWindow(PArray[i].WindowTitle, false);
             List<string> TeamWinTitle = T1WinTitle;
             for (int i = 1, n = 0; n < 2; i++)
             {
@@ -124,6 +127,9 @@ namespace CSGO_Boost_Panel
                 if (i == (T2WinTitle.Count - 1) && n == 1)
                     n++;
             }
+            for (short i = 0; i < 10; i++)
+                if (PArray[i].IsOn)
+                    WindowHelper.EnableWindow(PArray[i].WindowTitle, true);
             return;
         }
 
