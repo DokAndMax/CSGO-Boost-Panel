@@ -94,7 +94,7 @@ namespace CSGO_Boost_Panel
             IntPtr WindowHWND = FindWindowEx(zero, zero, null, WinTitle);
             if (IsIconic(WindowHWND))
                 ShowWindow(WindowHWND, 4);
-            if (settingsObj.Value<bool>("Focus"))
+            if (settingsObj.Value<bool>("FocusWindows"))
             {
                 keybd_event((byte)ALT, 0x45, EXTENDEDKEY | 0, 0);
                 keybd_event((byte)ALT, 0x45, EXTENDEDKEY | KEYUP, 0);

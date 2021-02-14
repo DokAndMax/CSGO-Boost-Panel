@@ -1,6 +1,7 @@
 ﻿using CSGSI;
 using CSGSI.Events;
 using MahApps.Metro.Controls;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -202,6 +203,13 @@ namespace CSGO_Boost_Panel
                 SteamFolder.Text = settingsObj.Value<string>("SteamFolder");
                 LoadSteamAccs();
             }
+            else if (GetSteamInstallPath() is string a)
+            {
+                SteamFolder.Text = a;
+                settingsObj["SteamFolder"] = a;
+                LoadSteamAccs();
+            }
+
             if (settingsObj.Value<bool>("CSGOsRunning") == true)
             {
                 CSGOsRunning.IsChecked = true;
@@ -373,10 +381,7 @@ namespace CSGO_Boost_Panel
                 InfoMessage(sender, "Cannot start GameStateListener #1. AutoDisconnect won't work! Try reboot your PC", MessageBoxImage.Warning);
             if (!gslT2.Start())
                 InfoMessage(sender, "Cannot start GameStateListener #2. AutoDisconnect won't work! Try reboot your PC", MessageBoxImage.Warning);
-            if (AutoAccept.IsOn)
-            {
-                _ = Task.Run(() => AutoAcceptFunc());
-            }
+            _ = Task.Run(() => AutoAcceptFunc());
             CSGSILogic(true, true);
             AccountChecker();
             StatsUpdate();
@@ -674,6 +679,8 @@ namespace CSGO_Boost_Panel
 
         private void AutoAcceptFunc()
         {
+            if (!settingsObj.Value<bool>("AutoAccept") || !PArray[0].IsOn || !PArray[5].IsOn)
+                return;
             Directory.CreateDirectory(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\");
             Stream Team1logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             Stream Team2logStream = File.Open(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -743,7 +750,7 @@ namespace CSGO_Boost_Panel
             gslT2.NewGameState -= RoundLong;
             DisconnectActive = false;
 
-            if (!enabled || !settingsObj.Value<bool>("AutoDisconnect"))
+            if (!enabled || !settingsObj.Value<bool>("AutoDisconnect") || !PArray[0].IsOn || !PArray[5].IsOn)
                 return;
 
             if (settingsObj.Value<short>("WinTeam") == 2 && RoundNumber >= 15)
@@ -932,10 +939,7 @@ namespace CSGO_Boost_Panel
                     newRound = false;
                     connected = false;
                     GamesPlayerForAppSession++; GamesPlayerForGameSession++;
-                    if (settingsObj.Value<bool>("AutoAccept"))
-                    {
-                        _ = Task.Run(() => AutoAcceptFunc());
-                    }
+                    _ = Task.Run(() => AutoAcceptFunc());
                     InvokeUI(() =>
                     {
                         StatsUpdate();
@@ -1238,6 +1242,14 @@ namespace CSGO_Boost_Panel
         {
         }
 
+        private static string GetSteamInstallPath()
+        {
+            RegistryKey subkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam");
+            if (subkey == null)
+                return null;
+            return subkey.GetValue("InstallPath") as string;
+        }
+
         private void CPUReducer(object sender, RoutedEventArgs e)
         {
             try
@@ -1272,7 +1284,7 @@ namespace CSGO_Boost_Panel
 
         private async void StatsUpdate()
         {
-            if (string.IsNullOrEmpty(ActivePreset))
+            if (string.IsNullOrEmpty(ActivePreset) || !PArray[0].IsOn || !PArray[5].IsOn)
                 return;
             JObject lobbiesObj = (JObject)JsonConvert.DeserializeObject(File.ReadAllText("Lobbies.json"));
             Directory.CreateDirectory(settingsObj["CSGOFolder"].ToString() + @"\csgo\log\");
