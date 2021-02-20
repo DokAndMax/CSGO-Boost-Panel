@@ -732,6 +732,15 @@ namespace CSGO_Boost_Panel
         {
             CSGSI.Nodes.RoundPhase roundPhase = CSGSI.Nodes.RoundPhase.Undefined;
 
+            gslT1.NewGameState -= Round;
+            gslT2.NewGameState -= Round;
+            gslT1.NewGameState -= RoundLong;
+            gslT2.NewGameState -= RoundLong;
+            DisconnectActive = false;
+
+            if (!enabled || !settingsObj.Value<bool>("AutoDisconnect") || !PArray[0].IsOn || !PArray[5].IsOn)
+                return;
+
             if (indicators)
             {
                 gslT1.NewGameState -= Indicators;
@@ -743,15 +752,6 @@ namespace CSGO_Boost_Panel
                 gslT1.RoundPhaseChanged += RoundLasts;
                 gslT2.RoundPhaseChanged += RoundLasts;
             }
-
-            gslT1.NewGameState -= Round;
-            gslT2.NewGameState -= Round;
-            gslT1.NewGameState -= RoundLong;
-            gslT2.NewGameState -= RoundLong;
-            DisconnectActive = false;
-
-            if (!enabled || !settingsObj.Value<bool>("AutoDisconnect") || !PArray[0].IsOn || !PArray[5].IsOn)
-                return;
 
             if (settingsObj.Value<short>("WinTeam") == 2 && RoundNumber >= 15)
             {
@@ -932,7 +932,7 @@ namespace CSGO_Boost_Panel
 
             async void Indicators(GameState a)
             {
-                if (a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver & !WarmUp)
+                if (a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver && !WarmUp)
                 {
                     WarmUp = true;
                     DisconnectActive = false;
@@ -1148,9 +1148,9 @@ namespace CSGO_Boost_Panel
             }
         }
 
-        private async void PlayOneFunc(object sender, RoutedEventArgs e)
+        private void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-            await CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
+             CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
