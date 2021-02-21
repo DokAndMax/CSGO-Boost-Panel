@@ -982,6 +982,13 @@ namespace CSGO_Boost_Panel
                     }
                     if(settingsObj.Value<bool>("Automation"))
                     {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            if (settingsObj.Value<short>("WinTeam") == 0)
+                                WinTeam2.IsChecked = true;
+                            else if (settingsObj.Value<short>("WinTeam") == 1)
+                                WinTeam1.IsChecked = true;
+                        });
                         await CSGOIntercation.GatherLobby();
                         await CSGOIntercation.StartSearching(3);
                         await Task.Delay(10000);
