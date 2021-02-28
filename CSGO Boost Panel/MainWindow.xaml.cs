@@ -725,6 +725,11 @@ namespace CSGO_Boost_Panel
                     AutoAcceptRestartS = true;
                     RestartSearch(false);
                 }
+                if (Team1String != Team2String && !string.IsNullOrEmpty(Team1String) && !string.IsNullOrEmpty(Team2String) && !AutoAcceptRestartS)
+                {
+                    AutoAcceptRestartS = true;
+                    RestartSearch(false);
+                }
                 Thread.Sleep(650);
             }
         }
