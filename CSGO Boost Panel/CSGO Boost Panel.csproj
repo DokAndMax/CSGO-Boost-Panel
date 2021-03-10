@@ -135,6 +135,7 @@
     <Compile Include="LobbyPlayer.cs" />
     <Compile Include="CSGOIntercation.cs" />
     <Compile Include="LogWriter.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="TgBot.cs" />
     <Compile Include="WindowHelper.cs" />
     <Page Include="MainWindow.xaml">

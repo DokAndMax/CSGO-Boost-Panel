@@ -10,10 +10,10 @@ namespace CSGO_Boost_Panel
 {
     class CSGOIntercation
     {
-        public async static Task StartSearching(int num)
+        public async static Task StartSearching(int type)
         {
             String ldr1Title = PArray[0].WindowTitle, ldr2Title = PArray[5].WindowTitle;
-            switch (num)
+            switch (type)
             {
                 case 1:
                     {

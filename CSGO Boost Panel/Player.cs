@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace CSGO_Boost_Panel
 {
@@ -12,12 +11,12 @@ namespace CSGO_Boost_Panel
         }
 
         public string Login { get; set; }
-        public string nickname { get { return rank; } set { Nickname = value; OnPropertyChanged("Nickname"); } }
-        public string Nickname { get; set; }
+        public string Nickname { get { return nickname; } set { nickname = value; OnPropertyChanged("Nickname"); } }
+        private string nickname;
         public short Level { get; set; }
         public string XP { get; set; }
-        private string rank;
         public string Rank { get { return rank; } set { rank = value; OnPropertyChanged("Rank"); OnPropertyChanged("XP"); OnPropertyChanged("Level"); } }
+        private string rank;
         public string PresetName { get; set; }
         public string Visibility { get; set; }
 

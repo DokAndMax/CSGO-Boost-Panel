@@ -557,7 +557,7 @@
                         <iconPacks:PackIconModern Kind="Settings" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <Grid Margin="73,-63,0,27">
+                <Grid x:Name="SettingsGrid"  Margin="73,-63,0,27">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="45*"/>
                         <RowDefinition Height="392*"/>
@@ -573,11 +573,11 @@
                                 <ColumnDefinition Width="13*"/>
                             </Grid.ColumnDefinitions>
                             <iconPacks:PackIconMaterial Kind="FolderCog" Grid.RowSpan="2" VerticalAlignment="Center" Width="Auto" Height="Auto" Padding="5"/>
-                            <Button Content="Choose Steam Folder" Template="{StaticResource Button1Tempate}" Style="{StaticResource CustomButton}" Tag="SteamFolder" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal" Grid.Column="1"/>
-                            <Button Content="Choose CSGO Folder" Template="{StaticResource Button2Tempate}" Style="{StaticResource CustomButton}" Tag="CSGOFolder" Click="SaveSettings" mah:ControlsHelper.ContentCharacterCasing="Normal" Grid.Column="1" Grid.Row="1"/>
+                            <Button Content="Choose Steam Folder" Template="{StaticResource Button1Tempate}" Style="{StaticResource CustomButton}" Tag="SteamFolder" Click="SaveFolder" mah:ControlsHelper.ContentCharacterCasing="Normal" Grid.Column="1"/>
+                            <Button Content="Choose CSGO Folder" Template="{StaticResource Button2Tempate}" Style="{StaticResource CustomButton}" Tag="CSGOFolder" Click="SaveFolder" mah:ControlsHelper.ContentCharacterCasing="Normal" Grid.Column="1" Grid.Row="1"/>
                         </Grid>
                     </Border>
-                    <Button x:Name="TestBtn" Click="TestButton" Content="TestButton" Margin="509,337,147,19" Grid.Row="1" Visibility="Hidden"/>
+                    <Button x:Name="TestBtn" Click="TestButton" Content="TestButton" Margin="509,346,147,10" Grid.Row="1" Visibility="Hidden"/>
                     <Grid Margin="23,135,428,133" Grid.Row="1" >
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -603,28 +603,32 @@
                         </Viewbox>
                         <TextBlock x:Name="CSGOFolder" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" FontWeight="Bold" FontSize="15" Height="62"/>
                     </Grid>
-                    <TextBlock HorizontalAlignment="Left" Margin="424,10,0,0" TextWrapping="Wrap" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="639,8,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346" Grid.Row="1"/>
-                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,6,104,356" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="640" TextInput="SaveSettings" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,6,35,356" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="480" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="424,58,0,0" TextWrapping="Wrap" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" Grid.Row="1"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="639,55,0,0" TextWrapping="Wrap" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" Grid.Row="1"/>
-                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,54,104,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="400" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,54,35,308" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="300" TextChanged="SaveSettings" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="496,117,0,243" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="496,154,0,206" Content="AutoDisconnect" Grid.Row="1"/>
-                    <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="658,158,62,208" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                    <TextBlock Margin="424,25,0,0" Text="Leader resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" TextWrapping="Wrap" HorizontalAlignment="Left" Grid.RowSpan="2"/>
+                    <TextBlock Margin="639,23,0,0" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-0.5,-1.346" HorizontalAlignment="Left" TextWrapping="Wrap" Grid.RowSpan="2"/>
+                    <TextBlock Margin="424,28,0,0" Text="Bot resolution:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" HorizontalAlignment="Left" TextWrapping="Wrap" Grid.Row="1"/>
+                    <TextBlock Margin="639,25,0,0" Text="x" VerticalAlignment="Top" Height="29" Width="10" FontSize="16" TextAlignment="Center" RenderTransformOrigin="-1,3.423" HorizontalAlignment="Left" TextWrapping="Wrap" Grid.Row="1"/>
+                    <TextBlock Margin="424,76,0,0" Text="Wait after game end:" VerticalAlignment="Top" Height="26" Width="151" FontSize="16" TextAlignment="Right" HorizontalAlignment="Left" TextWrapping="Wrap" Grid.Row="1"/>
+                    <TextBlock Margin="411,124,0,0" Text="Delay in round 14 (Tie):" VerticalAlignment="Top" Height="26" Width="164" FontSize="16" TextAlignment="Right" HorizontalAlignment="Left" TextWrapping="Wrap" Grid.Row="1"/>
+                    <TextBox x:Name="LeaderResX" TextWrapping="Wrap" Margin="580,21,104,386" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding LeaderResX, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.RowSpan="2"/>
+                    <TextBox x:Name="LeaderResY" TextWrapping="Wrap" Margin="649,21,35,386" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding LeaderResY, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.RowSpan="2"/>
+                    <TextBox x:Name="BotResX" TextWrapping="Wrap" Margin="580,24,104,338" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding BotResX, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.Row="1"/>
+                    <TextBox x:Name="BotResY" TextWrapping="Wrap" Margin="649,24,35,338" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding BotResY, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.Row="1"/>
+                    <TextBox x:Name="EndGameWaitSeconds" TextWrapping="Wrap" Margin="580,72,104,290" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding WaitSecondsAutomation, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.Row="1"/>
+                    <TextBox x:Name="DelayInRound14" TextWrapping="Wrap" Margin="580,120,104,242" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding DelayInRound14, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="496,158,0,202" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="496,195,0,165" Content="AutoDisconnect" Grid.Row="1"/>
+                    <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="658,199,62,167" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="Sounds" Toggled="SettingsTgl" Margin="496,191,0,169" Content="Sounds" Grid.Row="1" Width="111"/>
-                    <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="607,194,113,170" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+                    <mah:ToggleSwitch x:Name="Sounds" Toggled="SettingsTgl" Margin="496,232,0,128" Content="Sounds" Grid.Row="1" Width="111"/>
+                    <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="607,236,113,130" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
-                    <mah:ToggleSwitch x:Name="FocusWindows" Toggled="SettingsTgl" Margin="496,227,0,133" Content="Focus windows" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="Automation" Margin="496,263,0,97" Content="Automation" Toggled="SettingsTgl" Grid.Row="1" DataContext="AutoBoost"/>
-                    <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Background="{x:Null}" Margin="389,117,281,242" Checked="WinTeam1_Checked" Grid.Row="1" MinWidth="0"/>
-                    <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Background="{x:Null}" Margin="389,161,281,198" Checked="WinTeam2_Checked" Grid.Row="1" MinWidth="0"/>
-                    <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Background="{x:Null}" Margin="389,205,281,154" Checked="WinTeamTie_Checked" Grid.Row="1" MinWidth="0"/>
+                    <mah:ToggleSwitch x:Name="FocusWindows" Toggled="SettingsTgl" Margin="496,268,0,92" Content="Focus windows" Grid.Row="1"/>
+                    <mah:ToggleSwitch x:Name="Automation" Margin="496,304,0,56" Content="Automation" Toggled="SettingsTgl" Grid.Row="1" DataContext="AutoBoost"/>
+                    <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Background="{x:Null}" Margin="389,166,281,193" Checked="WinTeam1_Checked" Grid.Row="1" MinWidth="0"/>
+                    <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Background="{x:Null}" Margin="389,210,281,149" Checked="WinTeam2_Checked" Grid.Row="1" MinWidth="0"/>
+                    <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Background="{x:Null}" Margin="389,254,281,105" Checked="WinTeamTie_Checked" Grid.Row="1" MinWidth="0"/>
                     <Grid x:Name="SoundSettings" Margin="372,69,131,193" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -654,7 +658,7 @@
                     <TextBlock Margin="29,303,610,59" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
                     <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="134,304,323,58" Background="#3FFFFFFF" BorderBrush="#FF460808" Grid.Row="1"/>
                     <Button x:Name="TgCheckApiButton" Padding="0" Content="OK" HorizontalAlignment="Left" Margin="424,304,0,0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="29" Click="TgCheckApi" IsEnabled="False" FontSize="16"/>
-                    <Button Margin="620,338,10,21" Style="{StaticResource MahApps.Styles.Button.Split}" Grid.Row="1" Content="Check for updates" Padding="0" mah:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="CheckUpdates"/>
+                    <Button Margin="620,340,10,19" Style="{StaticResource MahApps.Styles.Button.Split}" Grid.Row="1" Content="Check for updates" Padding="0" mah:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="CheckUpdates"/>
                     <TextBlock Margin="659,375,0,0" Grid.Row="1" Text="{Binding StringFormat=Version: {0}, RelativeSource={RelativeSource AncestorType=Window}, Path=AssemblyVersion}" Foreground="#FF8D8C8C"/>
                 </Grid>
             </TabItem>
