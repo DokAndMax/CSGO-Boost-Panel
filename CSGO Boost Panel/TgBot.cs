@@ -87,7 +87,7 @@ namespace CSGO_Boost_Panel
 
         public async static void SendNotify(string message)
         {
-            if (MainWindow.settingsObj.Value<String>("chatID") == null || !BotIsOn)
+            if (MainWindow.settingsObj.Value<String>("chatID") == null || MainWindow.settingsObj.Value<bool>("notifies") == false)
                 return;
             await botClient.SendTextMessageAsync(
               chatId: MainWindow.settingsObj.Value<String>("chatID"),
@@ -99,18 +99,21 @@ namespace CSGO_Boost_Panel
         private static async Task BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             Message message = messageEventArgs.Message;
+            if (MainWindow.settingsObj.Value<String>("chatID") == null)
+            {
+                MainWindow.settingsObj["chatID"] = message.Chat.Id;
+                SendNotify("👋");
+            }
             if (message == null || message.Type != MessageType.Text || message.Date < DateTime.UtcNow.AddSeconds(-15))
                 return;
-            if(MainWindow.settingsObj.Value<String>("chatID") == null)
-                MainWindow.settingsObj["chatID"] = message.Chat.Id;
             switch (message.Text.Split(' ').First())
             {
-                // change notify settings
+                // changes notify settings
                 case "Notify":
                     ChangeNotify(message);
                     break;
 
-                // send a screenshot
+                // sends a screenshot
                 case "Screenshot":
                     await SendScreenshot(message);
                     break;
@@ -122,7 +125,7 @@ namespace CSGO_Boost_Panel
                     SendNotify("ok");
                     break;
 
-                // soon
+                // gathers bots into two lobbies
                 case "Gather":
                     if (!Check()) return;
                     await GatherLobby();
@@ -132,7 +135,7 @@ namespace CSGO_Boost_Panel
                     await SendScreenshot(message);
                     break;
 
-                //
+                // manually starts CSGO of each bot
                 case "Playone":
                     if (!Check()) return;
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
@@ -156,7 +159,7 @@ namespace CSGO_Boost_Panel
                     SendInfo(message);
                     break;
 
-                //
+                // turns off the PC
                 case "Shutdown":
                     var psi = new ProcessStartInfo("shutdown", "/sg /t 0")
                     {
@@ -166,7 +169,7 @@ namespace CSGO_Boost_Panel
                     Process.Start(psi);
                     break;
 
-                    //
+                    // starts boost session
                 case "Start":
                     if (on)
                     {
@@ -183,7 +186,7 @@ namespace CSGO_Boost_Panel
                     StartResult = true;
                     break;
 
-                    //
+                    // stops boost session
                 case "Stop":
                     Application.Current.Dispatcher.Invoke(delegate {
                         (Application.Current.MainWindow as MainWindow).Stop(null, null);
@@ -191,7 +194,7 @@ namespace CSGO_Boost_Panel
                     SendNotify("ok");
                     break;
 
-                    //
+                    // changes active preset
                 case "Change":
                     if (on)
                     {
@@ -364,14 +367,14 @@ namespace CSGO_Boost_Panel
             const string usage = "Використання:\n" +
                                     "Screenshot - зробити скріншот робочого столу\n" +
                                     "Gather - зібрати всіх ботів у два лобі в грі\n" +
-                                    "Playone - перезапуск клієнта Steam і відповідно СSGO, якщо виникли проблеми\n" +
-                                    "Start - \n" +
-                                    "Stop - \n" +
-                                    "Change preset - \n" +
+                                    "Playone - перезапустити клієнт Steam і відповідно - СSGO, якщо виникли проблеми\n" +
+                                    "Start - запустити сесію бусту\n" +
+                                    "Stop - закінчити сесію бусту\n" +
+                                    "Change preset - змінити активний пресет команди\n" +
                                     "Startsearch (T1, T2, BOTH) - почати пошук\n" +
                                     "Notify - вимкнути / увімкнути сповіщення\n" +
-                                    "Info - інформація про активну сесію бусту\n" +
-                                    "Shutdown - вимнкути ПК";
+                                    "Info - отримати інформація про активну сесію бусту\n" +
+                                    "Shutdown - вимкнути ПК";
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: usage,

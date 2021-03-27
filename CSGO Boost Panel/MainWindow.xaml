@@ -655,10 +655,10 @@
                         <Border BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
                         <mah:ToggleSwitch x:Name="LongDisconnect" Toggled="SettingsTgl" Grid.Row="0" Grid.Column="1" IsOn="False" Content="Long disconnect"/>
                     </Grid>
-                    <TextBlock Margin="29,303,610,59" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
-                    <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="134,304,323,58" Background="#3FFFFFFF" BorderBrush="#FF460808" Grid.Row="1"/>
-                    <Button x:Name="TgCheckApiButton" Padding="0" Content="OK" HorizontalAlignment="Left" Margin="424,304,0,0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="29" Click="TgCheckApi" IsEnabled="False" FontSize="16"/>
-                    <Button Margin="620,340,10,19" Style="{StaticResource MahApps.Styles.Button.Split}" Grid.Row="1" Content="Check for updates" Padding="0" mah:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="CheckUpdates"/>
+                    <TextBlock Margin="9,313,630,49" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
+                    <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="114,314,343,48" Background="#3FFFFFFF" BorderBrush="#FF460808" Grid.Row="1"/>
+                    <Button x:Name="TgCheckApiButton" Padding="0" Content="OK" HorizontalAlignment="Left" Margin="404,314,0,0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="29" Click="TgCheckApi" IsEnabled="False" FontSize="16"/>
+                    <Button Margin="620,340,10,19" Style="{StaticResource MahApps.Styles.Button.Split}" Grid.Row="1" Content="Check for updates" Padding="0" mah:ControlsHelper.ContentCharacterCasing="Normal" Focusable="False" Click="CheckUpdatesButton"/>
                     <TextBlock Margin="659,375,0,0" Grid.Row="1" Text="{Binding StringFormat=Version: {0}, RelativeSource={RelativeSource AncestorType=Window}, Path=AssemblyVersion}" Foreground="#FF8D8C8C"/>
                 </Grid>
             </TabItem>

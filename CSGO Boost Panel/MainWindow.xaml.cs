@@ -60,6 +60,7 @@ namespace CSGO_Boost_Panel
         private static readonly Settings Settings = new Settings(0, 5, 640, 480, 400, 300);
         public MainWindow()
         {
+            UpdateProgram(true);
             InitializeComponent();
             Loaded += LoadSettings;
 
@@ -88,7 +89,8 @@ namespace CSGO_Boost_Panel
         {
             if (on)
                 settingsObj["CSGOsRunning"] = true;
-            File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
+            if(settingsObj != null)
+                File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
             TgBot.RemoveKeyboard();
             log.LogWrite("Exit");
             log.LogWrite(e.ExceptionObject.ToString() + "\n Crash");
@@ -170,7 +172,8 @@ namespace CSGO_Boost_Panel
 
         private void Application_Exit(object sender, EventArgs e)
         {
-            File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
+            if (settingsObj != null)
+                File.WriteAllText("Settings.json", JsonConvert.SerializeObject(settingsObj, Formatting.Indented));
             TgBot.RemoveKeyboard();
             log.LogWrite("Exit");
             Environment.Exit(0);
@@ -227,6 +230,9 @@ namespace CSGO_Boost_Panel
                 if (settingsObj.Property(TextSettings[i].Name) != null)
                     TextSettings[i].Text = settingsObj.Value<string>(TextSettings[i].Name);
             }
+
+            if (settingsObj.Property("notifies") == null)
+                MainWindow.settingsObj["notifies"] = true;
 
             if (settingsObj.Property("EndGameWaitSeconds") != null)
                 Settings.WaitSecondsAutomation = settingsObj.Value<short>("EndGameWaitSeconds");
@@ -1004,8 +1010,7 @@ namespace CSGO_Boost_Panel
                         mediaPlayer.Load();
                         mediaPlayer.Play();
                     }
-                    if (MainWindow.settingsObj.Value<bool>("notifies"))
-                        TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
+                    TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
                     if (settingsObj.Value<short>("WinTeam") == 2 && settingsObj.Value<bool>("AutoDisconnect"))
                     {
                         gslT1.NewGameState -= Round;
@@ -1077,8 +1082,7 @@ namespace CSGO_Boost_Panel
                                 mediaPlayer.Load();
                                 mediaPlayer.Play();
                             }
-                            if (MainWindow.settingsObj.Value<bool>("notifies"))
-                                TgBot.SendNotify("Check your game! Round lasts more than 35 seconds");
+                            TgBot.SendNotify("Check your game! Round lasts more than 35 seconds");
                             break;
                         }
                         await Task.Delay(5000);
@@ -1139,8 +1143,7 @@ namespace CSGO_Boost_Panel
                 mediaPlayer.Load();
                 mediaPlayer.Play();
             }
-            if (MainWindow.settingsObj.Value<bool>("notifies"))
-                TgBot.SendNotify("Match found");
+            TgBot.SendNotify("Match found");
             for (int i = 0; i < 10; i++)
             {
                 if (string.IsNullOrEmpty(PArray[i].WindowTitle))
@@ -1448,16 +1451,27 @@ namespace CSGO_Boost_Panel
             TgBot.WaitingForCommand(TgAPIKey);
         }
 
-        private void CheckUpdates(object sender, RoutedEventArgs e)
+        private void CheckUpdatesButton(object sender, RoutedEventArgs e)
         {
+            UpdateProgram(false);
+        }
+
+        private void UpdateProgram(bool silentUpdate)
+        {
+            string appVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            string newVersion = CheckForNewVersion();
+
+            if (newVersion == appVersion)
+            {
+                if(!silentUpdate)
+                    MessageBox.Show("You have the latest version.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            if (!silentUpdate && MessageBox.Show("Update " + newVersion + " is available! You have installed: " + appVersion + ". Do you want to update ?", "Update is available", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.No)
+                return;
+
             try
             {
-                JObject version = CheckForNewVersion();
-                if (version.Value<String>("actualversion") == Assembly.GetEntryAssembly().GetName().Version.ToString())
-                {
-                    MessageBox.Show("UpToDate");
-                    return;
-                }
                 var client = new WebClient();
                 client.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/IziBoost.zip"), "temp_myprogram");
                 if (Directory.Exists("temp_myprogram_folder")) Directory.Delete("temp_myprogram_folder", true);
@@ -1472,7 +1486,7 @@ namespace CSGO_Boost_Panel
             catch (Exception) { }
         }
 
-        private static JObject CheckForNewVersion()
+        private static String CheckForNewVersion()
         {
             using (var webClient = new WebClient())
             {
@@ -1483,7 +1497,7 @@ namespace CSGO_Boost_Panel
                 }
                 catch (Exception) { }
                 JObject version = JsonConvert.DeserializeObject<JObject>(jsonData);
-                return version;
+                return version.Value<String>("actualversion");
             }
         }
 
