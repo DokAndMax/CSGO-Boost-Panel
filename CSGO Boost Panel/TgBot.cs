@@ -87,7 +87,7 @@ namespace CSGO_Boost_Panel
 
         public async static void SendNotify(string message)
         {
-            if (MainWindow.settingsObj.Value<String>("chatID") == null || MainWindow.settingsObj.Value<bool>("notifies") == false)
+            if (!BotIsOn || MainWindow.settingsObj.Value<String>("chatID") == null || MainWindow.settingsObj.Value<bool>("notifies") == false)
                 return;
             await botClient.SendTextMessageAsync(
               chatId: MainWindow.settingsObj.Value<String>("chatID"),
