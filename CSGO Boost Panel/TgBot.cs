@@ -202,10 +202,10 @@ namespace CSGO_Boost_Panel
                         return;
                     }
                     string a = "";
-                    a += "Active preset:  " + ActivePreset + "\n\n";
-                    for (short i = 0; i < _items.Count; i++)
+                    a += "Active preset:  " + (string.IsNullOrEmpty(ActiveTeam.TeamName) ? "None" : ActiveTeam.TeamName) + "\n\n";
+                    for (short i = 0; i < TeamsCollection.Count; i++)
                     {
-                        a += (i + 1) + "  Lobby name: " + _items[i].Name + "\n";
+                        a += (i + 1) + "  Lobby name: " + TeamsCollection[i].TeamName + "\n";
                     }
                     botClient.OnMessage -= BotOnMessageReceivedCatch;
                     botClient.OnMessageEdited -= BotOnMessageReceivedCatch;
@@ -261,9 +261,9 @@ namespace CSGO_Boost_Panel
         {
             if (!MainWindow.settingsObj.Value<bool>("notifies"))
             {
+                MainWindow.settingsObj["chatID"] = message.Chat.Id;
                 SendNotify("notify turns on");
                 MainWindow.settingsObj["notifies"] = true;
-                MainWindow.settingsObj["chatID"] = message.Chat.Id;
             }
             else
             {
@@ -279,15 +279,15 @@ namespace CSGO_Boost_Panel
             string status;
             for (short i = 0; i < 10; i++)
             {
-                if (string.IsNullOrEmpty(PArray[i].WindowTitle))
+                if (string.IsNullOrEmpty(ActiveTeam.Player[i].WindowTitle))
                     continue;
-                if (PArray[i].IsStarted == Red)
+                if (ActiveTeam.Player[i].IsStarted == Red)
                     status = " 🔴 ";
                 else
                     status = " 🟢 ";
-                info += (i+1) + "\t" + status + "\t-\t" + PArray[i].WindowTitle + "\n";
+                info += (i+1) + "\t" + status + "\t-\t" + ActiveTeam.Player[i].WindowTitle + "\n";
             }
-            info += "\nActive preset:  " + ActivePreset + "\n";
+            info += "\nActive preset:  " + (string.IsNullOrEmpty(ActiveTeam.TeamName) ? "None" : ActiveTeam.TeamName) + "\n";
             info += "\nAutoAccept:   " + AutoAcceptStatusCircle + "    Player Statistics:   " + PlayerStatusCircle + "\n";
             info += "\nGames played for: game session - " + GamesPlayerForGameSession + "; app session - " + GamesPlayerForAppSession;
             SendNotify(info);
@@ -330,9 +330,9 @@ namespace CSGO_Boost_Panel
             {
                 for (short i = 1; i < 11; i++)
                 {
-                    if (string.IsNullOrEmpty(PArray[i-1].WindowTitle))
+                    if (string.IsNullOrEmpty(ActiveTeam.Player[i-1].WindowTitle))
                         continue;
-                    if (PArray[i-1].IsStarted == Red)
+                    if (ActiveTeam.Player[i-1].IsStarted == Red)
                         await RestartCSGO(i);
                 }
                 SendNotify("ok");
@@ -348,7 +348,7 @@ namespace CSGO_Boost_Panel
             botClient.OnMessageEdited -= LoadPreset;
             botClient.OnMessage += BotOnMessageReceivedCatch;
             botClient.OnMessageEdited += BotOnMessageReceivedCatch;
-            if (Int16.TryParse(message.Text.Split(' ')[0], out short result) && result <= _items.Count && result > 0)
+            if (Int16.TryParse(message.Text.Split(' ')[0], out short result) && result <= TeamsCollection.Count && result > 0)
             {
                 Application.Current.Dispatcher.Invoke(delegate
                 {

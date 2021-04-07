@@ -12,7 +12,7 @@ namespace CSGO_Boost_Panel
     {
         public async static Task StartSearching(int type)
         {
-            String ldr1Title = PArray[0].WindowTitle, ldr2Title = PArray[5].WindowTitle;
+            String ldr1Title = ActiveTeam.Player[0].WindowTitle, ldr2Title = ActiveTeam.Player[5].WindowTitle;
             switch (type)
             {
                 case 1:
@@ -52,13 +52,13 @@ namespace CSGO_Boost_Panel
         public async static Task GatherLobby()
         {
             List<String> ldrTitles = new List<String>();
-            if (PArray[0].WindowTitle.Contains("LEADER"))
-                ldrTitles.Add(PArray[0].WindowTitle);
-            if (PArray[5].WindowTitle.Contains("LEADER"))
-                ldrTitles.Add(PArray[5].WindowTitle);
+            if (ActiveTeam.Player[0].WindowTitle.Contains("LEADER"))
+                ldrTitles.Add(ActiveTeam.Player[0].WindowTitle);
+            if (ActiveTeam.Player[5].WindowTitle.Contains("LEADER"))
+                ldrTitles.Add(ActiveTeam.Player[5].WindowTitle);
             for (short i = 0; i < 10; i++)
-                if (PArray[i].IsOn)
-                    WindowHelper.EnableWindow(PArray[i].WindowTitle, false);
+                if (ActiveTeam.Player[i].Toggled)
+                    WindowHelper.EnableWindow(ActiveTeam.Player[i].WindowTitle, false);
             List<string> TeamWinTitle = T1WinTitle;
             for (int i = 1, n = 0; n < 2; i++)
             {
@@ -128,20 +128,20 @@ namespace CSGO_Boost_Panel
                     n++;
             }
             for (short i = 0; i < 10; i++)
-                if (PArray[i].IsOn)
-                    WindowHelper.EnableWindow(PArray[i].WindowTitle, true);
+                if (ActiveTeam.Player[i].Toggled)
+                    WindowHelper.EnableWindow(ActiveTeam.Player[i].WindowTitle, true);
             return;
         }
 
        public static Task RestartCSGO(short WinNum)
        {
-            if (!PArray[WinNum - 1].IsOn || string.IsNullOrEmpty(PArray[WinNum - 1].Login))
+            if (!ActiveTeam.Player[WinNum - 1].Toggled || string.IsNullOrEmpty(ActiveTeam.Player[WinNum - 1].Login))
                 return Task.CompletedTask;
             string res;
             foreach (Process proc in  Process.GetProcessesByName("steam"))
             {
                 String parameters = CommandLineUtilities.getCommandLines(proc);
-                if (parameters.Contains(PArray[WinNum-1].Login))
+                if (parameters.Contains(ActiveTeam.Player[WinNum-1].Login))
                 {
                     proc.Kill();
                     break;
@@ -171,8 +171,8 @@ namespace CSGO_Boost_Panel
                     y = settingsObj.Value<string>("BotResY");
             }
             res = x + " " + y;
-            Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " + PArray[WinNum-1].Login + " " + PArray[WinNum-1].Password +
-                " " + PArray[WinNum-1].Position + " " + res);
+            Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " + ActiveTeam.Player[WinNum-1].Login + " " + ActiveTeam.Player[WinNum-1].Password +
+                " " + ActiveTeam.Player[WinNum-1].Pos + " " + res);
             return Task.CompletedTask;
        }
         static void RunAsSTAThread(Action goForIt)

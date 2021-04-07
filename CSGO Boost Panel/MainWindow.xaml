@@ -5,9 +5,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:CSGO_Boost_Panel="clr-namespace:CSGO_Boost_Panel" 
-        xmlns:local="clr-namespace:CSGO_Boost_Panel"
-        xmlns:controlzex="urn:controlzex" x:Class="CSGO_Boost_Panel.MainWindow"
+        x:Class="CSGO_Boost_Panel.MainWindow"
         mc:Ignorable="d"
         Icon="Icon.ico" MouseDown="Window_MouseDown"
         Title="IziBoost" ResizeMode="CanMinimize" Height="500" Width="824" x:Name="window1" Background="#B5FBDD" FocusVisualStyle="{x:Null}" Closed="Application_Exit">
@@ -253,42 +251,42 @@
                             <ColumnDefinition Width="162"/>
                             <ColumnDefinition Width="182"/>
                         </Grid.ColumnDefinitions>
-                        <Ellipse x:Name="Status1" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse x:Name="Status2" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status3" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status4" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status5" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status6" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status7" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status8" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status9" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
-                        <Ellipse x:Name="Status10" Fill="{Binding Path=IsStarted}" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton1" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton2" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton3" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton4" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton5" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton6" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton7" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton8" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton9" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
-                        <mah:ToggleSwitch x:Name="ToggleButton10" IsOn="{Binding Path=IsOn}" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <Ellipse x:Name="Status1" Fill="{Binding Path=Player[0].IsStarted}" Grid.Column="2" Grid.Row="1" Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="Status2" Fill="{Binding Path=Player[1].IsStarted}" Grid.Column="2" Grid.Row="2" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status3" Fill="{Binding Path=Player[2].IsStarted}" Grid.Column="2" Grid.Row="3" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status4" Fill="{Binding Path=Player[3].IsStarted}" Grid.Column="2" Grid.Row="4" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status5" Fill="{Binding Path=Player[4].IsStarted}" Grid.Column="2" Grid.Row="5" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status6" Fill="{Binding Path=Player[5].IsStarted}" Grid.Column="2" Grid.Row="7" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status7" Fill="{Binding Path=Player[6].IsStarted}" Grid.Column="2" Grid.Row="8" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status8" Fill="{Binding Path=Player[7].IsStarted}" Grid.Column="2" Grid.Row="9" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status9" Fill="{Binding Path=Player[8].IsStarted}" Grid.Column="2" Grid.Row="10" Width="15" Height="15"/>
+                        <Ellipse x:Name="Status10" Fill="{Binding Path=Player[9].IsStarted}" Grid.Column="2" Grid.Row="11" Width="15" Height="15"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton1" IsOn="{Binding Path=Player[0].Toggled}" Grid.Column="1" Grid.Row="1" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton2" IsOn="{Binding Path=Player[1].Toggled}" Grid.Column="1" Grid.Row="2" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton3" IsOn="{Binding Path=Player[2].Toggled}" Grid.Column="1" Grid.Row="3" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton4" IsOn="{Binding Path=Player[3].Toggled}" Grid.Column="1" Grid.Row="4" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton5" IsOn="{Binding Path=Player[4].Toggled}" Grid.Column="1" Grid.Row="5" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton6" IsOn="{Binding Path=Player[5].Toggled}" Grid.Column="1" Grid.Row="7" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton7" IsOn="{Binding Path=Player[6].Toggled}" Grid.Column="1" Grid.Row="8" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton8" IsOn="{Binding Path=Player[7].Toggled}" Grid.Column="1" Grid.Row="9" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton9" IsOn="{Binding Path=Player[8].Toggled}" Grid.Column="1" Grid.Row="10" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
+                        <mah:ToggleSwitch x:Name="ToggleButton10" IsOn="{Binding Path=Player[9].Toggled}" Grid.Column="1" Grid.Row="11" FontSize="12" ContentDirection="RightToLeft" Foreground="{x:Null}" Width="48" Height="32" FocusVisualStyle="{x:Null}"/>
 
-                        <TextBox x:Name="Login1" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login2" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login3" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login4" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login5" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login1" Text="{Binding Path=Player[0].Login}" MaxLength="250" Grid.Column="3" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login2" Text="{Binding Path=Player[1].Login}" MaxLength="250" Grid.Column="3" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login3" Text="{Binding Path=Player[2].Login}" MaxLength="250" Grid.Column="3" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login4" Text="{Binding Path=Player[3].Login}" MaxLength="250" Grid.Column="3" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login5" Text="{Binding Path=Player[4].Login}" MaxLength="250" Grid.Column="3" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password1" MaxLength="250" Grid.Column="4" Grid.Row="1" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password2" MaxLength="250" Grid.Column="4" Grid.Row="2" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password3" MaxLength="250" Grid.Column="4" Grid.Row="3" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password4" MaxLength="250" Grid.Column="4" Grid.Row="4" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password5" MaxLength="250" Grid.Column="4" Grid.Row="5" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login6" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login7" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login8" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login9" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
-                        <TextBox x:Name="Login10" Text="{Binding Path=Login}" MaxLength="250" Grid.Column="3" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login6" Text="{Binding Path=Player[5].Login}" MaxLength="250" Grid.Column="3" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login7" Text="{Binding Path=Player[6].Login}" MaxLength="250" Grid.Column="3" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login8" Text="{Binding Path=Player[7].Login}" MaxLength="250" Grid.Column="3" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login9" Text="{Binding Path=Player[8].Login}" MaxLength="250" Grid.Column="3" Grid.Row="10" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
+                        <TextBox x:Name="Login10" Text="{Binding Path=Player[9].Login}" MaxLength="250" Grid.Column="3" Grid.Row="11" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Login" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password6" MaxLength="250" Grid.Column="4" Grid.Row="7" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password7" MaxLength="250" Grid.Column="4" Grid.Row="8" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
                         <PasswordBox x:Name="Password8" MaxLength="250" Grid.Column="4" Grid.Row="9" Background="{x:Null}" Width="114" Height="29" mah:TextBoxHelper.Watermark="Password" BorderBrush="#3F01142F" FontSize="15"/>
@@ -425,18 +423,21 @@
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
                     </Grid>
-                    <Button x:Name="ClearButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="144,0,1,51" Width="30" Height="30" Click="ClearText" FocusVisualStyle="{x:Null}" Grid.Column="2">
-                        <iconPacks:PackIconMaterial Kind="CloseCircleOutline" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                    <Button x:Name="LoadButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="144,0,1,82" Width="30" Height="30" Click="LoadFromFile" FocusVisualStyle="{x:Null}" Grid.Column="2">
+                        <iconPacks:PackIconModern Kind="PageUpload" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
                     </Button>
-                    <Button x:Name="SaveButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="133,0,2,10" Width="40" Height="40" Click="Save" FocusVisualStyle="{x:Null}" Grid.Column="2">
-                        <iconPacks:PackIconModern Kind="Save" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                    <Button x:Name="SaveButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="144,0,1,51" Width="30" Height="30" Click="SaveLobby" FocusVisualStyle="{x:Null}" Grid.Column="2">
+                        <iconPacks:PackIconModern Kind="Save" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
                     </Button>
-                    <Grid x:Name="AcceptGrid" Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="83,328,42,40" Height="74" Width="162" Grid.ColumnSpan="2" Grid.Column="1">
+                    <Button x:Name="AddButton" Background="#FFEE3D48" Style="{DynamicResource MahApps.Styles.Button.Circle}" BorderBrush="#7F000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Margin="133,0,2,10" Width="40" Height="40" Click="NewLobbyGridOpen" FocusVisualStyle="{x:Null}" Grid.Column="2">
+                        <iconPacks:PackIconMaterial Kind="PlusThick" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF231F20"/>
+                    </Button>
+                    <Grid x:Name="NewLobbyGrid" Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="83,328,42,40" Height="74" Width="162" Grid.ColumnSpan="2" Grid.Column="1">
                         <Grid.Background>
                             <ImageBrush ImageSource="{StaticResource bcgDrawingImage}"/>
                         </Grid.Background>
                         <TextBlock Text="Name for your lobby:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16,10,32,48" Foreground="#FFFF8B8B"/>
-                        <TextBox x:Name="PresetName" Background="#7FFBABAB" AcceptsReturn="False" KeyDown="Accept" Margin="10,31,10,17" MinHeight="0"/>
+                        <TextBox x:Name="PresetName" Background="#7FFBABAB" AcceptsReturn="False" KeyDown="NewLobby" Margin="10,31,10,17" MinHeight="0"/>
                     </Grid>
                     <CheckBox x:Name="CSGOsRunning" Margin="97,447,2,-21" Content="Running?" Grid.Column="2" FocusVisualStyle="{x:Null}"
                               mah:CheckBoxHelper.ForegroundUnchecked="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundUncheckedMouseOver="{StaticResource CheckBoxRunning}" mah:CheckBoxHelper.ForegroundCheckedPressed="{StaticResource CheckBoxRunning}"
@@ -475,33 +476,45 @@
                         <iconPacks:PackIconMaterial Kind="AccountBoxMultipleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <ListBox x:Name="lobbiesList" Margin="78,-60,3,26" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}" PreviewMouseMove="ListBox_PreviewMouseMove">
-                    <ListBox.Resources>
-                        <ContextMenu x:Key="ItemContextMenu" Placement="Left" OverridesDefaultStyle="True">
-                            <MenuItem Header="Delete" Click="MenuItemDelete_Click"/>
-                        </ContextMenu>
-                    </ListBox.Resources>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Margin" Value="5"/>
-                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
-                            <Setter Property="AllowDrop" Value="True"/>
-                            <EventSetter Event="Drop" Handler="ListBoxItem_Drop" />
-                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown"/>
-                            <Setter Property="Padding" Value="5"/>
-                            <Setter Property="FontSize" Value="20"/>
-                            <Setter Property="Height" Value="40"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="BorderThickness" Value="1"/>
-                                    <Setter Property="BorderBrush" Value="Black"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                <Grid FocusVisualStyle="{x:Null}" Margin="78,-60,3,26">
+                    <ListBox x:Name="lobbiesList" Foreground="Black" BorderBrush="{x:Null}" MouseDoubleClick="LoadPreset" Background="{x:Null}" PreviewMouseMove="ListBox_PreviewMouseMove" DisplayMemberPath="TeamName">
+                        <ListBox.Resources>
+                            <ContextMenu x:Key="ItemContextMenu" Placement="Left" OverridesDefaultStyle="True">
+                                <MenuItem Header="Delete" Click="MenuItem_Delete"/>
+                                <MenuItem Header="Duplicate" Click="MenuItem_Duplicate"/>
+                                <MenuItem Header="Rename" Click="MenuItem_Rename"/>
+                                <MenuItem Header="Copy windows positions" Click="MenuItem_CopyPos"/>
+                            </ContextMenu>
+                        </ListBox.Resources>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                                <Setter Property="AllowDrop" Value="True"/>
+                                <EventSetter Event="Drop" Handler="ListBoxItem_Drop" />
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown"/>
+                                <Setter Property="Padding" Value="5"/>
+                                <Setter Property="FontSize" Value="20"/>
+                                <Setter Property="Height" Value="40"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <Grid x:Name="RenameLobbyGrid" Visibility="Collapsed" FocusVisualStyle="{x:Null}" Margin="534,317,10,43" Height="74">
+                        <Grid.Background>
+                            <ImageBrush ImageSource="{StaticResource bcgDrawingImage}"/>
+                        </Grid.Background>
+                        <TextBlock Text="New name for your lobby:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16,10,32,48" Foreground="#FFFF8B8B"/>
+                        <TextBox x:Name="NewLobbyName" Background="#7FFBABAB" AcceptsReturn="False" KeyDown="RenameLobby" Margin="10,31,10,17" MinHeight="0" FocusVisualStyle="{x:Null}"/>
+                    </Grid>
+                </Grid>
             </TabItem>
             <TabItem x:Name="players" Margin="-126,171,126,-171" Width="66" Height="65" BorderThickness="0" Padding="0">
                 <TabItem.Header>
@@ -518,25 +531,33 @@
                         <ItemsControl x:Name="playersList">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="1*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Path=Login}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding Path=Nickname}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
-                                        <WrapPanel Grid.Column="2" Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=Level, StringFormat=0;;#}" Width="35" FontSize="20" Padding="4" TextAlignment="Center"/>
-                                            <TextBlock Text="{Binding Path=XP}" Width="51" FontSize="20" Padding="4" TextAlignment="Center"/>
-                                        </WrapPanel>
-                                        <Image Grid.Column="3" Source="{Binding Rank}" Width="75" Height="30"/>
-                                        <Border Grid.ColumnSpan="4" Grid.Row="1" Visibility="{Binding Path=Visibility}" Height="2" Margin="0,5,0,5" BorderThickness="0,0,0,2" VerticalAlignment="Center">
+                                    <StackPanel>
+                                        <ItemsControl ItemsSource="{Binding Player}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="2*"/>
+                                                            <ColumnDefinition Width="2*"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                            <ColumnDefinition Width="1*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding Path=Login}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Path=Nickname}" FontSize="20" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="210"/>
+                                                        <WrapPanel Grid.Column="2" Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Path=Level, StringFormat=0;;#}" Width="35" FontSize="20" Padding="4" TextAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Path=XP}" Width="51" FontSize="20" Padding="4" TextAlignment="Center"/>
+                                                        </WrapPanel>
+                                                        <Image Grid.Column="3" Source="{Binding Rank}" Width="75" Height="30"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Border Padding="0" Height="2" Margin="0,5,0,5" BorderThickness="0,0,0,2" VerticalAlignment="Center">
                                             <Border.BorderBrush>
                                                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                                     <GradientStop Color="#141E30" Offset="0"/>
@@ -544,7 +565,7 @@
                                                 </LinearGradientBrush>
                                             </Border.BorderBrush>
                                         </Border>
-                                    </Grid>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -557,7 +578,7 @@
                         <iconPacks:PackIconModern Kind="Settings" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <Grid x:Name="SettingsGrid"  Margin="73,-63,0,27">
+                <Grid x:Name="SettingsGrid" Margin="73,-63,0,27">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="45*"/>
                         <RowDefinition Height="392*"/>
@@ -617,20 +638,18 @@
                     <TextBox x:Name="DelayInRound14" TextWrapping="Wrap" Margin="580,120,104,242" Background="#3FFFFFFF" BorderBrush="#FF460808" Text="{Binding DelayInRound14, UpdateSourceTrigger=PropertyChanged}" TextChanged="SaveSettings" PreviewKeyDown="NoSpacesTextBox" DataObject.Pasting="CheckPastedText" PreviewTextInput="NumberValidationTextBox" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="AutoAccept" Toggled="SettingsTgl" Margin="496,158,0,202" HorizontalAlignment="Left" Content="AutoAccept" Grid.Row="1"/>
                     <mah:ToggleSwitch x:Name="AutoDisconnect" Toggled="SettingsTgl" Margin="496,195,0,165" Content="AutoDisconnect" Grid.Row="1"/>
-                    <Button x:Name="DisconnectSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="658,199,62,167" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
-                        <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
-                    </Button>
                     <mah:ToggleSwitch x:Name="Sounds" Toggled="SettingsTgl" Margin="496,232,0,128" Content="Sounds" Grid.Row="1" Width="111"/>
                     <Button x:Name="SoundSettingsOn" Style="{StaticResource MahApps.Styles.Button.Circle}" Click="AdvanceSettingsOn" Margin="607,236,113,130" Grid.Row="1" Width="19" Height="19" BorderThickness="0" Padding="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
                         <iconPacks:PackIconMaterial Kind="DotsHorizontalCircleOutline" Foreground="Black" Width="19" Height="19"/>
                     </Button>
                     <mah:ToggleSwitch x:Name="FocusWindows" Toggled="SettingsTgl" Margin="496,268,0,92" Content="Focus windows" Grid.Row="1"/>
-                    <mah:ToggleSwitch x:Name="Automation" Margin="496,304,0,56" Content="Automation" Toggled="SettingsTgl" Grid.Row="1" DataContext="AutoBoost"/>
+                    <mah:ToggleSwitch x:Name="Automation" Margin="496,304,0,56" Content="Automation" Toggled="SettingsTgl" Grid.Row="1"/>
                     <RadioButton x:Name="WinTeam1" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T1" Background="{x:Null}" Margin="389,166,281,193" Checked="WinTeam1_Checked" Grid.Row="1" MinWidth="0"/>
                     <RadioButton x:Name="WinTeam2" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="T2" Background="{x:Null}" Margin="389,210,281,149" Checked="WinTeam2_Checked" Grid.Row="1" MinWidth="0"/>
                     <RadioButton x:Name="WinTeamTie" Style="{StaticResource MahApps.Styles.RadioButton.Win10}" Content="Tie" Background="{x:Null}" Margin="389,254,281,105" Checked="WinTeamTie_Checked" Grid.Row="1" MinWidth="0"/>
-                    <Grid x:Name="SoundSettings" Margin="372,69,131,193" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
+                    <Grid x:Name="SoundSettings" Margin="371,76,132,152" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
                         <Grid.RowDefinitions>
+                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -639,21 +658,11 @@
                             <ColumnDefinition Width="13"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Border BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+                        <Border BorderBrush="Black" BorderThickness="1" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
                         <mah:ToggleSwitch x:Name="MatchFoundSound" Toggled="SettingsTgl" Grid.Row="0" Grid.Column="1" IsOn="True" Content="Match found"/>
-                        <mah:ToggleSwitch x:Name="MatchEndedSound" Grid.Row="1" Toggled="SettingsTgl" Grid.Column="1" IsOn="True" Content="Match ended"/>
+                        <mah:ToggleSwitch x:Name="MatchEndedSound" Toggled="SettingsTgl" Grid.Row="1" Grid.Column="1" IsOn="True" Content="Match ended"/>
                         <mah:ToggleSwitch x:Name="RoundLastsSound" Toggled="SettingsTgl" Grid.Row="2" Grid.Column="1" IsOn="True" Content="Round lasts 35 seconds"/>
-                    </Grid>
-                    <Grid x:Name="DisconnectSettings" Margin="422,108,81,230" Grid.Row="1" Background="#FFAFCFEA" Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="13"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-                        <mah:ToggleSwitch x:Name="LongDisconnect" Toggled="SettingsTgl" Grid.Row="0" Grid.Column="1" IsOn="False" Content="Long disconnect"/>
+                        <mah:ToggleSwitch x:Name="LobbyNotGatheredSound" Toggled="SettingsTgl" Grid.Row="3" Grid.Column="1" IsOn="True" Content="Lobby not gathered"/>
                     </Grid>
                     <TextBlock Margin="9,313,630,49" Grid.Row="1" Text="Tg API:" TextAlignment="Center" LineHeight="36" FontSize="20"/>
                     <TextBox x:Name="TgApi" TextChanged="APIKeySave" TextWrapping="NoWrap" Margin="114,314,343,48" Background="#3FFFFFFF" BorderBrush="#FF460808" Grid.Row="1"/>

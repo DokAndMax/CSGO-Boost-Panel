@@ -132,7 +132,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="LobbyPlayer.cs" />
     <Compile Include="CSGOIntercation.cs" />
     <Compile Include="LogWriter.cs" />
     <Compile Include="Settings.cs" />
