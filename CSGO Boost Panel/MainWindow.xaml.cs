@@ -253,10 +253,10 @@ namespace CSGO_Boost_Panel
                         InfoMessage(sender, "Please type login or password",  MessageBoxImage.Information);
                         return;
                     }
-                    if (accInfo[ActiveTeam.Player[i].Login.ToLower()] == null)
+                    if (accInfo[ActiveTeam.Player[i].Login] == null)
                     {
                         LoadSteamAccs();
-                        if (accInfo[ActiveTeam.Player[i].Login.ToLower()] == null)
+                        if (accInfo[ActiveTeam.Player[i].Login] == null)
                         {
                             InfoMessage(sender, "First login to this account: \"" + ActiveTeam.Player[i].Login + "\" and then try again",  MessageBoxImage.Information);
                             return;
@@ -265,14 +265,14 @@ namespace CSGO_Boost_Panel
                     if (i < 5)
                     {
                         Logins.Add(ActiveTeam.Player[i].Login + " " + ActiveTeam.Player[i].Password + " " + ActiveTeam.Player[i].Pos + " " + Res[l] + " \"" + Names[l] + " #1\" " + n);
-                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login.ToLower() + " | " + Names[l] + " #1";
-                        T1WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login.ToLower() + " | " + Names[l] + " #1");
+                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #1";
+                        T1WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #1");
                     }
                     else
                     {
                         Logins.Add(ActiveTeam.Player[i].Login + " " + ActiveTeam.Player[i].Password + " " + ActiveTeam.Player[i].Pos + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n + 2));
-                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login.ToLower() + " | " + Names[l] + " #2";
-                        T2WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login.ToLower() + " | " + Names[l] + " #2");
+                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #2";
+                        T2WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #2");
                     }
                     if (n == 0)
                         n++;
@@ -652,16 +652,16 @@ namespace CSGO_Boost_Panel
                 MessageBox.Show("Type login");
                 return;
             }
-            if (accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text.ToLower()] == null)
+            if (accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text] == null)
             {
                 LoadSteamAccs();
-                if (accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text.ToLower()] == null)
+                if (accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text] == null)
                 {
                     MessageBox.Show("Please, login to this account and try again");
                     return;
                 }
             }
-            Process.Start("https://steamcommunity.com/profiles/" + accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text.ToLower()]["SteamID"] + "/");
+            Process.Start("https://steamcommunity.com/profiles/" + accInfo[((TextBox)this.GetType().GetField(((Button)sender).Tag.ToString(), BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this)).Text]["SteamID"] + "/");
         }
 
         private void AutoAcceptFunc()
@@ -1194,8 +1194,8 @@ namespace CSGO_Boost_Panel
                             foreach (Team Team in TeamsCollection)
                                 foreach (Player plr in Team.Player.Where(c => c.Login == ActiveTeam.Player[i].Login))
                                 {
-                                    plr.Nickname = accInfo[plr.Login.ToLower()].Value<string>("Nickname");
-                                    plr.SteamID = accInfo[plr.Login.ToLower()].Value<string>("SteamID");
+                                    plr.Nickname = accInfo[plr.Login].Value<string>("Nickname");
+                                    plr.SteamID = accInfo[plr.Login].Value<string>("SteamID");
                                 }
                         }
                         string RegExStr = Regex.Match(TeamString, @"(xuid u64[(] " + ActiveTeam.Player[i].SteamID + " .*? )prime", RegexOptions.Singleline).Value;
