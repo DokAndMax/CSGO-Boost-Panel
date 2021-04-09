@@ -62,7 +62,7 @@ namespace CSGO_Boost_Panel
             if (!BotIsOn)
                 return;
             await botClient.SendTextMessageAsync(
-                chatId: MainWindow.settingsObj.Value<String>("chatID"),
+                chatId: ProgramSettings.chatID,
                 text: "Disconnected",
                 replyMarkup: new ReplyKeyboardRemove()
                 );
@@ -87,10 +87,10 @@ namespace CSGO_Boost_Panel
 
         public async static void SendNotify(string message)
         {
-            if (!BotIsOn || MainWindow.settingsObj.Value<String>("chatID") == null || MainWindow.settingsObj.Value<bool>("notifies") == false)
+            if (!BotIsOn || string.IsNullOrEmpty(ProgramSettings.chatID) || ProgramSettings.Notifies)
                 return;
             await botClient.SendTextMessageAsync(
-              chatId: MainWindow.settingsObj.Value<String>("chatID"),
+              chatId: ProgramSettings.chatID,
               text: message,
               replyMarkup: rmu
               );
@@ -99,9 +99,9 @@ namespace CSGO_Boost_Panel
         private static async Task BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             Message message = messageEventArgs.Message;
-            if (MainWindow.settingsObj.Value<String>("chatID") == null)
+            if (string.IsNullOrEmpty(ProgramSettings.chatID))
             {
-                MainWindow.settingsObj["chatID"] = message.Chat.Id;
+                ProgramSettings.chatID = message.Chat.Id.ToString();
                 SendNotify("👋");
             }
             if (message == null || message.Type != MessageType.Text || message.Date < DateTime.UtcNow.AddSeconds(-15))
@@ -147,7 +147,7 @@ namespace CSGO_Boost_Panel
                     new KeyboardButton[] { "6", "7", "8", "9", "10" },
                     new KeyboardButton[] { "All red" }};
                     await botClient.SendTextMessageAsync(
-                        chatId: MainWindow.settingsObj.Value<String>("chatID"),
+                        chatId: ProgramSettings.chatID,
                         text: "Choose 1 - 10",
                         replyMarkup: new ReplyKeyboardMarkup(OneToTen, true, false)
                     );
@@ -212,7 +212,7 @@ namespace CSGO_Boost_Panel
                     botClient.OnMessage += LoadPreset;
                     botClient.OnMessageEdited += LoadPreset;
                     await botClient.SendTextMessageAsync(
-                        chatId: MainWindow.settingsObj.Value<String>("chatID"),
+                        chatId: ProgramSettings.chatID,
                         text: a,
                         replyMarkup: new ReplyKeyboardRemove()
                     );
@@ -259,16 +259,16 @@ namespace CSGO_Boost_Panel
 
         private static void ChangeNotify(Message message)
         {
-            if (!MainWindow.settingsObj.Value<bool>("notifies"))
+            if (!ProgramSettings.Notifies)
             {
-                MainWindow.settingsObj["chatID"] = message.Chat.Id;
+                ProgramSettings.chatID = message.Chat.Id.ToString();
                 SendNotify("notify turns on");
-                MainWindow.settingsObj["notifies"] = true;
+                ProgramSettings.Notifies = true;
             }
             else
             {
                 SendNotify("notify turns off");
-                MainWindow.settingsObj["notifies"] = false;
+                ProgramSettings.Notifies = false;
             }
         }
 

@@ -147,31 +147,19 @@ namespace CSGO_Boost_Panel
                     break;
                 }
             }
-            string x, y;
+            short x, y;
             if (Convert.ToInt16(WinNum) == 1 || Convert.ToInt16(WinNum) == 6)
             {
-                if (string.IsNullOrEmpty(settingsObj.Value<string>("LeaderResX")))
-                    x = "640";
-                else
-                    x = settingsObj.Value<string>("LeaderResX");
-                if (string.IsNullOrEmpty(settingsObj.Value<string>("LeaderResY")))
-                    y = "480";
-                else
-                    y = settingsObj.Value<string>("LeaderResY");
+                    x = ProgramSettings.LeaderResX;
+                    y = ProgramSettings.LeaderResY;
             }
             else
             {
-                if (string.IsNullOrEmpty(settingsObj.Value<string>("BotResX")))
-                    x = "400";
-                else
-                    x = settingsObj.Value<string>("BotResX");
-                if (string.IsNullOrEmpty(settingsObj.Value<string>("BotResY")))
-                    y = "300";
-                else
-                    y = settingsObj.Value<string>("BotResY");
+                    x = ProgramSettings.BotResX;
+                    y = ProgramSettings.BotResY;
             }
             res = x + " " + y;
-            Process.Start("Launcher.exe", "true \"" + settingsObj["SteamFolder"].ToString() + "\" " + ActiveTeam.Player[WinNum-1].Login + " " + ActiveTeam.Player[WinNum-1].Password +
+            Process.Start("Launcher.exe", "true \"" + ProgramSettings.SteamFolder + "\" " + ActiveTeam.Player[WinNum-1].Login + " " + ActiveTeam.Player[WinNum-1].Password +
                 " " + ActiveTeam.Player[WinNum-1].Pos + " " + res);
             return Task.CompletedTask;
        }

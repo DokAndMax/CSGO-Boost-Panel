@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace CSGO_Boost_Panel
 {
-    class Settings : INotifyPropertyChanged
+    public class Settings : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -11,32 +11,55 @@ namespace CSGO_Boost_Panel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public short WaitSecondsAutomation { get { return waitSecondsAutomation; } set { waitSecondsAutomation = value; OnPropertyChanged("WaitSecondsAutomation"); } }
-        private short waitSecondsAutomation;
+        public short WaitSecondsAutomation { get; set; }
 
-        public short DelayInRound14 { get { return delayInRound14; } set { delayInRound14 = value; OnPropertyChanged("DelayInRound14"); } }
-        private short delayInRound14;
+        public short DelayInRound14 { get; set; }
 
-        public short LeaderResX { get { return leaderResX; } set { leaderResX = value; OnPropertyChanged("LeaderResX"); } }
-        private short leaderResX;
+        public short LeaderResX { get; set; }
 
-        public short LeaderResY { get { return leaderResY; } set { leaderResY = value; OnPropertyChanged("LeaderResY"); } }
-        private short leaderResY;
+        public short LeaderResY { get; set; }
 
-        public short BotResX { get { return botResX; } set { botResX = value; OnPropertyChanged("BotResX"); } }
-        private short botResX;
+        public short BotResX { get; set; }
 
-        public short BotResY { get { return botResY; } set { botResY = value; OnPropertyChanged("BotResY"); } }
-        private short botResY;
+        public short BotResY { get; set; }
 
-        public Settings(short WaitSecondsAutomation, short DelayInRound14, short LeaderResX, short LeaderResY, short BotResX, short BotResY)
-        {
-            this.WaitSecondsAutomation = WaitSecondsAutomation;
-            this.DelayInRound14 = DelayInRound14;
-            this.LeaderResX = LeaderResX;
-            this.LeaderResY = LeaderResY;
-            this.BotResX = BotResX;
-            this.BotResY = BotResY;
-        }
+        public bool Notifies { get; set; }
+
+        public bool AutoAccept { get; set; }
+
+        public bool AutoDisconnect { get; set; }
+
+        public bool Sounds { get; set; }
+
+        public bool MatchFoundSound { get; set; }
+
+        public bool MatchEndedSound { get; set; }
+
+        public bool LobbyNotGatheredSound { get; set; }
+
+        public bool RoundLastsSound { get; set; }
+
+        public bool FocusWindows { get; set; }
+
+        public bool Automation { get; set; }
+
+        public bool WinTeam1 { get { return winTeam1; } set { winTeam1 = value; OnPropertyChanged("WinTeam1"); } }
+        private bool winTeam1;
+        public bool WinTeam2 { get { return winTeam2; } set { winTeam2 = value; OnPropertyChanged("WinTeam2"); } }
+        private bool winTeam2;
+        public bool WinTeamTie { get; set; }
+
+        public bool CSGOsRunning { get { return csgosRunning; } set { csgosRunning = value; OnPropertyChanged("CSGOsRunning"); } }
+        private bool csgosRunning;
+
+        public string TgApi { get; set; }
+
+        public string SteamFolder { get { return steamFolder; } set { steamFolder = value; OnPropertyChanged("SteamFolder"); } }
+        private string steamFolder;
+
+        public string CSGOFolder { get { return csgoFolder; } set { csgoFolder = value; OnPropertyChanged("CSGOFolder"); } }
+        private string csgoFolder;
+
+        public string chatID { get; set; }
     }
 }
