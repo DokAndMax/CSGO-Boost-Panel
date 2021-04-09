@@ -484,16 +484,16 @@ namespace CSGO_Boost_Panel
             {
                 for (int i = 1, a = 0, b = 5; a < 5; i += 4, a++, b++)
                 {
-                    ActiveTeam.Player[a].Login = accounts[i];
+                    ActiveTeam.Player[a].Login = accounts[i].ToLower();
                     Password[a].Password = accounts[i + 1];
-                    ActiveTeam.Player[b].Login = accounts[i + 2];
+                    ActiveTeam.Player[b].Login = accounts[i + 2].ToLower();
                     Password[b].Password = accounts[i + 3];
                 }
             } if (accounts[0] == "2")
             {
                 for (int i = 1, a = 0; a < 10; i += 2, a++)
                 {
-                    ActiveTeam.Player[a].Login = accounts[i];
+                    ActiveTeam.Player[a].Login = accounts[i].ToLower();
                     Password[a].Password = accounts[i + 1];
                 }
             }
