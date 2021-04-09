@@ -434,14 +434,16 @@ namespace CSGO_Boost_Panel
             NewLobbyGrid.Visibility = Visibility.Collapsed;
             grid1.Focus();
             e.Handled = true;
-            if (!string.IsNullOrEmpty(ActiveTeam.TeamName))
-                ActiveTeam = new Team().New();
-            ActiveTeam.TeamName = PresetName.Text;
-            controlContainer.DataContext = ActiveTeam;
-            TeamsCollection.Add(ActiveTeam);
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-            for (short i = 0; i < 10; i++)
-                Password[i].Password = "";
+            if (!string.IsNullOrEmpty(ActiveTeam.TeamName))
+            {
+                ActiveTeam = new Team().New();
+                controlContainer.DataContext = ActiveTeam;
+                for (short i = 0; i < 10; i++)
+                    Password[i].Password = "";
+            }
+            TeamsCollection.Add(ActiveTeam);
+            ActiveTeam.TeamName = PresetName.Text;
             LobbyCount = TeamsCollection.Count;
             File.WriteAllText("LobbiesNew.json", JsonConvert.SerializeObject(TeamsCollection, Formatting.Indented));
         }
@@ -476,7 +478,8 @@ namespace CSGO_Boost_Panel
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
             if (dialog.ShowDialog() == CommonFileDialogResult.Cancel)
                 return;
-            string[] accounts = File.ReadAllText(dialog.FileName).Split('\t', ' ', '\r', '\n');
+            string[] Delimiters = { " ", "\t", Environment.NewLine };
+            string[] accounts = File.ReadAllText(dialog.FileName).Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
             if (accounts[0] == "1")
             {
                 for (int i = 1, a = 0, b = 5; a < 5; i += 4, a++, b++)
