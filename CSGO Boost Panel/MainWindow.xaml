@@ -213,7 +213,7 @@
                         <iconPacks:PackIconModern Kind="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Width="48" Height="48" Foreground="#FFE0D9BF"/>
                     </Button>
                 </TabItem.Header>
-                <Grid Margin="74,-68,-3,22" Width="741">
+                <Grid x:Name="lobbyManipulator" Margin="74,-68,-3,22" Width="741">
                     <Grid.Background>
                         <ImageBrush ImageSource="{StaticResource bckgrndDrawingImage}" Stretch="None"/>
                     </Grid.Background>
@@ -222,6 +222,10 @@
                         <ColumnDefinition Width="112"></ColumnDefinition>
                         <ColumnDefinition Width="175"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
+                    <TextBlock FontSize="15" Margin="45,227,10,171" TextAlignment="Center" Grid.Column="2">
+                        <Run Text="Active preset:&#x0a;"/>
+                        <Run Text="{Binding TeamName}" Foreground="DarkRed"/>
+                    </TextBlock>
                     <Grid x:Name="AdditionOptions" IsEnabled="False" Grid.ColumnSpan="3" Margin="10,209,8,211">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>

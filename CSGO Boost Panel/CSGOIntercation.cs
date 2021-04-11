@@ -96,7 +96,7 @@ namespace CSGO_Boost_Panel
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.PlayerField);
                 await Task.Delay(250);
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Invite);
-                await Task.Delay(250);
+                await Task.Delay(750);
                 WindowHelper.Click(ldrTitles[n], CSGOCoefficients.Cancel);
                 await Task.Delay(250);
 

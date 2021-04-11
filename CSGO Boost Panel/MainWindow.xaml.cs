@@ -83,7 +83,7 @@ namespace CSGO_Boost_Panel
             #if DEBUG
             TestBtn.Visibility = Visibility.Visible;
             #endif
-            controlContainer.DataContext = ActiveTeam;
+            lobbyManipulator.DataContext = ActiveTeam;
             SettingsGrid.DataContext = ProgramSettings;
             lobbiesList.ItemsSource = TeamsCollection;
             playersList.ItemsSource = TeamsCollection;
@@ -179,10 +179,8 @@ namespace CSGO_Boost_Panel
         {
             LobbyCount = TeamsCollection.Count;
             if (string.IsNullOrEmpty(ProgramSettings.SteamFolder) && GetSteamInstallPath() is string a)
-            {
                 ProgramSettings.SteamFolder = a;
-                LoadSteamAccs();
-            }
+            LoadSteamAccs();
             loaded = true;
         }
 
@@ -438,7 +436,7 @@ namespace CSGO_Boost_Panel
             if (!string.IsNullOrEmpty(ActiveTeam.TeamName))
             {
                 ActiveTeam = new Team().New();
-                controlContainer.DataContext = ActiveTeam;
+                lobbyManipulator.DataContext = ActiveTeam;
                 for (short i = 0; i < 10; i++)
                     Password[i].Password = "";
             }
@@ -621,7 +619,7 @@ namespace CSGO_Boost_Panel
 
                 return;
             ActiveTeam = TeamsCollection[index];
-            controlContainer.DataContext = ActiveTeam;
+            lobbyManipulator.DataContext = ActiveTeam;
             PasswordBox[] Password = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
             for (short i = 0; i < 10; i++)
                 Password[i].Password = ActiveTeam.Player[i].Password;
