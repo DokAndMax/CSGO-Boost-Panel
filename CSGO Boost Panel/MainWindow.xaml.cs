@@ -588,14 +588,8 @@ namespace CSGO_Boost_Panel
         {
             if (!loaded)
                 return;
-            if (ProgramSettings.AutoDisconnect && on)
-            {
+            if (on)
                 Task.Run(() => CSGSILogic(false));
-            }
-            if (!ProgramSettings.AutoDisconnect && on)
-            {
-                Task.Run(() => CSGSILogic(false));
-            }
         }
 
         public void LoadPreset(int num)
@@ -809,7 +803,7 @@ namespace CSGO_Boost_Panel
                     {
                         short WinTeamNumTemp = WinTeamNum;
                         WindowHelper.Click(TWinTitle[WinTeamNumTemp][0], CSGOCoefficients.Reconnect);
-                        while (true)
+                        while (DisconnectActive)
                         {
                             string TeamString = Teamlog.ReadToEnd();
                             if (!string.IsNullOrEmpty(Regex.Match(TeamString, @"ChangeGameUIState: CSGO_GAME_UI_STATE_LOADINGSCREEN -> CSGO_GAME_UI_STATE_INGAME", RegexOptions.Singleline).Value))
