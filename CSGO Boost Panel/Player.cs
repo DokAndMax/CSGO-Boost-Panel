@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,9 +18,13 @@ namespace CSGO_Boost_Panel
         private string teamName;
         public IList<Player> Player { get; set; }
 
+        public Team()
+        {
+            this.Player = new ObservableCollection<Player>();
+        }
+
         public Team New()
         {
-            Player = new ObservableCollection<Player>();
             for(short i = 0; i < 10; i++)
             {
                 Player.Add(new Player(false, "", "", "", "Unknown", "50 50"));
@@ -31,10 +34,7 @@ namespace CSGO_Boost_Panel
 
         public Team Duplicate()
         {
-            Team duplicatedTeam = new Team
-            {
-                Player = new ObservableCollection<Player>()
-            };
+            Team duplicatedTeam = new Team();
             for (short i = 0; i < 10; i++)
             {
                 duplicatedTeam.Player.Add(new Player(false, "", "", "", "Unknown", "50 50"));

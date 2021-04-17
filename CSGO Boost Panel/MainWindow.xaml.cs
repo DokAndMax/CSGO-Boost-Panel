@@ -44,7 +44,7 @@ namespace CSGO_Boost_Panel
         public static bool AutoAcceptRestartS = false, WarmUp = false, DisconnectActive = false;
         public static string AutoAcceptStatusCircle = "🔴", PlayerStatusCircle = "🔴";
         public List<string>[] TWinTitle = { T2WinTitle, T1WinTitle };
-        public Button choosedObj;
+        public Button switchButton;
         public static Brush Red = (Brush)new BrushConverter().ConvertFrom("#FFA20404");
         public static Team ActiveTeam = new Team().New();
 
@@ -400,8 +400,8 @@ namespace CSGO_Boost_Panel
             on = false;
             WarmUp = false;
             connected = false;
-            if (choosedObj != null)
-                choosedObj.BorderBrush = null;
+            if (switchButton != null)
+                switchButton.BorderBrush = null;
             choosed = false;
             controlContainer.IsEnabled = true;
             AdditionOptions.IsEnabled = false;
@@ -721,9 +721,6 @@ namespace CSGO_Boost_Panel
             gslT2.NewGameState -= Round;
             DisconnectActive = false;
 
-            if (!ProgramSettings.AutoDisconnect || !ActiveTeam.Player[0].Toggled || !ActiveTeam.Player[5].Toggled)
-                return;
-
             if (indicators)
             {
                 gslT1.NewGameState -= Indicators;
@@ -736,6 +733,9 @@ namespace CSGO_Boost_Panel
                 gslT2.RoundPhaseChanged += RoundLasts;
             }
 
+            if (!ProgramSettings.AutoDisconnect || !ActiveTeam.Player[0].Toggled || !ActiveTeam.Player[5].Toggled)
+                return;
+
             if (ProgramSettings.WinTeamTie && RoundNumber >= 15)
             {
                 WinTeamNum = 1;
@@ -746,7 +746,7 @@ namespace CSGO_Boost_Panel
 
             async void Round(GameState a)
             {
-                if ((RoundNumber == a.Map.Round && roundPhase == a.Round.Phase)
+                if (!ProgramSettings.AutoDisconnect || (RoundNumber == a.Map.Round && roundPhase == a.Round.Phase)
                     || a.Map.Phase == CSGSI.Nodes.MapPhase.Undefined
                     || a.Map.Phase == CSGSI.Nodes.MapPhase.GameOver)
                     return;
@@ -1005,7 +1005,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT1;
             DisNumber = 15;
 
-            if (on && ProgramSettings.AutoDisconnect)
+            if (on)
                 _ = Task.Run(() => CSGSILogic(false));
         }
 
@@ -1015,7 +1015,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT2;
             DisNumber = 15;
 
-            if (on && ProgramSettings.AutoDisconnect)
+            if (on)
                 _ = Task.Run(() => CSGSILogic(false));
         }
 
@@ -1025,7 +1025,7 @@ namespace CSGO_Boost_Panel
             WinTeam = gslT1;
             DisNumber = 14;
 
-            if (on && ProgramSettings.AutoDisconnect)
+            if (on)
                 _ = Task.Run(() => CSGSILogic(false));
         }
 
@@ -1038,76 +1038,42 @@ namespace CSGO_Boost_Panel
         {
             if (choosed)
             {
-                choosedObj.BorderBrush = null;
+                switchButton.BorderBrush = null;
                 choosed = false;
-                short ChoosedObjNum = Convert.ToInt16(choosedObj.Tag);
-                short ButtonSenderNum = Convert.ToInt16(((Button)sender).Tag);
-                if (ChoosedObjNum < 5 && ButtonSenderNum < 5 || (ChoosedObjNum > 4 && ButtonSenderNum > 4))
+                short sourceIndex = Convert.ToInt16(switchButton.Tag);
+                short targetIndex = Convert.ToInt16(((Button)sender).Tag);
+                if ((sourceIndex < 5 && targetIndex < 5) || (sourceIndex > 4 && targetIndex > 4))
                     return;
-                if (!ActiveTeam.Player[ChoosedObjNum].Toggled || !ActiveTeam.Player[ButtonSenderNum].Toggled)
+                if (!ActiveTeam.Player[sourceIndex].Toggled || !ActiveTeam.Player[targetIndex].Toggled)
                     return;
-                for (int i = 0, n = 0; i < 1 && n < 5; n++)
-                {
-                    if (ActiveTeam.Player[n].Toggled)
-                    {
-                        if (ChoosedObjNum < 5)
-                        {
-                            if (ChoosedObjNum == n)
-                                return;
-                        }
-                        else
-                        {
-                            if (ButtonSenderNum == n)
-                                return;
-                        }
-                        i++;
-                    }
-                }
+                Player source = ActiveTeam.Player[sourceIndex];
+                Player target = ActiveTeam.Player[targetIndex];
 
-                for (int i = 0, n = 5; i < 1 && n < 10; n++)
+                if (sourceIndex < 5)
                 {
-                    if (ActiveTeam.Player[n].Toggled)
-                    {
-                        if (ChoosedObjNum > 4)
-                        {
-                            if (ChoosedObjNum == n)
-                                return;
-                        }
-                        else
-                        {
-                            if (ButtonSenderNum == n)
-                                return;
-                        }
-                        i++;
-                    }
-                }
-                if (ChoosedObjNum < 5)
-                {
-                    string changetitle = T1WinTitle[ChoosedObjNum];
-                    T1WinTitle[ChoosedObjNum] = T2WinTitle[ButtonSenderNum - 5];
-                    T2WinTitle[ButtonSenderNum - 5] = changetitle;
+                    string changetitle = T1WinTitle[sourceIndex];
+                    T1WinTitle[sourceIndex] = T2WinTitle[targetIndex - 5];
+                    T2WinTitle[targetIndex - 5] = changetitle;
                 }
                 else
                 {
-                    string changetitle = T2WinTitle[ChoosedObjNum - 5];
-                    T2WinTitle[ChoosedObjNum - 5] = T1WinTitle[ButtonSenderNum];
-                    T1WinTitle[ButtonSenderNum] = changetitle;
+                    string changetitle = T2WinTitle[sourceIndex - 5];
+                    T2WinTitle[sourceIndex - 5] = T1WinTitle[targetIndex];
+                    T1WinTitle[targetIndex] = changetitle;
                 }
-                string changeLog = ActiveTeam.Player[ChoosedObjNum].Login;
-                ActiveTeam.Player[ChoosedObjNum].Login = ActiveTeam.Player[ButtonSenderNum].Login;
-                ActiveTeam.Player[ButtonSenderNum].Login = changeLog;
+                ActiveTeam.Player.Insert(targetIndex + 1, source);
+                ActiveTeam.Player.RemoveAt(targetIndex);
+                ActiveTeam.Player.Insert(sourceIndex + 1, target);
+                ActiveTeam.Player.RemoveAt(sourceIndex);
                 PasswordBox[] passwordBox = { Password1, Password2, Password3, Password4, Password5, Password6, Password7, Password8, Password9, Password10 };
-                string changePass = passwordBox[ChoosedObjNum].Password;
-                passwordBox[ChoosedObjNum].Password = passwordBox[ButtonSenderNum].Password;
-                passwordBox[ButtonSenderNum].Password = changePass;
-                ActiveTeam.Player[ChoosedObjNum].Password = passwordBox[ChoosedObjNum].Password;
-                ActiveTeam.Player[ButtonSenderNum].Password = passwordBox[ButtonSenderNum].Password;
-
+                string changePass = passwordBox[sourceIndex].Password;
+                passwordBox[sourceIndex].Password = passwordBox[targetIndex].Password;
+                passwordBox[targetIndex].Password = changePass;
             }
             else
             {
                 ((Button)sender).BorderBrush = Brushes.Red;
-                choosedObj = (Button)sender;
+                switchButton = (Button)sender;
                 choosed = true;
             }
         }

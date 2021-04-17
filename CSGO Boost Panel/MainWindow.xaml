@@ -396,9 +396,6 @@
                             <iconPacks:PackIconModern Kind="ControlPlay" Width="Auto" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
                         </Button>
 
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="0" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
-                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
-                        </Button>
                         <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="2" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="1" Foreground="White" Click="ExChangeBot" BorderThickness="1">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
@@ -409,9 +406,6 @@
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
                         <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="5" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="4" Foreground="White" Click="ExChangeBot" BorderThickness="1">
-                            <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
-                        </Button>
-                        <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="7" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="5" Foreground="White" Click="ExChangeBot" BorderThickness="1" Visibility="Hidden">
                             <iconPacks:PackIconMaterial Kind="SyncCircle" Foreground="Black" Width="Auto" Height="Auto"/>
                         </Button>
                         <Button Style="{DynamicResource MahAppsButtonDisabled}" Grid.Column="1" Grid.Row="8" BorderBrush="{x:Null}" Background="{x:Null}" Width="47" Height="31" Tag="6" Foreground="White" Click="ExChangeBot" BorderThickness="1">
