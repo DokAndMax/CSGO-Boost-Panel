@@ -28,9 +28,9 @@ public class LogWriter
         try
         {
             txtWriter.Write("\r\nLog Entry : ");
-            txtWriter.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(),
-                DateTime.Now.ToLongDateString());
-            txtWriter.WriteLine("\n  :{0}", logMessage);
+            txtWriter.WriteLine("{0} {1} {2}", DateTime.Now.ToLongTimeString(),
+                DateTime.Now.ToLongDateString(), Assembly.GetEntryAssembly().GetName().Version.ToString());
+            txtWriter.WriteLine("\n  {0}", logMessage);
             txtWriter.WriteLine("-------------------------------");
         }
         catch (Exception) { }

@@ -53,7 +53,7 @@ namespace CSGO_Boost_Panel
 
         public MainWindow()
         {
-            if (File.Exists("LobbiesNew.json") && !string.IsNullOrEmpty(File.ReadAllText("LobbiesNew.json")))
+            if (File.Exists("LobbiesNew.json") && File.ReadAllText("LobbiesNew.json") != "null" && !string.IsNullOrEmpty(File.ReadAllText("LobbiesNew.json")))
                 TeamsCollection = JsonConvert.DeserializeObject<ObservableCollection<Team>>(File.ReadAllText("LobbiesNew.json"));
             else
                 TeamsCollection = new ObservableCollection<Team>();
@@ -75,7 +75,7 @@ namespace CSGO_Boost_Panel
                     LobbyNotGatheredSound = true,
                 };
 
-            //UpdateProgram(true);
+            UpdateProgram(true);
             InitializeComponent();
 
             Loaded += LoadSettings;
@@ -98,7 +98,7 @@ namespace CSGO_Boost_Panel
             File.WriteAllText("LobbiesNew.json", JsonConvert.SerializeObject(TeamsCollection, Formatting.Indented));
             TgBot.RemoveKeyboard();
             log.LogWrite("Exit");
-            log.LogWrite(e.ExceptionObject.ToString() + "\n Crash");
+            log.LogWrite("Crash\n" +e.ExceptionObject.ToString());
         }
 
         private Point _dragStartPoint;
@@ -177,7 +177,7 @@ namespace CSGO_Boost_Panel
 
         private void LoadSettings(object sender, RoutedEventArgs e)
         {
-            LobbyCount = TeamsCollection.Count;
+            LobbyCount = TeamsCollection?.Count ?? 0;
             if (string.IsNullOrEmpty(ProgramSettings.SteamFolder) && GetSteamInstallPath() is string a)
                 ProgramSettings.SteamFolder = a;
             LoadSteamAccs();
@@ -1238,7 +1238,7 @@ namespace CSGO_Boost_Panel
             string appVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
             string newVersion = CheckForNewVersion();
 
-            if (newVersion == appVersion)
+            if (String.IsNullOrEmpty(newVersion) || newVersion == appVersion)
             {
                 if(!silentUpdate)
                     MessageBox.Show("You have the latest version.", "", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1249,8 +1249,8 @@ namespace CSGO_Boost_Panel
 
             try
             {
-                var client = new WebClient();
-                client.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/IziBoost.zip"), "temp_myprogram");
+                using (WebClient webClient = new WebClient())
+                    webClient.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/IziBoost.zip"), "temp_myprogram");
                 if (Directory.Exists("temp_myprogram_folder")) Directory.Delete("temp_myprogram_folder", true);
                 ZipFile.ExtractToDirectory("temp_myprogram", "temp_myprogram_folder");
                 if (File.Exists("updater.exe")) { File.Delete("updater.exe"); }
@@ -1265,14 +1265,17 @@ namespace CSGO_Boost_Panel
 
         private static String CheckForNewVersion()
         {
-            using (var webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
             {
                 var jsonData = string.Empty;
                 try
                 {
                     jsonData = webClient.DownloadString("https://hippocratic-fishes.000webhostapp.com/version.json");
                 }
-                catch (Exception) { }
+                catch (Exception) 
+                {
+                    return string.Empty;
+                }
                 JObject version = JsonConvert.DeserializeObject<JObject>(jsonData);
                 return version.Value<String>("actualversion");
             }
