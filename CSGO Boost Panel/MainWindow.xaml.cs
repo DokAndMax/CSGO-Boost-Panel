@@ -1250,7 +1250,7 @@ namespace CSGO_Boost_Panel
             try
             {
                 using (WebClient webClient = new WebClient())
-                    webClient.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/IziBoost.zip"), "temp_myprogram");
+                    webClient.DownloadFile(new Uri(@"https://hippocratic-fishes.000webhostapp.com/assets/boost/IziBoost.zip"), "temp_myprogram");
                 if (Directory.Exists("temp_myprogram_folder")) Directory.Delete("temp_myprogram_folder", true);
                 ZipFile.ExtractToDirectory("temp_myprogram", "temp_myprogram_folder");
                 if (File.Exists("updater.exe")) { File.Delete("updater.exe"); }
@@ -1258,6 +1258,7 @@ namespace CSGO_Boost_Panel
                 if (on)
                     ProgramSettings.CSGOsRunning = true;
                 Process.Start("updater.exe", "IziBoost.exe");
+                log.LogWrite("Updated to " + newVersion);
                 Application_Exit(null, null);
             }
             catch (Exception) { }
