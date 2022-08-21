@@ -12,7 +12,7 @@ namespace CSGO_Boost_Panel
     {
         public async static Task StartSearching(int type)
         {
-            String ldr1Title = ActiveTeam.Player[0].WindowTitle, ldr2Title = ActiveTeam.Player[5].WindowTitle;
+            string ldr1Title = ActiveTeam.Player[0].WindowTitle, ldr2Title = ActiveTeam.Player[5].WindowTitle;
             switch (type)
             {
                 case 1:
@@ -51,7 +51,7 @@ namespace CSGO_Boost_Panel
 
         public async static Task GatherLobby()
         {
-            List<String> ldrTitles = new List<String>();
+            List<string> ldrTitles = new List<string>();
             if (ActiveTeam.Player[0].WindowTitle.Contains("LEADER"))
                 ldrTitles.Add(ActiveTeam.Player[0].WindowTitle);
             if (ActiveTeam.Player[5].WindowTitle.Contains("LEADER"))
@@ -140,7 +140,7 @@ namespace CSGO_Boost_Panel
             string res;
             foreach (Process proc in  Process.GetProcessesByName("steam"))
             {
-                String parameters = CommandLineUtilities.getCommandLines(proc);
+                string parameters = CommandLineUtilities.getCommandLines(proc);
                 if (parameters.Contains(ActiveTeam.Player[WinNum-1].Login))
                 {
                     proc.Kill();

@@ -54,9 +54,9 @@ namespace updater
             //}
             //catch (Exception) { }
         }
-        private static List<String> DirSearch(string sDir)
+        private static List<string> DirSearch(string sDir)
         {
-            List<String> files = new List<String>();
+            List<string> files = new List<string>();
             try
             {
                 foreach (string f in Directory.GetFiles(sDir))

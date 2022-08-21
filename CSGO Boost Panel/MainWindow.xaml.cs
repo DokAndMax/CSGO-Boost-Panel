@@ -75,7 +75,6 @@ namespace CSGO_Boost_Panel
                     LobbyNotGatheredSound = true,
                 };
 
-            UpdateProgram(true);
             InitializeComponent();
 
             Loaded += LoadSettings;
@@ -237,10 +236,11 @@ namespace CSGO_Boost_Panel
                 InfoMessage(sender, "Please specify Steam and CSGO folders",  MessageBoxImage.Information);
                 return;
             }
-            List<String> Logins = new List<String>();
+            List<string> Logins = new List<string>();
             T1WinTitle.Clear();
             T2WinTitle.Clear();
-            string[] Names = { "LEADER", "BOT" }, Res = { ProgramSettings.LeaderResX + " " + ProgramSettings.LeaderResY, ProgramSettings.BotResX + " " + ProgramSettings.BotResY};
+            string[] Names = { "LEADER", "BOT" }, 
+                Res = { $"{ProgramSettings.LeaderResX} {ProgramSettings.LeaderResY}", $"{ProgramSettings.BotResX} {ProgramSettings.BotResY}" };
             SavePasswords();
             for (short i = 0, n = 0, l = 0; i < 10; i++)
             {
@@ -256,21 +256,21 @@ namespace CSGO_Boost_Panel
                         LoadSteamAccs();
                         if (accInfo[ActiveTeam.Player[i].Login] == null)
                         {
-                            InfoMessage(sender, "First login to this account: \"" + ActiveTeam.Player[i].Login + "\" and then try again",  MessageBoxImage.Information);
+                            InfoMessage(sender, $"First login to this account: \"{ActiveTeam.Player[i].Login}\" and then try again",  MessageBoxImage.Information);
                             return;
                         }
                     }
                     if (i < 5)
                     {
-                        Logins.Add(ActiveTeam.Player[i].Login + " " + ActiveTeam.Player[i].Password + " " + ActiveTeam.Player[i].Pos + " " + Res[l] + " \"" + Names[l] + " #1\" " + n);
-                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #1";
-                        T1WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #1");
+                        Logins.Add($"{ActiveTeam.Player[i].Login} {ActiveTeam.Player[i].Password} {ActiveTeam.Player[i].Pos} {Res[l]} \"{Names[l]} #1\" {n}");
+                        ActiveTeam.Player[i].WindowTitle = $"LOGIN: {ActiveTeam.Player[i].Login} | {Names[l]} #1 - Direct3D 9";
+                        T1WinTitle.Add($"LOGIN: {ActiveTeam.Player[i].Login} | {Names[l]} #1 - Direct3D 9");
                     }
                     else
                     {
-                        Logins.Add(ActiveTeam.Player[i].Login + " " + ActiveTeam.Player[i].Password + " " + ActiveTeam.Player[i].Pos + " " + Res[l] + " \"" + Names[l] + " #2\" " + (n + 2));
-                        ActiveTeam.Player[i].WindowTitle = "LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #2";
-                        T2WinTitle.Add("LOGIN: " + ActiveTeam.Player[i].Login + " | " + Names[l] + " #2");
+                        Logins.Add($"{ActiveTeam.Player[i].Login} {ActiveTeam.Player[i].Password} {ActiveTeam.Player[i].Pos} {Res[l]} \"{Names[l]} #2\" {n + 2}");
+                        ActiveTeam.Player[i].WindowTitle = $"LOGIN: {ActiveTeam.Player[i].Login} | {Names[l]} #2 - Direct3D 9";
+                        T2WinTitle.Add($"LOGIN: {ActiveTeam.Player[i].Login} | {Names[l]} #2 - Direct3D 9");
                     }
                     if (n == 0)
                         n++;
@@ -299,7 +299,7 @@ namespace CSGO_Boost_Panel
                     continue;
                 if (!on)
                     return;
-                Process.Start("Launcher.exe", "false \"" + ProgramSettings.SteamFolder + "\" " + Logins[i] + " \"" + ProgramSettings.CSGOFolder + "\" ");
+                Process.Start("Launcher.exe", $@"""{ProgramSettings.SteamFolder}"" {Logins[i]} ""{ProgramSettings.CSGOFolder}""");
                 await Task.Delay(4000);
             }
             if (!(bool)WinTeam1.IsChecked && !(bool)WinTeam2.IsChecked && !(bool)WinTeamTie.IsChecked)
@@ -554,7 +554,7 @@ namespace CSGO_Boost_Panel
                 return;
             if (((Button)sender).Tag.ToString() == "SteamFolder")
             {
-                if (!File.Exists(dialog.FileName + @"/config/loginusers.vdf"))
+                if (!File.Exists($@"{dialog.FileName}/config/loginusers.vdf"))
                 {
                     MessageBox.Show("Wrong Steam Directory");
                     return;
@@ -627,8 +627,8 @@ namespace CSGO_Boost_Panel
                 return;
             }
             accInfo = new JObject();
-            string info = File.ReadAllText(ProgramSettings.SteamFolder + @"/config/loginusers.vdf");
-            string[] Delimiters = { @"""0""", @"""1""", "\"", "\n", "\t", "{", "}", "},", "\",", "users", "AccountName", "PersonaName", "RememberPassword", "MostRecent", "mostrecent", "Timestamp", "WantsOfflineMode" };
+            string info = File.ReadAllText($"{ProgramSettings.SteamFolder}/config/loginusers.vdf");
+            string[] Delimiters = { @"""0""", @"""1""", "\"", "\n", "\t", "{", "}", "},", "\",", "users", "AccountName", "PersonaName", "RememberPassword", "WantsOfflineMode", "SkipOfflineModeWarning", "AllowAutoLogin", "MostRecent", "Timestamp", };
             string[] b = info.Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
             for (int a = 1; a <= (b.Length / 4); a++)
             {
@@ -660,9 +660,9 @@ namespace CSGO_Boost_Panel
         {
             if (!ProgramSettings.AutoAccept || !ActiveTeam.Player[0].Toggled || !ActiveTeam.Player[5].Toggled)
                 return;
-            Directory.CreateDirectory(ProgramSettings.CSGOFolder + @"\csgo\log\");
-            Stream Team1logStream = File.Open(ProgramSettings.CSGOFolder + @"\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            Stream Team2logStream = File.Open(ProgramSettings.CSGOFolder + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            Directory.CreateDirectory($@"{ProgramSettings.CSGOFolder}\csgo\log\");
+            Stream Team1logStream = File.Open($@"{ProgramSettings.CSGOFolder}\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            Stream Team2logStream = File.Open($@"{ProgramSettings.CSGOFolder}\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             StreamReader Team1log = new StreamReader(Team1logStream);
             StreamReader Team2log = new StreamReader(Team2logStream);
             InvokeUI(() =>
@@ -855,7 +855,7 @@ namespace CSGO_Boost_Panel
                         mediaPlayer.Load();
                         mediaPlayer.Play();
                     }
-                    TgBot.SendNotify("Match ended (" + GamesPlayerForGameSession + "|" + GamesPlayerForAppSession + ")");
+                    TgBot.SendNotify($"Match ended ({GamesPlayerForGameSession}|{GamesPlayerForAppSession})");
                     if (ProgramSettings.WinTeamTie && ProgramSettings.AutoDisconnect)
                     {
                         gslT1.NewGameState -= Round;
@@ -944,7 +944,7 @@ namespace CSGO_Boost_Panel
                 AutoAcceptStatus.Fill = Brushes.Yellow;
             });
             AutoAcceptStatusCircle = "🟡";
-            List<String> ldrTitles = new List<String>();
+            List<string> ldrTitles = new List<string>();
             for (int i = 0; i < 10; i++)
             {
                 if (string.IsNullOrEmpty(ActiveTeam.Player[i].WindowTitle))
@@ -1031,7 +1031,7 @@ namespace CSGO_Boost_Panel
 
         private void PlayOneFunc(object sender, RoutedEventArgs e)
         {
-             CSGOIntercation.RestartCSGO(Int16.Parse(((Button)sender).Tag.ToString()));
+             CSGOIntercation.RestartCSGO(short.Parse(((Button)sender).Tag.ToString()));
         }
 
         private void ExChangeBot(object sender, RoutedEventArgs e)
@@ -1129,7 +1129,7 @@ namespace CSGO_Boost_Panel
         {
             if (string.IsNullOrEmpty(ActiveTeam.TeamName) || !ActiveTeam.Player[0].Toggled || !ActiveTeam.Player[5].Toggled)
                 return;
-            Directory.CreateDirectory(ProgramSettings.CSGOFolder + @"\csgo\log\");
+            Directory.CreateDirectory($@"{ProgramSettings.CSGOFolder}\csgo\log\");
             Stream Team1logStream = File.Open(ProgramSettings.CSGOFolder + @"\csgo\log\0.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             Stream Team2logStream = File.Open(ProgramSettings.CSGOFolder + @"\csgo\log\1.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             StreamReader Team1log = new StreamReader(Team1logStream);

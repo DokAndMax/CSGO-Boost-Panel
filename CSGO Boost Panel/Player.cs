@@ -20,7 +20,7 @@ namespace CSGO_Boost_Panel
 
         public Team()
         {
-            this.Player = new ObservableCollection<Player>();
+            Player = new ObservableCollection<Player>();
         }
 
         public Team New()
@@ -41,15 +41,15 @@ namespace CSGO_Boost_Panel
             }
             for(short i = 0; i < 10; i++)
             {
-                duplicatedTeam.Player[i].Login = this.Player[i].Login;
-                duplicatedTeam.Player[i].Password = this.Player[i].Password;
-                duplicatedTeam.Player[i].Nickname = this.Player[i].Nickname;
-                duplicatedTeam.Player[i].Level = this.Player[i].Level;
-                duplicatedTeam.Player[i].XP = this.Player[i].XP;
-                duplicatedTeam.Player[i].Pos = this.Player[i].Pos;
-                duplicatedTeam.Player[i].SteamID = this.Player[i].SteamID;
-                duplicatedTeam.Player[i].Rank = this.Player[i].Rank;
-                duplicatedTeam.Player[i].Toggled = this.Player[i].Toggled;
+                duplicatedTeam.Player[i].Login = Player[i].Login;
+                duplicatedTeam.Player[i].Password = Player[i].Password;
+                duplicatedTeam.Player[i].Nickname = Player[i].Nickname;
+                duplicatedTeam.Player[i].Level = Player[i].Level;
+                duplicatedTeam.Player[i].XP = Player[i].XP;
+                duplicatedTeam.Player[i].Pos = Player[i].Pos;
+                duplicatedTeam.Player[i].SteamID = Player[i].SteamID;
+                duplicatedTeam.Player[i].Rank = Player[i].Rank;
+                duplicatedTeam.Player[i].Toggled = Player[i].Toggled;
             }
             duplicatedTeam.TeamName = this.TeamName + " " + "copy";
             return duplicatedTeam;
@@ -100,7 +100,7 @@ namespace CSGO_Boost_Panel
             this.Nickname = Nickname;
             Level = 0;
             XP = "";
-            Rank = "Images/0.png";
+            Rank = "Resources/RankImages/0.png";
             IsStarted = Red;
             this.Pos = Pos;
         }

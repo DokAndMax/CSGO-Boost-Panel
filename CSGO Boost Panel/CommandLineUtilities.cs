@@ -5,22 +5,20 @@ using System.Management;
 
 public abstract class CommandLineUtilities
 {
-    public static String getCommandLines(Process processs)
+    public static string getCommandLines(Process processs)
     {
         ManagementObjectSearcher commandLineSearcher = new ManagementObjectSearcher(
             "SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + processs.Id);
-        String commandLine = "";
-        foreach (ManagementObject commandLineObject in commandLineSearcher.Get())
-        {
-            commandLine += (String)commandLineObject["CommandLine"];
-        }
+        string commandLine = "";
+        foreach (var commandLineObject in commandLineSearcher.Get())
+            commandLine += (string)commandLineObject["CommandLine"];
 
         return commandLine;
     }
 
-    public static String[] getCommandLinesParsed(Process process)
+    public static string[] getCommandLinesParsed(Process process)
     {
-        return (parseCommandLine(getCommandLines(process)));
+        return parseCommandLine(getCommandLines(process));
     }
 
     /// <summary>
@@ -31,12 +29,12 @@ public abstract class CommandLineUtilities
     /// </summary>
     /// <param name="commandLine"></param>
     /// <returns>String array</returns>
-    public static String[] parseCommandLine(String commandLine)
+    public static string[] parseCommandLine(string commandLine)
     {
-        List<String> arguments = new List<String>();
+        List<string> arguments = new List<string>();
 
-        Boolean stringIsQuoted = false;
-        String argString = "";
+        bool stringIsQuoted = false;
+        string argString = "";
         for (int c = 0; c < commandLine.Length; c++)  //process string one character at a tie
         {
             if (commandLine.Substring(c, 1) == "\"")
